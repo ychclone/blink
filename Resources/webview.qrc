@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file>Scripts/google-code-prettify/prettify.css</file>
+    <file>Scripts/google-code-prettify/prettify.js</file>
+  </qresource>
+</RCC>

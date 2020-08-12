@@ -1,0 +1,1198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <author>YCH</author>
+ <class>mainWindow</class>
+ <widget class="QMainWindow" name="mainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>783</width>
+    <height>550</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Blink</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton:hover:flat { border: 1px solid grey; border-radius: 3px}
+QTreeView {selection-background-color:steelblue}
+QListWidget {selection-background-color:steelblue}
+
+QMenuBar {
+	background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f2f6f8, stop:0.4 #d9dee7, stop:0.6 #d0d7e2, stop: 1 #e4ecf6);
+	border: 1px solid lightgrey;
+} 
+
+QTabBar::tab {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
+                                stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3);
+    border: 1px solid #C4C4C3;
+	padding: 5px;
+    min-width: 8ex;
+}
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #fafafa, stop: 0.4 #f4f4f4,
+                                stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+	padding: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border-bottom: 0px
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px;
+	padding: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+}
+
+QSplitter::handle {
+	background: ghostwhite;
+}
+</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>1</horstretch>
+     <verstretch>1</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">.QWidget {background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f6f9fe, stop:0.05 #e1eaf9, stop:0.5 #d9dee7 , stop:0.8 #b6c1d0, stop: 1 #e1eaf9);}</string>
+   </property>
+   <layout class="QGridLayout" name="gridLayout">
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <item row="0" column="0">
+     <widget class="QWidget" name="containerwidget" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>1</horstretch>
+        <verstretch>1</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <property name="spacing">
+        <number>3</number>
+       </property>
+       <item row="0" column="1">
+        <widget class="QSplitter" name="splitter">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="midLineWidth">
+          <number>0</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="opaqueResize">
+          <bool>true</bool>
+         </property>
+         <property name="childrenCollapsible">
+          <bool>false</bool>
+         </property>
+         <widget class="QTabWidget" name="mainTabWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>1</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>18</pointsize>
+           </font>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="documentMode">
+           <bool>false</bool>
+          </property>
+          <property name="tabsClosable">
+           <bool>false</bool>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="profileTab">
+           <attribute name="icon">
+            <iconset resource="../app.qrc">
+             <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Profile</string>
+           </attribute>
+           <layout class="QVBoxLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="CProfileListWidget" name="profile_listView">
+              <property name="font">
+               <font>
+                <family>Ubuntu</family>
+                <pointsize>16</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::WheelFocus</enum>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QTreeView::item {color: #0066FF;}
+QTreeView::item:selected
+{
+color: white;
+background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, stop: 1 #70A9FF);
+}</string>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::ExtendedSelection</enum>
+              </property>
+              <property name="uniformRowHeights">
+               <bool>true</bool>
+              </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" rowstretch="0" columnstretch="0">
+              <property name="horizontalSpacing">
+               <number>6</number>
+              </property>
+              <item row="0" column="0">
+               <widget class="QLineEdit" name="profilePattern_lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="sizeIncrement">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>18</pointsize>
+                 </font>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="groupTab">
+           <attribute name="icon">
+            <iconset resource="../app.qrc">
+             <normaloff>:/Images/group.png</normaloff>:/Images/group.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Group</string>
+           </attribute>
+           <layout class="QVBoxLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="CGroupListWidget" name="group_listView">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>PMingLiU</family>
+                <pointsize>10</pointsize>
+               </font>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QTreeView::item {color: #0066FF;
+background-color:qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0, stop: 0 white, stop: 1 #FAFAFA)
+}
+QTreeView::item:selected
+{
+color: white;
+background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, stop: 1 #70A9FF);
+}</string>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::ExtendedSelection</enum>
+              </property>
+              <property name="uniformRowHeights">
+               <bool>true</bool>
+              </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_3">
+              <item row="0" column="0">
+               <widget class="QLineEdit" name="groupPattern_lineEdit"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+         <widget class="QTabWidget" name="infoTabWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>10</horstretch>
+            <verstretch>1</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>18</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string/>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="inputMethodHints">
+           <set>Qt::ImhNone</set>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>22</width>
+            <height>22</height>
+           </size>
+          </property>
+          <property name="movable">
+           <bool>true</bool>
+          </property>
+          <widget class="QWidget" name="fileTab">
+           <attribute name="icon">
+            <iconset resource="../app.qrc">
+             <normaloff>:/Images/file.png</normaloff>:/Images/file.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>File</string>
+           </attribute>
+           <layout class="QVBoxLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="COutputListWidget" name="output_listView">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="font">
+               <font>
+                <family>Ubuntu</family>
+                <pointsize>16</pointsize>
+                <weight>50</weight>
+                <bold>false</bold>
+               </font>
+              </property>
+              <property name="focusPolicy">
+               <enum>Qt::WheelFocus</enum>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QTreeView::item {color: #0066FF;}
+QTreeView::item:selected
+{
+color: white;
+background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, stop: 1 #70A9FF);
+}</string>
+              </property>
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="selectionMode">
+               <enum>QAbstractItemView::ExtendedSelection</enum>
+              </property>
+              <property name="uniformRowHeights">
+               <bool>true</bool>
+              </property>
+              <property name="allColumnsShowFocus">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame">
+              <property name="minimumSize">
+               <size>
+                <width>20</width>
+                <height>21</height>
+               </size>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="lineWidth">
+               <number>0</number>
+              </property>
+              <layout class="QVBoxLayout">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLineEdit" name="filePattern_lineEdit">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                     <horstretch>80</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <pointsize>18</pointsize>
+                    </font>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="symbolTab">
+           <attribute name="icon">
+            <iconset resource="../app.qrc">
+             <normaloff>:/Images/symbol.png</normaloff>:/Images/symbol.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string>Symbol</string>
+           </attribute>
+           <layout class="QVBoxLayout">
+            <property name="spacing">
+             <number>2</number>
+            </property>
+            <property name="leftMargin">
+             <number>5</number>
+            </property>
+            <property name="topMargin">
+             <number>5</number>
+            </property>
+            <property name="rightMargin">
+             <number>5</number>
+            </property>
+            <property name="bottomMargin">
+             <number>5</number>
+            </property>
+            <item>
+             <widget class="QPlainTextEdit" name="symbol_textBrowser">
+              <property name="font">
+               <font>
+                <pointsize>18</pointsize>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="searchFrame">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <property name="styleSheet">
+               <string notr="true">QFrame {color: #0066FF;
+background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, stop: 1 #cee1ff);
+} </string>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Plain</enum>
+              </property>
+              <property name="lineWidth">
+               <number>0</number>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_5" rowstretch="0,0" columnstretch="0,0,0,0">
+               <property name="leftMargin">
+                <number>4</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="1" column="2">
+                <widget class="QPushButton" name="previousSymbolButton">
+                 <property name="text">
+                  <string>Previous</string>
+                 </property>
+                 <property name="flat">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1">
+                <widget class="QPushButton" name="nextSymbolButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>Search</string>
+                 </property>
+                 <property name="statusTip">
+                  <string>Search</string>
+                 </property>
+                 <property name="text">
+                  <string>Next</string>
+                 </property>
+                 <property name="shortcut">
+                  <string>Return</string>
+                 </property>
+                 <property name="flat">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="frameSymbol_lineEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>18</pointsize>
+                  </font>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <layout class="QGridLayout" name="gridLayout_4" rowstretch="0,0" columnstretch="0,0,0">
+              <property name="horizontalSpacing">
+               <number>6</number>
+              </property>
+              <property name="verticalSpacing">
+               <number>12</number>
+              </property>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="searchButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="toolTip">
+                 <string>Search</string>
+                </property>
+                <property name="statusTip">
+                 <string>Search</string>
+                </property>
+                <property name="text">
+                 <string> Search</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="../app.qrc">
+                  <normaloff>:/Icons/22x22/zoom-3.png</normaloff>:/Icons/22x22/zoom-3.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>22</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="shortcut">
+                 <string>Return</string>
+                </property>
+                <property name="flat">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="search_lineEdit">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>18</pointsize>
+                 </font>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>783</width>
+     <height>42</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuOptions">
+    <property name="title">
+     <string>&amp;Options</string>
+    </property>
+    <addaction name="actionSetting"/>
+    <addaction name="actionProfileAndGroupCaseSensitive"/>
+    <addaction name="actionFileCaseSensitive"/>
+    <addaction name="actionSymbolCaseSensitive"/>
+   </widget>
+   <widget class="QMenu" name="menuProfile">
+    <property name="title">
+     <string>&amp;Profile</string>
+    </property>
+    <addaction name="actionProfileNew"/>
+    <addaction name="actionProfileLoad"/>
+    <addaction name="actionProfileUpdate"/>
+    <addaction name="actionProfileRebuildTag"/>
+    <addaction name="actionProfileModify"/>
+    <addaction name="actionProfileDelete"/>
+    <addaction name="actionProfileGroup"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>&amp;View</string>
+    </property>
+    <addaction name="actionAlways_on_top"/>
+    <addaction name="actionTransparent"/>
+    <addaction name="actionToolbar"/>
+    <addaction name="actionProfile_Panel"/>
+    <addaction name="actionFile_Panel"/>
+   </widget>
+   <widget class="QMenu" name="menuGroup">
+    <property name="title">
+     <string>Group</string>
+    </property>
+    <addaction name="actionGroupNew"/>
+    <addaction name="actionGroupLoad"/>
+    <addaction name="actionGroupUpdate"/>
+    <addaction name="actionGroupModify"/>
+    <addaction name="actionGroupDelete"/>
+   </widget>
+   <addaction name="menuProfile"/>
+   <addaction name="menuGroup"/>
+   <addaction name="menuOptions"/>
+   <addaction name="menuView"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>20</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonIconOnly</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionProfileNew"/>
+   <addaction name="actionProfileLoad"/>
+   <addaction name="actionProfileUpdate"/>
+   <addaction name="actionProfileModify"/>
+   <addaction name="actionProfileDelete"/>
+  </widget>
+  <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-about.png</normaloff>:/Icons/22x22/gtk-about.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;About</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-execute.png</normaloff>:/Icons/22x22/gtk-execute.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Setting</string>
+   </property>
+  </action>
+  <action name="actionProfileNew">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-new.png</normaloff>:/Icons/22x22/gtk-new.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;New</string>
+   </property>
+  </action>
+  <action name="actionProfileLoad">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-redo-ltr.png</normaloff>:/Icons/22x22/gtk-redo-ltr.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Load</string>
+   </property>
+  </action>
+  <action name="actionProfileUpdate">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-refresh.png</normaloff>:/Icons/22x22/gtk-refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Update Symbol</string>
+   </property>
+   <property name="toolTip">
+    <string>Update Symbol</string>
+   </property>
+  </action>
+  <action name="actionProfileModify">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-properties.png</normaloff>:/Icons/22x22/gtk-properties.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Modify</string>
+   </property>
+  </action>
+  <action name="actionProfileDelete">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-delete.png</normaloff>:/Icons/22x22/gtk-delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Delete</string>
+   </property>
+  </action>
+  <action name="actionOutputCopy">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy Pathnames</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionSearch">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/zoom-3.png</normaloff>:/Icons/22x22/zoom-3.png</iconset>
+   </property>
+   <property name="text">
+    <string>Search</string>
+   </property>
+   <property name="toolTip">
+    <string>Search</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionCancelTagUpdate">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/Icons/22x22/actions/gtk-cancel.png</normaloff>:/Icons/22x22/actions/gtk-cancel.png</iconset>
+   </property>
+   <property name="text">
+    <string>Cancel update</string>
+   </property>
+  </action>
+  <action name="actionRegular_exp">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Regular exp.</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
+  <action name="actionWildcard">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Wildcard</string>
+   </property>
+  </action>
+  <action name="actionFixed_string">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fixed string</string>
+   </property>
+  </action>
+  <action name="actionAlways_on_top">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Always On Top</string>
+   </property>
+  </action>
+  <action name="actionTransparent">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Transparent</string>
+   </property>
+  </action>
+  <action name="actionAuto_Hide_Menu">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Auto Hide Menu</string>
+   </property>
+  </action>
+  <action name="actionToolbar">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Toolbar</string>
+   </property>
+  </action>
+  <action name="actionProfile_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Profile Panel</string>
+   </property>
+  </action>
+  <action name="actionFile_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>File Panel</string>
+   </property>
+  </action>
+  <action name="actionWebZoomIn">
+   <property name="text">
+    <string>actionWebZoomIn</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom In</string>
+   </property>
+  </action>
+  <action name="actionWebZoomOut">
+   <property name="text">
+    <string>actionWebZoomOut</string>
+   </property>
+   <property name="toolTip">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionOutputExplore">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/document-open-folder.png</normaloff>:/Icons/22x22/document-open-folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Explore</string>
+   </property>
+   <property name="toolTip">
+    <string>Explore</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionOutputConsole">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/xconsole-2.png</normaloff>:/Icons/22x22/xconsole-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Console</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
+  </action>
+  <action name="actionProfileExplore">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/document-open-folder.png</normaloff>:/Icons/22x22/document-open-folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Explore</string>
+   </property>
+  </action>
+  <action name="actionProfileConsole">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/xconsole-2.png</normaloff>:/Icons/22x22/xconsole-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Console</string>
+   </property>
+  </action>
+  <action name="actionOutputProperties">
+   <property name="text">
+    <string>Properties</string>
+   </property>
+  </action>
+  <action name="actionOutputEdit">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Edit</string>
+   </property>
+   <property name="font">
+    <font>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+  </action>
+  <action name="actionProfileAndGroupCaseSensitive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Profile, Group Case Sensitive</string>
+   </property>
+  </action>
+  <action name="actionSymbolCaseSensitive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Symbol Case Sensitive</string>
+   </property>
+  </action>
+  <action name="actionFileCaseSensitive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>File Case Sensitive</string>
+   </property>
+  </action>
+  <action name="actionNextSymbolSearch">
+   <property name="text">
+    <string>nextSymbolSearch</string>
+   </property>
+  </action>
+  <action name="actionPreviousSymbolSearch">
+   <property name="text">
+    <string>previousSymbolSearch</string>
+   </property>
+  </action>
+  <action name="actionGroupNew">
+   <property name="text">
+    <string>New</string>
+   </property>
+  </action>
+  <action name="actionGroupLoad">
+   <property name="text">
+    <string>Load</string>
+   </property>
+  </action>
+  <action name="actionGroupUpdate">
+   <property name="text">
+    <string>Update</string>
+   </property>
+  </action>
+  <action name="actionGroupModify">
+   <property name="text">
+    <string>Modify</string>
+   </property>
+  </action>
+  <action name="actionGroupDelete">
+   <property name="text">
+    <string>Delete</string>
+   </property>
+  </action>
+  <action name="actionProfileGroup">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/insert-link-2.png</normaloff>:/Icons/22x22/insert-link-2.png</iconset>
+   </property>
+   <property name="text">
+    <string>Add to group</string>
+   </property>
+  </action>
+  <action name="actionProfileRebuildTag">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/gtk-refresh.png</normaloff>:/Icons/22x22/gtk-refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rebuild Symbol</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CProfileListWidget</class>
+   <extends>QTreeView</extends>
+   <header>Display/CProfileListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>COutputListWidget</class>
+   <extends>QTreeView</extends>
+   <header>Display/COutputListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CGroupListWidget</class>
+   <extends>QTreeView</extends>
+   <header>Display/CGroupListWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>mainTabWidget</tabstop>
+  <tabstop>profile_listView</tabstop>
+  <tabstop>profilePattern_lineEdit</tabstop>
+  <tabstop>infoTabWidget</tabstop>
+  <tabstop>group_listView</tabstop>
+  <tabstop>output_listView</tabstop>
+  <tabstop>filePattern_lineEdit</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../app.qrc"/>
+  <include location="../webview.qrc"/>
+ </resources>
+ <connections/>
+</ui>

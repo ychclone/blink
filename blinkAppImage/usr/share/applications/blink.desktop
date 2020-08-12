@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Blink
+Exec=/usr/bin/blink
+Icon=/usr/share/icons/hicolor/256x256/blink.png
+

@@ -1,0 +1,7 @@
+<!DOCTYPE ProfileML>
+<record>
+ <profile>
+  <profileItem name="blink" srcMask="*.cpp *.c" headerMask="*.hpp *.h" profileCreateDateTime="28/11/2019 17:21:22" srcDir="/home/yeung/blink" labels="" tagUpdateDateTime="28/11/2019 17:21:25"/>
+ </profile>
+ <group/>
+</record>

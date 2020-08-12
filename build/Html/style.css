@@ -1,0 +1,17 @@
+A:link {color: #0066FF; font-weight:bold; font-family: Consolas; text-decoration: none}
+A:visited {color: #0066FF; font-weight:bold; font-family: Consolas; text-decoration: none}
+A:active {color: #0066FF; font-weight:bold; font-family: Consolas; text-decoration: none}
+A:hover {color: #0066FF; font-weight:bold; font-family: Consolas; text-decoration: underline}
+
+functionsig {color: #33F000; font-weight:bold; font-family: Consolas;}
+code { background: #FAFAFA; display: table-row; font-family: Consolas; white-space: nowrap}
+linenum {color: #9999CC; font-family: Consolas}
+
+keyword {color: #00CCCC; font-weight:bold}
+body {background: #FAFAFA}
+
+.itemblock {margin: 1em 0em 1em 0.3em; padding: 0em}
+.header {margin: 0; padding: 0em 0em 0.3em 0em}
+
+
+

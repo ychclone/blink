@@ -1,0 +1,31 @@
+goto break return continue asm
+case default
+if else switch
+while for do
+sizeof
+int long short char void
+signed unsigned float double
+struct union enum typedef
+static register auto volatile extern const
+
+new delete this friend using
+public protected private
+inline virtual explicit export bool wchar_t
+throw try catch
+operator typeid
+and bitor or xor compl bitand and_eq or_eq xor_eq not not_eq
+const_cast
+static_cast
+dynamic_cast
+reinterpret_cast
+mutable
+class
+typename
+template
+namespace
+NPOS
+true
+false
+
+
+

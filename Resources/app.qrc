@@ -1,0 +1,37 @@
+<RCC>
+  <qresource prefix="/">
+    <file>Images/group.png</file>
+    <file>Images/file.png</file>
+    <file>Images/profile.png</file>
+    <file>Images/symbol.png</file>
+    <file>Icons/22x22/document-open-folder.png</file>
+    <file>Icons/22x22/edit-4.png</file>
+    <file>Icons/22x22/edit-add-4.png</file>
+    <file>Icons/22x22/edit-remove-3.png</file>
+    <file>Icons/22x22/zoom-3.png</file>
+    <file>Icons/22x22/code-class.png</file>
+    <file>Icons/22x22/document-new-4.png</file>
+    <file>Icons/22x22/document-open-6.png</file>
+    <file>Icons/22x22/view-process-all.png</file>
+    <file>Icons/22x22/edit-copy-4.png</file>
+    <file>Icons/22x22/xconsole-2.png</file>
+    <file>Icons/22x22/insert-link-2.png</file>
+    <file>Icons/48x48/applications-graphics-5.png</file>
+    <file>Images/graphics2.png</file>
+    <file>Icons/22x22/gtk-about.png</file>
+    <file>Icons/48x48/application-x-gnome-saved-search.png</file>
+    <file>Icons/48x48/applications-system.png</file>
+    <file>Icons/48x48/forward.png</file>
+    <file>Icons/22x22/gtk-execute.png</file>
+    <file>Icons/22x22/gtk-cancel.png</file>
+    <file>Icons/text-x-preview.ico</file>
+    <file>Icons/22x22/gtk-delete.png</file>
+    <file>Icons/22x22/gtk-new.png</file>
+    <file>Icons/22x22/gtk-ok.png</file>
+    <file>Icons/22x22/gtk-properties.png</file>
+    <file>Icons/22x22/gtk-redo-ltr.png</file>
+    <file>Icons/22x22/gtk-refresh.png</file>
+    <file>Images/graphics32x32.png</file>
+    <file>Images/graphics3.png</file>
+  </qresource>
+</RCC>
