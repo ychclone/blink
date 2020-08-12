@@ -3,4 +3,4 @@ Type=Application
 Name=Blink
 Exec=/usr/bin/blink
 Icon=/usr/share/icons/hicolor/128x128/blink.png
-Categories=Development
+Categories=Development;
