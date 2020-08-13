@@ -13,29 +13,33 @@ public:
 
 	virtual ~CConfigDlg() {};
 
-	QFont getProfileDefaultFont(); 
+	QFont getProfileDefaultFont();
+	QFont getSymbolDefaultFont();
 
 private slots:
 	void changePage(QListWidgetItem *current, QListWidgetItem *previous);
 	void on_okButton_clicked();
 	void on_cancelButton_clicked();
 	void on_applyButton_clicked();
-	
+
 	void on_defaultEditor_toolBn_clicked();
 	void on_profileFont_toolBn_clicked();
+
+	void on_symbolFont_toolBn_clicked();
 
 	void on_tagDir_toolBn_clicked();
 	void on_tmpDir_toolBn_clicked();
 
-	void configContentChanged();	
+	void configContentChanged();
 
 private:
-	void createActions(); 
+	void createActions();
 
 	void loadSetting();
 	void saveSetting();
 
 	QFont profileDefaultFont_;
+	QFont symbolDefaultFont_;
 
 
 };

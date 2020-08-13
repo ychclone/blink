@@ -1,5 +1,5 @@
 #include <QDir>
-#include <QFileDialog> 
+#include <QFileDialog>
 
 #include <QFontDialog>
 
@@ -10,10 +10,10 @@ CConfigDlg::CConfigDlg(QWidget* parent)
 : QDialog(parent)
 {
 	setupUi(this);
-	
+
 	loadSetting();
 
-	// connect slot only after when dialog has already been loaded and initial content filled in 
+	// connect slot only after when dialog has already been loaded and initial content filled in
 	createActions();
 }
 
@@ -22,20 +22,24 @@ QFont CConfigDlg::getProfileDefaultFont()
 	return profileDefaultFont_;
 }
 
+QFont CConfigDlg::getSymbolDefaultFont()
+{
+	return symbolDefaultFont_;
+}
+
 void CConfigDlg::loadSetting()
 {
 	CConfigManager* confManager;
-	
+
 	confManager	= CConfigManager::getInstance();
-	
-	defaultEditor_lineEdit->setText(confManager->getAppSettingValue("DefaultEditor").toString()); 
+
+	defaultEditor_lineEdit->setText(confManager->getAppSettingValue("DefaultEditor").toString());
 	tagDir_lineEdit->setText(confManager->getAppSettingValue("TagDir").toString());
-	srcSubstDrv_lineEdit->setText(confManager->getAppSettingValue("SrcSubstDrv").toString()); 
-	tagSubstDrv_lineEdit->setText(confManager->getAppSettingValue("TagSubstDrv").toString()); 
     tmpDir_lineEdit->setText(confManager->getAppSettingValue("TmpDir").toString());
 
-	timeoutRunExtProgram_lineEdit->setText(confManager->getAppSettingValue("TimeoutRunExtProgram").toString());  
+	timeoutRunExtProgram_lineEdit->setText(confManager->getAppSettingValue("TimeoutRunExtProgram").toString());
 
+	// Profile font
 	QString profileFontStr = confManager->getAppSettingValue("ProfileFont").toString();
 	if (profileFontStr != "") { // load from setting
 		profileDefaultFont_.fromString(profileFontStr);
@@ -43,26 +47,37 @@ void CConfigDlg::loadSetting()
 		profileDefaultFont_ = QApplication::font(); // using application font as default font
 	}
 
-	// update profile font setting display
-	QString fontTextToDisplay = profileDefaultFont_.family() + ", " + QString::number(profileDefaultFont_.pointSize());
-	profileFont_lineEdit->setText(fontTextToDisplay);
+	// update profile font in setting display
+	QString profileFontTextToDisplay = profileDefaultFont_.family() + ", " + QString::number(profileDefaultFont_.pointSize());
+	profileFont_lineEdit->setText(profileFontTextToDisplay);
+
+	// Symbol font
+	QString symbolFontStr = confManager->getAppSettingValue("SymbolFont").toString();
+	if (symbolFontStr != "") { // load from setting
+		symbolDefaultFont_.fromString(symbolFontStr);
+	} else {
+		symbolDefaultFont_ = QApplication::font(); // using application font as default font
+	}
+
+	// update symbol font in setting display
+	QString symbolFontTextToDisplay = symbolDefaultFont_.family() + ", " + QString::number(symbolDefaultFont_.pointSize());
+	symbolFont_lineEdit->setText(symbolFontTextToDisplay);
 }
 
 void CConfigDlg::saveSetting()
 {
 	CConfigManager* confManager;
-	
+
 	confManager	= CConfigManager::getInstance();
-	
-	confManager->setAppSettingValue("DefaultEditor", defaultEditor_lineEdit->text()); 
+
+	confManager->setAppSettingValue("DefaultEditor", defaultEditor_lineEdit->text());
 	confManager->setAppSettingValue("TagDir", tagDir_lineEdit->text());
-	confManager->setAppSettingValue("SrcSubstDrv", srcSubstDrv_lineEdit->text());
-	confManager->setAppSettingValue("TagSubstDrv", tagSubstDrv_lineEdit->text());
     confManager->setAppSettingValue("TmpDir", tmpDir_lineEdit->text());
 
 	confManager->setAppSettingValue("TimeoutRunExtProgram", timeoutRunExtProgram_lineEdit->text());
 
-	confManager->setAppSettingValue("ProfileFont", profileDefaultFont_.toString()); 
+	confManager->setAppSettingValue("ProfileFont", profileDefaultFont_.toString());
+	confManager->setAppSettingValue("SymbolFont", symbolDefaultFont_.toString());
 }
 
 void CConfigDlg::createActions()
@@ -73,13 +88,12 @@ void CConfigDlg::createActions()
             this, SLOT(changePage(QListWidgetItem *, QListWidgetItem*)));
 
     // when setting change
-	QObject::connect(defaultEditor_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged())); 
+	QObject::connect(defaultEditor_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(tagDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
-	QObject::connect(srcSubstDrv_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged())); 
-	QObject::connect(tagSubstDrv_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged())); 
-	QObject::connect(tmpDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged())); 
+	QObject::connect(tmpDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(timeoutRunExtProgram_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
-	QObject::connect(profileFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));  
+	QObject::connect(profileFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
+	QObject::connect(symbolFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 }
 
 void CConfigDlg::changePage(QListWidgetItem *current, QListWidgetItem *previous)
@@ -103,7 +117,7 @@ void CConfigDlg::on_cancelButton_clicked()
 }
 
 void CConfigDlg::on_applyButton_clicked()
-{                   
+{
     saveSetting();
 	setWindowModified(false);
 }
@@ -129,7 +143,7 @@ void CConfigDlg::on_defaultEditor_toolBn_clicked()
 	if (programPath != "") {
 		defaultEditor_lineEdit->setText(programPath);
 	}
-} 
+}
 
 void CConfigDlg::on_profileFont_toolBn_clicked()
 {
@@ -144,7 +158,21 @@ void CConfigDlg::on_profileFont_toolBn_clicked()
 		QString fontTextToDisplay = profileDefaultFont_.family() + ", " + QString::number(profileDefaultFont_.pointSize());
 		profileFont_lineEdit->setText(fontTextToDisplay);
 	}
+}
 
+void CConfigDlg::on_symbolFont_toolBn_clicked()
+{
+	bool bOkClicked;
+	QFont selectedFont = QFontDialog::getFont(
+						&bOkClicked, symbolDefaultFont_, this);
+
+	if (bOkClicked) {
+		symbolDefaultFont_ = selectedFont;
+
+		// update symbol font setting display
+		QString fontTextToDisplay = symbolDefaultFont_.family() + ", " + QString::number(symbolDefaultFont_.pointSize());
+		symbolFont_lineEdit->setText(fontTextToDisplay);
+	}
 }
 
 void CConfigDlg::on_tagDir_toolBn_clicked()
@@ -164,7 +192,7 @@ void CConfigDlg::on_tagDir_toolBn_clicked()
 	}
 }
 
-void CConfigDlg::on_tmpDir_toolBn_clicked() 
+void CConfigDlg::on_tmpDir_toolBn_clicked()
 {
 	QString tmpDir;
 
@@ -178,7 +206,7 @@ void CConfigDlg::on_tmpDir_toolBn_clicked()
 			tr("Temp directory"), tmpDir);
 	if (directory != "") {
 		tmpDir_lineEdit->setText(directory);
-	} 
+	}
 }
 
 

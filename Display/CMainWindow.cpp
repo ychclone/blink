@@ -233,6 +233,7 @@ m_bTagBuildInProgress(false)
 		actionFileCaseSensitive->setChecked(false);
 	}
 
+	// Profile Font
 	QString profileFontSettingStr;
 	QFont profileFont;
 
@@ -249,17 +250,30 @@ m_bTagBuildInProgress(false)
 		group_listView->updateGroupFont(QApplication::font());
 	}
 
+	// text document for symbol, need to be initialized before setting symbol font
+	textLayout_ = new QPlainTextDocumentLayout(&textDocument_);
+	textDocument_.setDocumentLayout(textLayout_);
 
+	// Symbol font
+	QString symbolFontSettingStr;
+	QFont symbolFont;
+
+	symbolFontSettingStr = m_confManager->getAppSettingValue("SymbolFont").toString();
+	symbolFont.fromString(symbolFontSettingStr);
+
+	if (symbolFontSettingStr != "") {
+		setSymbolFont(symbolFont);
+	} else {
+		setSymbolFont(QApplication::font()); // using system font by default
+	}
+
+	// case sensitive
     bSymbolSearchCaseSensitive = m_confManager->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
 	if (bSymbolSearchCaseSensitive) {
 		actionSymbolCaseSensitive->setChecked(true);
 	} else {
 		actionSymbolCaseSensitive->setChecked(false);
 	}
-
-	textLayout_ = new QPlainTextDocumentLayout(&textDocument_);
-	textDocument_.setDocumentLayout(textLayout_);
-	textDocument_.setDefaultStyleSheet("a {color: #0066FF; font-weight: bold; font-family: Consolas; text-decoration: none} functionsig {color: #33F000; font-weight:bold; font-family: Consolas;} code { background: #FAFAFA; display: table-row; font-family: Consolas; white-space: nowrap} linenum {color: #9999CC; font-family: Consolas} keyword {color: #00CCCC; font-weight:bold} spacesize {font-size: 6pt} body {background: #FAFAFA; font-size: 16pt}");
 
     createActions();
 }
@@ -333,6 +347,16 @@ void CMainWindow::updateOutputListWidget()
 	output_listView->resizeColumnToContents(2);
 }
 
+void CMainWindow::setSymbolFont(QFont symbolFont)
+{
+	QString symbolFontFamily = symbolFont.family();
+	QString symbolFontSize = QString::number(symbolFont.pointSize());
+	QString lineHeight = QString::number(symbolFont.pointSize() / 3);
+
+	QString textDocumentSyleStr = QString("a {color: #0066FF; font-weight: bold; font-family: %1; text-decoration: none} functionsig {color: #33F000; font-weight:bold; font-family: %1;} code { background: #FAFAFA; display: table-row; font-family: Consolas; white-space: nowrap} linenum {color: #9999CC; font-family: %1} keyword {color: #00CCCC; font-weight:bold} spacesize {font-size: %3pt} body {background: #FAFAFA; font-size: %2pt}").arg(symbolFontFamily, symbolFontSize, lineHeight);
+
+	textDocument_.setDefaultStyleSheet(textDocumentSyleStr);
+}
 
 void CMainWindow::loadProfileList()
 {
@@ -405,7 +429,6 @@ void CMainWindow::createActions()
 	// default double click, enter action for profile list item
 	connect(profile_listView, SIGNAL(profileItemTriggered()), this, SLOT(on_loadProfileButton_clicked()));
 
-	connect(actionProfileUpdate, SIGNAL(triggered()), this, SLOT(on_updateProfileButton_clicked()));
 	connect(actionProfileRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProfileButton_clicked()));
 
 	connect(actionProfileModify, SIGNAL(triggered()), this, SLOT(on_editProfileButton_clicked()));
@@ -446,7 +469,7 @@ void CMainWindow::createActions()
 	connect(actionNextSymbolSearch, SIGNAL(triggered()), this, SLOT(on_nextSymbolButton_clicked()));
 	connect(actionPreviousSymbolSearch, SIGNAL(triggered()), this, SLOT(on_previousSymbolButton_clicked()));
 
-	//connect(search_lineEdit, SIGNAL(textChanged(const QString &)), this, SLOT(on_searchButton_clicked()));
+	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
 
     connect(CProfileManager::getInstance(), SIGNAL(profileMapUpdated()), this, SLOT(loadProfileList()));
 	connect(CProfileManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
@@ -1113,10 +1136,15 @@ void CMainWindow::on_actionSetting_triggered()
 	int dialogCode = dialog->exec();
 
 	if (dialogCode == QDialog::Accepted) {
-		QFont updatedFont = static_cast<CConfigDlg*> (dialog)->getProfileDefaultFont();
+		QFont updatedProfileFont = static_cast<CConfigDlg*> (dialog)->getProfileDefaultFont();
 
-		profile_listView->updateProfileFont(updatedFont);
-		output_listView->updateOutputFont(updatedFont);
+		profile_listView->updateProfileFont(updatedProfileFont);
+		group_listView->updateGroupFont(updatedProfileFont);
+		output_listView->updateOutputFont(updatedProfileFont);
+
+		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
+
+		setSymbolFont(updatedSymbolFont);
 	}
 }
 

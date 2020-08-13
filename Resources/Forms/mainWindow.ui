@@ -686,7 +686,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
                  </size>
                 </property>
                 <property name="shortcut">
-                 <string>Return</string>
+                 <string/>
                 </property>
                 <property name="flat">
                  <bool>true</bool>
@@ -756,7 +756,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     </property>
     <addaction name="actionProfileNew"/>
     <addaction name="actionProfileLoad"/>
-    <addaction name="actionProfileUpdate"/>
     <addaction name="actionProfileRebuildTag"/>
     <addaction name="actionProfileModify"/>
     <addaction name="actionProfileDelete"/>
@@ -813,7 +812,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </attribute>
    <addaction name="actionProfileNew"/>
    <addaction name="actionProfileLoad"/>
-   <addaction name="actionProfileUpdate"/>
+   <addaction name="actionProfileRebuildTag"/>
    <addaction name="actionProfileModify"/>
    <addaction name="actionProfileDelete"/>
   </widget>
@@ -859,18 +858,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="text">
     <string>&amp;Load</string>
-   </property>
-  </action>
-  <action name="actionProfileUpdate">
-   <property name="icon">
-    <iconset resource="../app.qrc">
-     <normaloff>:/Icons/22x22/gtk-refresh.png</normaloff>:/Icons/22x22/gtk-refresh.png</iconset>
-   </property>
-   <property name="text">
-    <string>&amp;Update Symbol</string>
-   </property>
-   <property name="toolTip">
-    <string>Update Symbol</string>
    </property>
   </action>
   <action name="actionProfileModify">

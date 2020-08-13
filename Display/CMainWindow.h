@@ -8,7 +8,7 @@
 
 #include <QSortFilterProxyModel>
 
-#include <QContextMenuEvent> 
+#include <QContextMenuEvent>
 
 #include <QToolButton>
 
@@ -23,11 +23,11 @@
 #include "Model/CProfileLoadThread.h"
 #include "Model/CProfileUpdateThread.h"
 
-#include "Model/CGroupLoadThread.h" 
+#include "Model/CGroupLoadThread.h"
 
 #include "Model/CProfileListModel.h"
-#include "Model/CGroupListModel.h" 
-#include "Model/COutputListModel.h" 
+#include "Model/CGroupListModel.h"
+#include "Model/COutputListModel.h"
 
 #include "Model/CConfigManager.h"
 
@@ -43,41 +43,41 @@ public:
     CMainWindow(QWidget* parent = 0);
     virtual ~CMainWindow() {}
 
-	void setSplitterSizes(const QList<int>& splitterSizeList); 
+	void setSplitterSizes(const QList<int>& splitterSizeList);
     void restoreTabWidgetPos();
 
 public slots:
     void loadProfileList();
-    void loadGroupList(); 
+    void loadGroupList();
 	void loadOutputList();
 
 private slots:
     void on_newProfileButton_clicked();
     void on_loadProfileButton_clicked();
     void on_updateProfileButton_clicked();
-    void on_rebuildTagProfileButton_clicked(); 
+    void on_rebuildTagProfileButton_clicked();
 
     void on_editProfileButton_clicked();
     void on_deleteProfileButton_clicked();
 
 	void on_exploreProfileButton_clicked();
 	void on_consoleProfileButton_clicked();
-	
+
 
     void on_newGroupButton_clicked();
     void on_loadGroupButton_clicked();
     void on_updateGroupButton_clicked();
     void on_editGroupButton_clicked();
     void on_deleteGroupButton_clicked();
-    
+
     void on_aboutButton_clicked();
-    void on_clearOutputButton_clicked(); 
+    void on_clearOutputButton_clicked();
     void on_clearLogButton_clicked();
     void on_actionAlways_on_top_toggled();
     void on_actionTransparent_toggled();
-	void on_actionToolbar_toggled(); 
+	void on_actionToolbar_toggled();
 
-	void on_actionProfile_Panel_toggled(); 
+	void on_actionProfile_Panel_toggled();
 	void on_actionFile_Panel_toggled();
 
     void on_actionExit_triggered();
@@ -89,20 +89,20 @@ private slots:
 	void on_outputConsolePressed();
 	void on_outputPropertiesPressed();
 
-	void on_searchButton_clicked(); 
+	void on_searchButton_clicked();
 
-	void wheelEvent(QWheelEvent *e); 
+	void wheelEvent(QWheelEvent *e);
 
     void updateTagBuildProgress(int percentage);
 	void updateCancelledTagBuild();
 
-	void updateProfileLoadProgress(int percentage);  
-	void updateGroupLoadProgress(int percentage); 
+	void updateProfileLoadProgress(int percentage);
+	void updateGroupLoadProgress(int percentage);
 
 	void on_errorDuringRun(const QString& cmdStr);
 
 	void on_profilePatternLineEditShortcutPressed();
-	void on_groupPatternLineEditShortcutPressed(); 
+	void on_groupPatternLineEditShortcutPressed();
 
 	void on_filePatternLineEditShortcutPressed();
 	void on_searchLineEditShortcutPressed();
@@ -110,11 +110,11 @@ private slots:
 	void on_infoTabWidgetToolBn_clicked();
 
 	void profileFilterRegExpChanged();
-	void groupFilterRegExpChanged(); 
+	void groupFilterRegExpChanged();
 
 	void fileFilterRegExpChanged();
 
-	void searchLineEditChanged(); 
+	void searchLineEditChanged();
 
 	void on_symbolSearchFrameShortcutPressed();
     void on_nextSymbolButton_clicked();
@@ -128,18 +128,19 @@ private slots:
 	void appendLogList(TRACE_LEVEL level, const QString& msg);
 	void keyPressEvent(QKeyEvent *event);
 
-	void queryTag(const QString& tag); 
+	void queryTag(const QString& tag);
 
-private: 
+private:
 	void updateProfileListWidget();
-    void updateGroupListWidget(); 
+    void updateGroupListWidget();
 	void updateOutputListWidget();
 
+	void setSymbolFont(QFont symbolFont);
     void createActions();
-	
+
     QStringList getSelectedProfileItemNameList();
 	QStringList getSelectedGroupItemNameList();
-	QStringList getSelectedOutputItemNameList(); 
+	QStringList getSelectedOutputItemNameList();
 
     void setAlwaysOnTop(bool enable);
     void setTransparency(bool enable);
@@ -152,15 +153,15 @@ private:
 
 	QActionGroup *filterMethodGroup;
 	QRegExp::PatternSyntax patternSyntax_;
-    
+
 	CProfileListModel* m_profileListModel;
-    CGroupListModel* m_groupListModel; 
-    COutputListModel* m_outputListModel; 
+    CGroupListModel* m_groupListModel;
+    COutputListModel* m_outputListModel;
 
     CProfileLoadThread m_profileLoadThread;
     CProfileUpdateThread m_profileUpdateThread;
 
-	CGroupLoadThread m_groupLoadThread; 
+	CGroupLoadThread m_groupLoadThread;
 
 	QSortFilterProxyModel* m_profileListProxyModel;
 	QItemSelectionModel* m_profileListSelectionModel;
@@ -171,24 +172,24 @@ private:
     QTimeLine m_timeLine;
 
     QShortcut* profilePatternLineEditShortcut;
-	QShortcut* groupPatternLineEditShortcut; 
+	QShortcut* groupPatternLineEditShortcut;
 
 	QShortcut* fileSearchShortcut;
 	QShortcut* tagSearchShortcut;
 
 	QShortcut* outputExploreShortcut;
 	QShortcut* outputConsoleShortcut;
-	QShortcut* outputPropertiesShortcut; 
+	QShortcut* outputPropertiesShortcut;
 
 	QShortcut* profileLoadShortcut;
 	QShortcut* profileUpdateShortcut;
 
-	QShortcut* symbolSearchFrameShortcut; 
-	QShortcut* nextSymbolSearchShortcut;  
-	QShortcut* previousSymbolSearchShortcut;  
+	QShortcut* symbolSearchFrameShortcut;
+	QShortcut* nextSymbolSearchShortcut;
+	QShortcut* previousSymbolSearchShortcut;
 
 #ifdef Q_OS_WIN
-    QShortcut* previousSymbolSearchShortcut_win;   
+    QShortcut* previousSymbolSearchShortcut_win;
 #endif
 
 	QToolButton *m_pInfoTabWidgetToolBn;
@@ -199,11 +200,11 @@ private:
 	int infoTabWidgetWidth;
 
 	CProfileItem m_currentProfileItem;
-	CGroupItem m_currentGroupItem; 
-	
+	CGroupItem m_currentGroupItem;
+
 	CConfigManager* m_confManager;
 
-	QTagger m_tagger; 
+	QTagger m_tagger;
 
 	T_OutputItemList m_outputItemList;
 
