@@ -47,6 +47,8 @@ m_bTagBuildInProgress(false)
 
     setupUi(this);
 
+	setWindowIcon(QIcon(":/Images/graphics3.png"));
+
     // setting for progress bar
     m_progressBar.setTextVisible(false);
     m_progressBar.setMaximumSize(100, 16);
