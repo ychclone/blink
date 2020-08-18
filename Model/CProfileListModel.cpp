@@ -69,7 +69,7 @@ bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
             // fill default value according to item dropped
             droppedItem.m_name = info.fileName();
             droppedItem.m_srcDir = fName;
-            droppedItem.m_srcMask = "*.cpp *.c *.go *.js *.py *.ts";
+            droppedItem.m_srcMask = "*.cpp *.c *.go *.java *.js *.py *.scala *.ts";
             droppedItem.m_headerMask = "*.hpp *.h";
             droppedItem.m_labels = "";
 
