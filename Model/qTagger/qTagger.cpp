@@ -9,14 +9,14 @@ const char* QTagger::kDB_FIELD_FILE_RECORD_SEPERATOR = ";";
 const char* QTagger::kDB_TAG_RECORD_SEPERATOR = "#";
 const char* QTagger::kQTAG_CONFIG_FILE = "qtag.conf";
 
-const char* QTagger::kQTAG_TAGS_DIR = "tags"; 
+const char* QTagger::kQTAG_TAGS_DIR = "tags";
 
-const char* QTagger::kQTAG_DEFAULT_TAGDBNAME = "tag.db";  
+const char* QTagger::kQTAG_DEFAULT_TAGDBNAME = "tag.db";
 
 const char* QTagger::kQTAG_DEFAULT_INPUTLIST_FILE = "fileList.txt";
 
 QTagger::QTagger()
-{	
+{
 }
 
 QTagger::~QTagger()
@@ -50,22 +50,22 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 	loadKeywordFile();
 	m_tokenMap.clear();
 
-	QFile tagDbFile(tagDbFileName);  
+	QFile tagDbFile(tagDbFileName);
 	if (!tagDbFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qDebug() << "Cannot open tagDb file (" << tagDbFileName << ") for update!" << endl;
 		return -1;
 	}
 
 	QTextStream tagDbFileStream(&tagDbFile);
-	QString line; 
-	int tagFieldIndex; 
+	QString line;
+	int tagFieldIndex;
 
 	QString tagStr;
 
 	QString resultFileRecordListStr;
 	QStringList resultFileRecordList;
 
-	unsigned long fileId; 
+	unsigned long fileId;
 
 	QString updatedResultFileRecordListStr;
 	int fileIdFieldIndex;
@@ -75,9 +75,9 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 	bool bDeletedTag, bModifiedTag;
 
 	while (!tagDbFileStream.atEnd()) {
-		line = tagDbFileStream.readLine(); 
+		line = tagDbFileStream.readLine();
 
-		tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR); 
+		tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR);
 
 		if (tagFieldIndex != -1) {
 			tagStr = line.mid(0, tagFieldIndex); // length should be tagFieldIndex - 0 i.e. tagFieldIndex
@@ -85,21 +85,21 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 			resultFileRecordListStr = line.mid(tagFieldIndex + 1); // exclude kDB_TAG_RECORD_SEPERATOR
 			resultFileRecordList = resultFileRecordListStr.split(kDB_FIELD_FILE_RECORD_SEPERATOR, QString::SkipEmptyParts);
 
-			updatedFileRecordListStr = ""; 
+			updatedFileRecordListStr = "";
 
 			// check each file record in a tag entry
-			foreach (const QString& resultFileRecord, resultFileRecordList) { 
-				fileIdFieldIndex = resultFileRecord.indexOf(kDB_FIELD_FILE_SEPERATOR); 
-				fileId = resultFileRecord.mid(0, fileIdFieldIndex).toULong(); 
+			foreach (const QString& resultFileRecord, resultFileRecordList) {
+				fileIdFieldIndex = resultFileRecord.indexOf(kDB_FIELD_FILE_SEPERATOR);
+				fileId = resultFileRecord.mid(0, fileIdFieldIndex).toULong();
 
-				bModifiedTag = false; 
+				bModifiedTag = false;
 				bDeletedTag = false;
 
 				QMap<long, long>::const_iterator it = fileIdModifiedMap.find(fileId);
 				if (it != fileIdModifiedMap.end()) { // modified tag
 					// modified tag, remove it from tagDb, to be added later as new tag
 					bModifiedTag = true;
-				
+
 				} else { // check whether it is a deleted tag
 
 					QMap<long, long>::const_iterator it = fileIdDeletedMap.find(fileId);
@@ -115,7 +115,7 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 					updatedFileRecordListStr = updatedFileRecordListStr + kDB_FIELD_FILE_RECORD_SEPERATOR + resultFileRecord;
 				}
 			}
-			
+
 			if (updatedFileRecordListStr != "") { // only add to token map if there is record
 				m_tokenMap[tagStr] = updatedFileRecordListStr;
 			}
@@ -129,41 +129,41 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 	qDebug() << "parseSourceFile for newFile" << endl;
-#endif	
+#endif
 
-	foreach (long fileIdCreated, fileIdCreatedMap) { 
+	foreach (long fileIdCreated, fileIdCreatedMap) {
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "fileIdCreated =" << fileIdCreated << endl;
 #endif
-		currentFilePath = inputFileList[fileIdCreated].m_fileName; 
+		currentFilePath = inputFileList[fileIdCreated].m_fileName;
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
-		qDebug() << "currentFilePath =" << currentFilePath << endl; 
+		qDebug() << "currentFilePath =" << currentFilePath << endl;
 #endif
 		parseSourceFile(fileIdCreated, currentFilePath, m_tokenMap);
 	}
 
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
-	qDebug() << "parseSourceFile for modifiedFile" << endl; 
-#endif	
+	qDebug() << "parseSourceFile for modifiedFile" << endl;
+#endif
 
 	// modified file
-	foreach (long fileIdCreated, fileIdModifiedMap) { 
+	foreach (long fileIdCreated, fileIdModifiedMap) {
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "fileIdCreated =" << fileIdCreated << endl;
 #endif
-		currentFilePath = inputFileList[fileIdCreated].m_fileName; 
+		currentFilePath = inputFileList[fileIdCreated].m_fileName;
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
-		qDebug() << "currentFilePath =" << currentFilePath << endl; 
+		qDebug() << "currentFilePath =" << currentFilePath << endl;
 #endif
 		parseSourceFile(fileIdCreated, currentFilePath, m_tokenMap);
 	}
-	
+
 	return 0;
 }
 
 int QTagger::writeTagDb(const QString& tagDbFileName)
 {
-	QFile tagDbFile(tagDbFileName);  
+	QFile tagDbFile(tagDbFileName);
 	if (!tagDbFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
 		qDebug() << "Cannot open tagDb file (" << tagDbFileName << ") for writing!" << endl;
 		return -1;
@@ -173,13 +173,13 @@ int QTagger::writeTagDb(const QString& tagDbFileName)
 
 	QList<QString> tagList = m_tokenMap.keys();
 
-	qDebug() << "Before writing. Tag total: " << m_tokenMap.size() << endl; 
-	
+	qDebug() << "Before writing. Tag total: " << m_tokenMap.size() << endl;
+
 	for (int i = 0; i < tagList.size(); ++i) {
 		tagDb << tagList[i] << kDB_TAG_RECORD_SEPERATOR << m_tokenMap[tagList[i]] << '\n';
 	}
 
-	tagDb.flush();	
+	tagDb.flush();
 	tagDbFile.close();
 
 	qDebug() << "Finish writing. Tag total: " << m_tokenMap.size() << endl;
@@ -187,11 +187,11 @@ int QTagger::writeTagDb(const QString& tagDbFileName)
 	return 0;
 }
 
-int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned long>& lineNumList, QList<CTagResultItem>& resultLineList, 
+int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned long>& lineNumList, QList<CTagResultItem>& resultLineList,
 							const QStringList& lineFilterStrList, const QStringList& functionNameFilterStrList, const QStringList& excludePatternFilterStrList,
-							int linePrintBeforeMatch, int linePrintAfterMatch) 
+							int linePrintBeforeMatch, int linePrintAfterMatch, const Qt::CaseSensitivity& caseSensitivity)
 {
-	QFile sourceFile(fileName);	
+	QFile sourceFile(fileName);
 	QString line;
 	unsigned long currentLineNum = 0;
 	unsigned long j;
@@ -203,7 +203,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 	int closeBracketIndex;
 
 	bool bCanSkip;
-	
+
 	QStringList lastLines;
 	QList<int> lastManualIndentLevelList;
 
@@ -212,9 +212,9 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 	bool bMatchedLineFilterStringList;
 	bool bMatchedFunctionNameFilter;
-	bool bPassExcludePatternFilter; 
-	
-	if (!sourceFile.open(QIODevice::ReadOnly | QIODevice::Text)) {	
+	bool bPassExcludePatternFilter;
+
+	if (!sourceFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qDebug() << "Cannot open source file (" << fileName << ") for reading!" << endl;
 		return -1;
 	}
@@ -243,8 +243,14 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 	int manualIndentLevel = 0;
 
+	QVector<QRegExp> lineFilterRegExpMatcher;
+
+	for (i = 0; i < lineFilterStrList.size(); i++) {
+		lineFilterRegExpMatcher.push_back(QRegExp(lineFilterStrList[i], caseSensitivity));
+	}
+
 	while (!sourceFileStream.atEnd()) {
-		currentLineNum++; 
+		currentLineNum++;
 		line = sourceFileStream.readLine();
 
 		manualIndentLevel = getManualIndentLevel(line);
@@ -253,7 +259,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			break;
 		}
 
-		bCanSkip = skipInsideCommentAndRemoveComment(line, currentLineNum); 
+		bCanSkip = skipInsideCommentAndRemoveComment(line, currentLineNum);
 
 		if (bCanSkip) {
 			continue;
@@ -301,28 +307,31 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			if (currentLineNum == lineNumList[j]) {
 
                 if (bGotPendingResultItem) {
-					resultLineList << pendingResultItem; 
+					resultLineList << pendingResultItem;
 					bGotPendingResultItem = false;
 				}
 
 				// result in grep format
 				resultItem.filePath_ = fileName;
 				resultItem.fileLineNum_ = currentLineNum;
-				resultItem.fileLineSrc_ = line; 
+				resultItem.fileLineSrc_ = line;
 
-                // line filter, assume matched, only mismatched if any query tag not matched
-				bMatchedLineFilterStringList = true;
-				for (k = 0; k < lineFilterStrList.size(); k++) {
-					if (!line.contains(lineFilterStrList.at(k))) {
-						bMatchedLineFilterStringList = false;
-						break;
+				if (lineFilterRegExpMatcher.isEmpty()) { // assume match if no line filter
+                    bMatchedLineFilterStringList = true;
+				} else { // consider as not matching if a single item is not matched
+					bMatchedLineFilterStringList = true;
+					for (k = 0; k < lineFilterRegExpMatcher.size(); k++) {
+						if (lineFilterRegExpMatcher[k].indexIn(line) == -1) {
+							bMatchedLineFilterStringList = false;
+							break;
+						}
 					}
 				}
 
 				// exclude pattern filter, pass if not consist excluded pattern
 				bPassExcludePatternFilter = true;
 
-				for (k = 0; k < excludePatternFilterStrList.size(); k++) { 
+				for (k = 0; k < excludePatternFilterStrList.size(); k++) {
 					if (line.contains(excludePatternFilterStrList.at(k))) {
 						bPassExcludePatternFilter = false;
 						break;
@@ -333,18 +342,18 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 				if (functionNameFilterStrList.empty()) {
 					bMatchedFunctionNameFilter = true;
 				} else {
-					bMatchedFunctionNameFilter = false; 
+					bMatchedFunctionNameFilter = false;
 
 					// consider as already mismatch if function signature is empty
 					if (resultItem.functionSignature_.isEmpty()) {
-						bMatchedFunctionNameFilter = false; 
+						bMatchedFunctionNameFilter = false;
 					} else {
-						bMatchedFunctionNameFilter = false;  
+						bMatchedFunctionNameFilter = false;
 
-                        //qDebug() << "resultItem.functionSignature_ = " << resultItem.functionSignature_ << endl;  
+                        //qDebug() << "resultItem.functionSignature_ = " << resultItem.functionSignature_ << endl;
 
 						for (k = 0; k < functionNameFilterStrList.size(); k++) {
-							//qDebug() << "functionNameFilterStrList.at(k) = " << functionNameFilterStrList.at(k) << endl;   
+							//qDebug() << "functionNameFilterStrList.at(k) = " << functionNameFilterStrList.at(k) << endl;
 
 							if (resultItem.functionSignature_.contains(functionNameFilterStrList.at(k))) {
 								bMatchedFunctionNameFilter = true;
@@ -352,14 +361,14 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 							}
 						}
 					}
-				}  
-				
+				}
+
 				// valid only if all matched
 				if (bMatchedLineFilterStringList && bMatchedFunctionNameFilter && bPassExcludePatternFilter) {
-					if ((linePrintBeforeMatch > 0) && (linePrintAfterMatch > 0)) { 
-						resultItem.lineSrcIndentLevel_ = manualIndentLevel; 
+					if ((linePrintBeforeMatch > 0) && (linePrintAfterMatch > 0)) {
+						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 
-						int lastLineSize = lastLines.size(); 
+						int lastLineSize = lastLines.size();
 
 						for (k = 1; k <= linePrintBeforeMatch; k++) {
 							if (lastLineSize - k - 1 >= 0) { // excluding the current line
@@ -371,15 +380,15 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 						pendingResultItem = resultItem;
 						resultItem.fileLineSrcBeforeList_.clear(); // reuse resultItem
 						resultItem.beforeIndentLevelList_.clear();
-						
+
 						bGotPendingResultItem = true;
 
 						linePrintAfter = linePrintAfterMatch;
 
 					} else if (linePrintBeforeMatch > 0) {
-						resultItem.lineSrcIndentLevel_ = manualIndentLevel; 
+						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 
-						int lastLineSize = lastLines.size(); 
+						int lastLineSize = lastLines.size();
 
 						for (k = 1; k <= linePrintBeforeMatch; k++) {
 							if (lastLineSize - k - 1 >= 0) { // excluding the current line
@@ -388,10 +397,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 							}
 						}
 
-						resultLineList << resultItem; 
+						resultLineList << resultItem;
 						resultItem.fileLineSrcBeforeList_.clear(); // reuse resultItem
 						resultItem.beforeIndentLevelList_.clear();
-					
+
 					} else if (linePrintAfterMatch > 0) {
 						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 						pendingResultItem = resultItem;
@@ -409,10 +418,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 					pendingResultItem.fileLineSrcAfterList_.append(line);
 					pendingResultItem.afterIndentLevelList_.append(manualIndentLevel);
 
-					linePrintAfter--; 
+					linePrintAfter--;
 
 					if (linePrintAfter == 0) { // finish appending line after to print
-                        resultLineList << pendingResultItem; 
+                        resultLineList << pendingResultItem;
 						bGotPendingResultItem = false;
 					}
 				}
@@ -436,7 +445,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 int QTagger::loadTagList(const QString& tagDbFileName)
 {
-	QFile tagDbFile(tagDbFileName);  
+	QFile tagDbFile(tagDbFileName);
 	int tagFieldIndex;
 	QString line;
 	QString tagName;
@@ -449,17 +458,17 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	QTextStream tagDb(&tagDbFile);
 	m_tagList.clear();
 
-	while (!tagDb.atEnd()) { 
-		line = tagDb.readLine();  
+	while (!tagDb.atEnd()) {
+		line = tagDb.readLine();
 		tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR);
 
-		if (tagFieldIndex != -1) { 
+		if (tagFieldIndex != -1) {
 			tagName = line.mid(0, tagFieldIndex);
 		}
 		m_tagList.append(tagName);
 	}
 
-	tagDbFile.close(); 
+	tagDbFile.close();
 
 	loadKeywordFile();
 	return 0;
@@ -474,7 +483,7 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 {
 	QString tagQueryStr = "^" + tagToQuery;
 	QString tagQueryMatched = "";
-	QRegExp tagQueryRegEx(tagQueryStr, caseSensitivity); 
+	QRegExp tagQueryRegEx(tagQueryStr, caseSensitivity);
 
 	QStringList result;
 	foreach (const QString &tag, m_tagList) {
@@ -486,22 +495,22 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 		}
 	}
 
-	return 0;  
+	return 0;
 }
 
-int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery, 
+int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
 					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	if (!tagToQuery.isEmpty()) {
-		QStringList tagToQueryList; 
+		QStringList tagToQueryList;
 		QStringList lineFilterStrList;
 
 		QStringList fileNameFilterStrList;
 		QStringList functionNameFilterStrList;
-		QStringList excludePatternFilterStrList; 
+		QStringList excludePatternFilterStrList;
 		QString tagToQueryStr;
 
-		int linePrintBeforeMatch = 0; 
+		int linePrintBeforeMatch = 0;
 		int linePrintAfterMatch = 0;
 
 		tagToQueryList = tagToQuery.split(" ", QString::SkipEmptyParts);
@@ -513,7 +522,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		}
 
 		tagToQueryStr = tagToQueryList.takeFirst(); // take first and remove first tag for query
-		
+
 		int i;
 
 		QString queryField;
@@ -528,12 +537,12 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 				if (!queryField.isEmpty()) {
 					fileNameFilterStrList << queryField;
 				}
-			} else if (queryField.startsWith("/t")) { // function name filter 
+			} else if (queryField.startsWith("/t")) { // function name filter
                 queryField.remove(0, 2); // remove header
 				if (!queryField.isEmpty()) {
 					functionNameFilterStrList << queryField;
 				}
-			} else if (queryField.startsWith("/x")) { // exclude pattern filter 
+			} else if (queryField.startsWith("/x")) { // exclude pattern filter
                 queryField.remove(0, 2); // remove header
 				if (!queryField.isEmpty()) {
 					excludePatternFilterStrList << queryField;
@@ -546,7 +555,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 				linePrintAfterMatch = queryField.toInt(&bStrConvertOk);
 			} else if (queryField.startsWith("/n")) { // number of line to print before and after matches
                 queryField.remove(0, 2); // remove header
-				linePrintBeforeMatch = queryField.toInt(&bStrConvertOk); 
+				linePrintBeforeMatch = queryField.toInt(&bStrConvertOk);
 				linePrintAfterMatch = linePrintBeforeMatch;
 			} else {
 				lineFilterStrList << queryField;
@@ -561,9 +570,9 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
         CSourceFileList::loadFileList(inputFileName, inputFileItemList);
 
 		// query in tag db
-		QFile tagDbFile(tagDbFileName); 
+		QFile tagDbFile(tagDbFileName);
 
-		if (!tagDbFile.open(QIODevice::ReadOnly | QIODevice::Text)) {	
+		if (!tagDbFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 			qDebug() << "Cannot open tagDb file (" << tagDbFileName << ") for reading!" << endl;
 			return -1;
 		}
@@ -574,7 +583,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		QString tagQueryMatched = "";
 
 		QRegExp tagQueryRegEx(tagQueryStr, caseSensitivity);
-		
+
 		int tagFieldIndex;
 		int lineFieldIndex;
 
@@ -586,9 +595,9 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		QStringList queryResultFileRecordList;
 
 		QString queryResultFileName;
-		
+
 		QString queryResultLineNumListStr;
-		QStringList queryResultLineNumStrList; 
+		QStringList queryResultLineNumStrList;
 
 		QList<unsigned long> queryResultLineNumList;
 
@@ -596,7 +605,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		long k;
 
 		while (!tagDbFileStream.atEnd()) {
-			line = tagDbFileStream.readLine(); 
+			line = tagDbFileStream.readLine();
 
 			// Format: | Tag | ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
 			//tagFieldIndex = line.indexOf(tagQueryRegEx);
@@ -605,14 +614,14 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 
 			if (tagFieldIndex != -1) {
 
-				// Result format: ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ... 
-				
+				// Result format: ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
+
 				//queryResultFileRecordListStr = line.mid(tagQueryStr.length() - 1); // exlcude tag and the caret regular expression character
-				queryResultFileRecordListStr = line.mid(tagQueryRegEx.matchedLength() - 1); // exlcude tag and the caret regular expression character 
+				queryResultFileRecordListStr = line.mid(tagQueryRegEx.matchedLength() - 1); // exlcude tag and the caret regular expression character
 
 				//qDebug() << "queryResultFileRecordListStr = " << queryResultFileRecordListStr;
 
-				// Result format: file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... 
+				// Result format: file 1 ID | ":" | location 1 line num | "," | location 2 line num | ...
 				queryResultFileRecordList = queryResultFileRecordListStr.split(kDB_FIELD_FILE_RECORD_SEPERATOR, QString::SkipEmptyParts);
 
 				foreach (const QString& queryResultFileRecord, queryResultFileRecordList) {
@@ -635,13 +644,13 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 					if (fileNameFilterStrList.empty()) {
 						bMatchedFileNameFilter = true;
 					} else {
-						bMatchedFileNameFilter = false; 
-						
-						//qDebug() << "fileName = " << fileName << endl; 
-						
+						bMatchedFileNameFilter = false;
+
+						//qDebug() << "fileName = " << fileName << endl;
+
 						for (k = 0; k < fileNameFilterStrList.size(); k++) {
 
-							//qDebug() << "fileNameFilterStrList.at(k) = " << fileNameFilterStrList.at(k) << endl;  
+							//qDebug() << "fileNameFilterStrList.at(k) = " << fileNameFilterStrList.at(k) << endl;
 							if (queryResultFileName.contains(fileNameFilterStrList.at(k))) {
 								bMatchedFileNameFilter = true;
 								break;
@@ -652,14 +661,14 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 					if (!bMatchedFileNameFilter) { // skip if not match file name
 						continue;
 					}
-					
-					// Result format: location 1 line num | "," | location 2 line num | ... 
+
+					// Result format: location 1 line num | "," | location 2 line num | ...
 					queryResultLineNumListStr = queryResultFileRecord.mid(lineFieldIndex + 1);
 
 #ifdef kDEBUG_QTAGGER_QUERY
 					qDebug() << "queryResultLineNumListStr = " << queryResultLineNumListStr;
-#endif					
-					
+#endif
+
 					// Result format: location 1 line num
 					queryResultLineNumStrList = queryResultLineNumListStr.split(kDB_FIELD_LINE_SEPERATOR, QString::SkipEmptyParts);
 
@@ -668,22 +677,22 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 						queryResultLineNumList << queryResultLineNumStr.toULong();
 					}
 
-					getFileLineContent(queryResultFileName, queryResultLineNumList, resultList, 
+					getFileLineContent(queryResultFileName, queryResultLineNumList, resultList,
 									lineFilterStrList, functionNameFilterStrList, excludePatternFilterStrList,
-									linePrintBeforeMatch, linePrintAfterMatch);
+									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity);
 				}
 			}
 		}
 		tagDbFile.close();
 	}
-	return 0;	
+	return 0;
 }
 
 int QTagger::resetCommentSkip()
 {
 	bBlockCommentFollowing_ = false;
 	blockCommentStartIndex_ = -1;
-	blockCommentEndIndex_ = -1; 
+	blockCommentEndIndex_ = -1;
 
 	blockCommentBeginCol_ = -1;
 	blockCommentBeginLine_ = 0;
@@ -699,16 +708,16 @@ bool QTagger::skipInsideCommentAndRemoveComment(QString& currentLineRead, const 
 {
 	currentLineRead = currentLineRead.trimmed();
 
-	// do not check comment start when already inside comment  
+	// do not check comment start when already inside comment
 	if (!bBlockCommentFollowing_) {
 		commentAction_ = NON_COMMENT;
 
 		lineCommentStartIndex_ = currentLineRead.indexOf("//");
-		blockCommentStartIndex_ = currentLineRead.indexOf("/*"); 
+		blockCommentStartIndex_ = currentLineRead.indexOf("/*");
 
 		// check if contains comment
 		if ((lineCommentStartIndex_ >= 0) && (blockCommentStartIndex_ == -1)) { // only line comment string
-			commentAction_ = LINE_COMMENT; 
+			commentAction_ = LINE_COMMENT;
 		} else if ((blockCommentStartIndex_ >= 0) && (lineCommentStartIndex_ == -1)) { // only block comment string
 			commentAction_ = BLOCK_COMMENT;
 		} else if ((lineCommentStartIndex_ >= 0) && (blockCommentStartIndex_ >= 0)) { // contains both kind of comment, depends on which appears earlier
@@ -718,7 +727,7 @@ bool QTagger::skipInsideCommentAndRemoveComment(QString& currentLineRead, const 
 				commentAction_ = BLOCK_COMMENT;
 			}
 		}
-		
+
 		if (commentAction_ == LINE_COMMENT) {
 			currentLineRead.remove(lineCommentStartIndex_, currentLineRead.length() - lineCommentStartIndex_); // remove from start of line comment until line end
 		} else if (commentAction_ == BLOCK_COMMENT) {
@@ -728,8 +737,8 @@ bool QTagger::skipInsideCommentAndRemoveComment(QString& currentLineRead, const 
 			blockCommentBeginLine_ = lineNumReading;
 		}
 	}
-	
-	// skipping comment, as comment following 
+
+	// skipping comment, as comment following
 	if (bBlockCommentFollowing_) {
 		blockCommentEndIndex_ = currentLineRead.indexOf("*/");
 
@@ -790,12 +799,12 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 
 	QSet<QString> tagCurrentLineSet; // remember tag for current line, not putting tag duplicated in the same line
 
-	if (!sourcefile.open(QIODevice::ReadOnly | QIODevice::Text)) {	
+	if (!sourcefile.open(QIODevice::ReadOnly | QIODevice::Text)) {
 		qDebug() << "Cannot open source file (" << fileName << ") for reading in parseSourceFile()!" << endl;
 		return false;
 	}
 
-	QTextStream sourcefileStream(&sourcefile); 
+	QTextStream sourcefileStream(&sourcefile);
 
 	qDebug() << "parseSourceFile IN, id =" << fileId << ", fileName =" << fileName <<  endl;
 
@@ -813,12 +822,12 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 	bool bCanSkip;
 
 	resetCommentSkip();
-	
+
 	while (!sourcefileStream.atEnd()) {
 		lineNumReading++;
 
 		tagCurrentLineSet.clear();
-		
+
 		currentLineRead = sourcefileStream.readLine();
 		if (sourcefileStream.atEnd()) {
 			break;
@@ -829,20 +838,20 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 		if (bCanSkip) {
 			continue;
 		}
-		
+
 		tokenList.clear();
 		extractWordTokens(currentLineRead, tokenList);
 		foreach (const QString& token, tokenList) {
 			if (token.length() == 1) { // not storing single character
 				continue;
 			}
-			
+
 			if (token.length() == 2) {
-				if (token.at(0).isDigit() && token.at(1).isDigit()) {  // not storing two digit tag 
+				if (token.at(0).isDigit() && token.at(1).isDigit()) {  // not storing two digit tag
 					continue;
 				}
 			}
-			
+
 			if (!tagCurrentLineSet.contains(token)) { // as not storing tag duplicate in same line
 				tagCurrentLineSet.insert(token);
 
@@ -855,7 +864,7 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 						tokenMapValue = tokenMap[token];
 
 						// File format: ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
-						
+
 						fileIdFieldIndex = tokenMapValue.lastIndexOf(fileIdField); // search from backward
 
 						if (fileIdFieldIndex >= 0) { // already exists in the same file
@@ -894,7 +903,7 @@ void QTagger::extractWordTokens(const QString& str, QStringList& tokenList)
             currentWord += currentChar;
 			bContinueScanning = true;
 		}
-		
+
 		if (!bContinueScanning || (i == (str.length() - 1))) { // encounter seperator or line end
 			if (!currentWord.isEmpty()) {
 				tokenList << currentWord;
@@ -930,8 +939,8 @@ void QTagger::loadKeywordFile()
 {
 	QString keywordFileName = QCoreApplication::applicationDirPath() + "/keyword.txt";
 	QFile file(keywordFileName);
-	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {	
-		qDebug() << "cannot open keyword file (" << keywordFileName << ") for reading!" << endl; 
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		qDebug() << "cannot open keyword file (" << keywordFileName << ") for reading!" << endl;
 		return;
 	}
 
@@ -948,7 +957,7 @@ void QTagger::loadKeywordFile()
 	}
 	file.close();
 }
-        
+
 
 
 
