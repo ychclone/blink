@@ -73,12 +73,12 @@ m_bTagBuildInProgress(false)
     // defining shortcut
 
 	// filter under profile tab
-	profilePatternLineEditShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_P), this);
+	profilePatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_P), this);
 	// filter under group tab
-	groupPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_G), this);
+	groupPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_G), this);
 
-	fileSearchShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
-	tagSearchShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_S), this);
+	fileSearchShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_F), this);
+	tagSearchShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_S), this);
 
 	outputExploreShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_E), this);
 	outputConsoleShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_M), this);
@@ -86,7 +86,7 @@ m_bTagBuildInProgress(false)
 	profileLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
 	profileUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_U), this);
 
-	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_F), this);
+	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
 	symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
 
 	nextSymbolSearchShortcut = new QShortcut(QKeySequence::FindNext, this);

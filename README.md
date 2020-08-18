@@ -41,6 +41,22 @@ profile tab.
 Or right click and select "Load"
 6. Start file filtering and code search on the file and symbol tab
 
+# Advanced Usage
+
+For symbol queries, advanced options can be entered:
+There is no spacing in between e.g. /a10, /n3, /xinclude
+
+* /a NumberOfLinesAfter
+* /b NumberOfLinesBefore
+* /n NumberOfLinesBeforeAndAFter
+* /f FileNameToMatch
+* /x PatternToExclude
+
+In addition, regular expression can be entered for the queries:
+e.g. .*mainWindows, (_clicked|_Pressed)
+It will match all ("and" condition) if multiple symbols are entered for
+queries.
+
 # Configuration
 
 The text editor when double clicking the filename in file tab
