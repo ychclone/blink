@@ -4,7 +4,7 @@
 #include <QMessageBox>
 #include <QDateTime>
 
-#include "CProfileListModel.h" 
+#include "CProfileListModel.h"
 #include "Display/CProfileDlg.h"
 
 CProfileListModel::CProfileListModel(QObject *parent)
@@ -16,7 +16,7 @@ CProfileListModel::CProfileListModel(QObject *parent)
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
     setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
-    setHeaderData(3, Qt::Horizontal, QObject::tr("Labels")); 
+    setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 }
 
 void CProfileListModel::addProfileItem(const CProfileItem& profileItem)
@@ -30,26 +30,26 @@ void CProfileListModel::addProfileItem(const CProfileItem& profileItem)
 	if (profileItem.m_tagUpdateDateTime == "") {
 		setData(index(0, 1), "");
 	} else {
-		tagUpdateDateTime = QDateTime::fromString(profileItem.m_tagUpdateDateTime, "dd/MM/yyyy HH:mm:ss");  
-		setData(index(0, 1), tagUpdateDateTime); 
+		tagUpdateDateTime = QDateTime::fromString(profileItem.m_tagUpdateDateTime, "dd/MM/yyyy HH:mm:ss");
+		setData(index(0, 1), tagUpdateDateTime);
 	}
 
 	if (profileItem.m_profileCreateDateTime == "") {
-		setData(index(0, 2), ""); 
+		setData(index(0, 2), "");
 	} else {
 		profileCreateDatetime = QDateTime::fromString(profileItem.m_profileCreateDateTime, "dd/MM/yyyy HH:mm:ss");
 		setData(index(0, 2), profileCreateDatetime);
 	}
 
-    setData(index(0, 3), profileItem.m_labels); 
-	
+    setData(index(0, 3), profileItem.m_labels);
+
 }
 
 bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent)
 {
     QList <QUrl> urlList;
-    
+
     QFileInfo info;
     QString fName;
 
@@ -69,9 +69,9 @@ bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
             // fill default value according to item dropped
             droppedItem.m_name = info.fileName();
             droppedItem.m_srcDir = fName;
-            droppedItem.m_srcMask = "*.cpp *.c";
+            droppedItem.m_srcMask = "*.cpp *.c *.go *.js *.py *.ts";
             droppedItem.m_headerMask = "*.hpp *.h";
-            droppedItem.m_labels = ""; 
+            droppedItem.m_labels = "";
 
             QDialog* dialog = new CProfileDlg(droppedItem.m_name, droppedItem, m_parent);
             dialog->exec();
