@@ -583,10 +583,9 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 
 		QTextStream tagDbFileStream(&tagDbFile);
 
-		QString tagQueryStr = "^" + tagToQueryStr + kDB_TAG_RECORD_SEPERATOR + kDB_FIELD_FILE_RECORD_SEPERATOR; // tag start in column 1
-		QString tagQueryMatched = "";
-
-		QRegExp tagQueryRegEx(tagQueryStr, caseSensitivity);
+		QRegularExpression tagQueryRegEx(tagToQueryStr);
+		QRegularExpressionMatch tagQueryMatch;
+		QString tagField;
 
 		int tagFieldIndex;
 		int lineFieldIndex;
@@ -608,20 +607,26 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		bool bMatchedFileNameFilter;
 		long k;
 
+		if (caseSensitivity == Qt::CaseInsensitive) {
+			tagQueryRegEx.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+		}
+
 		while (!tagDbFileStream.atEnd()) {
 			line = tagDbFileStream.readLine();
 
 			// Format: | Tag | ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
 			//tagFieldIndex = line.indexOf(tagQueryRegEx);
 
-			tagFieldIndex = tagQueryRegEx.indexIn(line, 0);
+			tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR, 0);
+			tagField = line.left(tagFieldIndex);
 
-			if (tagFieldIndex != -1) {
+			tagQueryMatch = tagQueryRegEx.match(tagField);
+
+			if (tagQueryMatch.hasMatch()) {
 
 				// Result format: ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
 
-				//queryResultFileRecordListStr = line.mid(tagQueryStr.length() - 1); // exlcude tag and the caret regular expression character
-				queryResultFileRecordListStr = line.mid(tagQueryRegEx.matchedLength() - 1); // exlcude tag and the caret regular expression character
+				queryResultFileRecordListStr = line.mid(tagFieldIndex); // exlcude tag and the caret regular expression character
 
 				//qDebug() << "queryResultFileRecordListStr = " << queryResultFileRecordListStr;
 

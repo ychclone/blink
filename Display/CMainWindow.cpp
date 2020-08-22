@@ -32,10 +32,6 @@
 #include "CConfigDlg.h"
 #include "CFindReplaceDlg.h"
 
-#include "Model/CProfileListModel.h"
-#include "Model/CGroupListModel.h"
-#include "Model/COutputListModel.h"
-
 #include "Utils/CUtils.h"
 
 #include "Model/qTagger/CTagResultItem.h"
