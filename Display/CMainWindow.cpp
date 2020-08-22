@@ -69,7 +69,7 @@ bTagBuildInProgress_(false)
 
     // defining shortcut
 
-	// filter under profile tab
+	// filter under project tab
 	profilePatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_P), this);
 	// filter under group tab
 	groupPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_G), this);
@@ -232,7 +232,7 @@ bTagBuildInProgress_(false)
 		actionFileCaseSensitive->setChecked(false);
 	}
 
-	// Profile Font
+	// Project Font
 	QString profileFontSettingStr;
 	QFont profileFont;
 
@@ -296,7 +296,7 @@ void CMainWindow::restoreTabWidgetPos()
     int profileTabIndex = confManager_->getValue("Window", "profileTabIndex", 0).toInt();
     int fileTabIndex = confManager_->getValue("Window", "fileTabIndex", 0).toInt();
 
-    // group instead of profile tab first
+    // group instead of project tab first
     if (profileTabIndex == 1) {
         mainTabWidget->clear();
 
@@ -309,7 +309,7 @@ void CMainWindow::restoreTabWidgetPos()
         icon14.addFile(QString::fromUtf8(":/Icons/22x22/view-process-all.png"), QSize(), QIcon::Normal, QIcon::Off);
         mainTabWidget->addTab(profileTab, icon14, QString());
 
-        mainTabWidget->setTabText(mainTabWidget->indexOf(profileTab), QCoreApplication::translate("mainWindow", "Profile", 0, 0));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(profileTab), QCoreApplication::translate("mainWindow", "Project", 0, 0));
         mainTabWidget->setTabText(mainTabWidget->indexOf(groupTab), QCoreApplication::translate("mainWindow", "Group", 0, 0));
     }
 
@@ -374,7 +374,7 @@ void CMainWindow::loadProjectList()
 
     projectListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     projectListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    projectListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
+    projectListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Project Create Datetime"));
     projectListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
 	QMap<QString, CProfileItem> profileMap;
@@ -428,12 +428,12 @@ void CMainWindow::createActions()
 {
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(on_aboutButton_clicked()));
 
-	// [Profile action]
+	// [Project action]
     connect(actionProfileNew, SIGNAL(triggered()), this, SLOT(on_newProfileButton_clicked()));
 
 	connect(actionProfileLoad, SIGNAL(triggered()), this, SLOT(on_loadProfileButton_clicked()));
 
-	// default double click, enter action for profile list item
+	// default double click, enter action for project list item
 	connect(project_listView, SIGNAL(profileItemTriggered()), this, SLOT(on_loadProfileButton_clicked()));
 
 	connect(actionProfileRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProfileButton_clicked()));
@@ -584,7 +584,7 @@ void CMainWindow::on_newProfileButton_clicked()
     dialog->exec();
 }
 
-// load the profile into environment
+// load the project into environment
 void CMainWindow::on_loadProfileButton_clicked()
 {
     QStringList profileItemNameList = getSelectedProfileItemNameList();
@@ -595,7 +595,7 @@ void CMainWindow::on_loadProfileButton_clicked()
 
 	if (profileSelected != 0) {
 		if (profileSelected > 1) {
-			QMessageBox::information(this, "Load", "Only one profile can be loaded each time", QMessageBox::Ok);
+			QMessageBox::information(this, "Load", "Only one project can be loaded each time", QMessageBox::Ok);
 		} else {
 
 			profileItemName = profileItemNameList.at(0);
@@ -605,9 +605,9 @@ void CMainWindow::on_loadProfileButton_clicked()
 
 			QDir currentDir(QDir::currentPath());
 
-			// only load profile if source directory exists
+			// only load project if source directory exists
 			if (currentDir.exists(profileItem.srcDir_)) {
-				statusBar()->showMessage("Loading profile " + profileItem.name_ + "...");
+				statusBar()->showMessage("Loading project " + profileItem.name_ + "...");
 
                 filePattern_lineEdit->clear();
 
@@ -618,13 +618,13 @@ void CMainWindow::on_loadProfileButton_clicked()
 				profileLoadThread_.start();
 
 			} else {
-				QMessageBox::warning(this, "Load", "Cannot load profile. Source directory doesn't exists.", QMessageBox::Ok);
+				QMessageBox::warning(this, "Load", "Cannot load project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
 		}
 	}
 }
 
-// update tags for the profile
+// update tags for the project
 void CMainWindow::on_updateProfileButton_clicked()
 {
 	QStringList profileItemNameList = getSelectedProfileItemNameList();
@@ -636,7 +636,7 @@ void CMainWindow::on_updateProfileButton_clicked()
 
     if (profileSelected != 0) {
 		if (profileSelected > 1) {
-			QMessageBox::information(this, "Update", "Only one profile can be updated each time", QMessageBox::Ok);
+			QMessageBox::information(this, "Update", "Only one project can be updated each time", QMessageBox::Ok);
 		} else {
 			profileItemName = profileItemNameList.at(0);
 
@@ -644,12 +644,12 @@ void CMainWindow::on_updateProfileButton_clicked()
 
 			QDir currentDir(QDir::currentPath());
 
-			// only update profile if source directory exists
+			// only update project if source directory exists
 			if (currentDir.exists(profileItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
 				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
-				// tag last update date time updated so need update in profile manager
+				// tag last update date time updated so need update in project manager
 				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
 
 				statusBar()->showMessage("Updating tag for " + profileItem.name_ + "...");
@@ -658,7 +658,7 @@ void CMainWindow::on_updateProfileButton_clicked()
 				profileUpdateThread_.setCurrentProfileItem(profileItem);
 				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
-                QMessageBox::warning(this, "Load", "Cannot update profile. Source directory doesn't exists.", QMessageBox::Ok);
+                QMessageBox::warning(this, "Load", "Cannot update project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
 		}
     }
@@ -675,7 +675,7 @@ void CMainWindow::on_rebuildTagProfileButton_clicked()
 
     if (profileSelected != 0) {
 		if (profileSelected > 1) {
-			QMessageBox::information(this, "Rebuild", "Only one profile can be rebuilt each time", QMessageBox::Ok);
+			QMessageBox::information(this, "Rebuild", "Only one project can be rebuilt each time", QMessageBox::Ok);
 		} else {
 			profileItemName = profileItemNameList.at(0);
 
@@ -683,12 +683,12 @@ void CMainWindow::on_rebuildTagProfileButton_clicked()
 
 			QDir currentDir(QDir::currentPath());
 
-			// only update profile if source directory exists
+			// only update project if source directory exists
 			if (currentDir.exists(profileItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
 				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
-				// tag last update date time updated so need update in profile manager
+				// tag last update date time updated so need update in project manager
 				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
 
 				statusBar()->showMessage("Rebuilding tag for " + profileItem.name_ + "...");
@@ -697,14 +697,14 @@ void CMainWindow::on_rebuildTagProfileButton_clicked()
 				profileUpdateThread_.setCurrentProfileItem(profileItem);
 				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
-                QMessageBox::warning(this, "Load", "Cannot rebuilt profile. Source directory doesn't exists.", QMessageBox::Ok);
+                QMessageBox::warning(this, "Load", "Cannot rebuilt project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
 		}
     }
 }
 
 
-// get the profile name of the selected list item
+// get the project name of the selected list item
 QStringList CMainWindow::getSelectedProfileItemNameList()
 {
     QModelIndexList indexSelectedList;
@@ -732,7 +732,7 @@ QStringList CMainWindow::getSelectedProfileItemNameList()
 
 		// as all items in the same row with differnt columns will also be returned in selectedIndexes
 		if (!profileItemNameList.contains(profileItemName)) {
-			// not add profile name to the list if already added
+			// not add project name to the list if already added
 			profileItemNameList += profileItemName;
 		}
 	}
@@ -776,7 +776,7 @@ QStringList CMainWindow::getSelectedGroupItemNameList()
     return groupItemNameList;
 }
 
-// get the profile name of the selected list item
+// get the project name of the selected list item
 QStringList CMainWindow::getSelectedOutputItemNameList()
 {
     QModelIndexList indexSelectedList;
@@ -804,7 +804,7 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
 
 		// as all items in the same row with differnt columns will also be returned in selectedIndexes
 		if (!outputItemNameList.contains(outputItemName)) {
-			// not add profile name to the list if already added
+			// not add project name to the list if already added
 			outputItemNameList += outputItemName;
 		}
 	}
@@ -812,7 +812,7 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
     return outputItemNameList;
 }
 
-// edit selected profile
+// edit selected project
 void CMainWindow::on_editProfileButton_clicked()
 {
     CProfileItem profileItem;
@@ -824,7 +824,7 @@ void CMainWindow::on_editProfileButton_clicked()
 
 	if (profileSelected != 0) { // only do processing when a item is selected
 		if (profileSelected > 1) {
-			QMessageBox::information(this, "Edit", "Only one profile can be edited each time", QMessageBox::Ok);
+			QMessageBox::information(this, "Edit", "Only one project can be edited each time", QMessageBox::Ok);
 		} else {
 
 			profileItemName = profileItemNameList.at(0);
@@ -838,7 +838,7 @@ void CMainWindow::on_editProfileButton_clicked()
 	}
 }
 
-// delete selected profile
+// delete selected project
 void CMainWindow::on_deleteProfileButton_clicked()
 {
 	QStringList profileItemNameList = getSelectedProfileItemNameList();
@@ -857,7 +857,7 @@ void CMainWindow::on_deleteProfileButton_clicked()
 			}
 		} else {
 			QString profileItemName = profileItemNameList.at(0);
-			ret = QMessageBox::question(this, "Confirm delete", "Delete the selected profile?", QMessageBox::Yes, QMessageBox::No);
+			ret = QMessageBox::question(this, "Confirm delete", "Delete the selected project?", QMessageBox::Yes, QMessageBox::No);
 			if (ret == QMessageBox::Yes) {
 				CProfileManager::getInstance()->removeProfileItem(profileItemName);
 			}
@@ -1257,9 +1257,9 @@ void CMainWindow::updateProfileLoadProgress(int percentage)
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
 
-        statusBar()->showMessage("Profile " + currentProfileItem_.name_ + " loaded.");
+        statusBar()->showMessage("Project " + currentProfileItem_.name_ + " loaded.");
     } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Profile " + currentProfileItem_.name_ + ".");
+		statusBar()->showMessage("Failed to load Project " + currentProfileItem_.name_ + ".");
 	}
 }
 
@@ -1502,7 +1502,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 {
 	QPoint p;
 
-	// project_listView area and have selected profile
+	// project_listView area and have selected project
 	p = project_listView->mapFromGlobal(event->globalPos());
 
 	// get current active tab
@@ -1516,8 +1516,8 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 			QStringList profileItemNameList = getSelectedProfileItemNameList();
 			int profileSelected = profileItemNameList.size();
 
-			if (profileSelected != 0) { // only show menu if have more than 1 selected profile
-				// only show delete menu if more than one profile selected
+			if (profileSelected != 0) { // only show menu if have more than 1 selected project
+				// only show delete menu if more than one project selected
 				if (profileSelected > 1) {
 					QMenu menu(this);
 					menu.addAction(actionProfileDelete);
@@ -1584,7 +1584,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 		QStringList outputItemNameList = getSelectedOutputItemNameList();
 		int outputItemSelected = outputItemNameList.size();
 
-		if (outputItemSelected != 0) { // only show menu if have more than 1 selected profile
+		if (outputItemSelected != 0) { // only show menu if have more than 1 selected project
 			if (outputItemSelected > 1) {
 				QMenu menu(this);
 
