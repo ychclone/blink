@@ -2,6 +2,7 @@
 #include <QFileDialog>
 
 #include <QFontDialog>
+#include <QMessageBox>
 
 #include <QDebug>
 #include "CFindReplaceDlg.h"
@@ -50,6 +51,22 @@ void CFindReplaceDlg::on_replaceButton_clicked()
 	int replacedFileCount = 0;
     long totalMatchCount = 0;
 	long matchCount = 0;
+
+	// only letter or number or underscore for match whole word
+	if (matchWholeWord_checkBox->isChecked()) {
+		bool bLetterNumOrUnderscore = true;
+
+		for (i = 0; i < find_lineEdit->text().size(); i++) {
+			if (!(find_lineEdit->text().at(i).isLetterOrNumber() || find_lineEdit->text().at(i) == QChar('_'))) {
+				bLetterNumOrUnderscore = false;
+				break;
+			}
+		}
+
+		if (!bLetterNumOrUnderscore) {
+			QMessageBox::information(this, "File Replaces", "Only letter, number or underscore is supported for match whole word", QMessageBox::Ok);
+		}
+	}
 
 	progressBar->show();
 	for (i = 0; i < fileTotal; i++) {
