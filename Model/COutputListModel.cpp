@@ -1,4 +1,4 @@
-#include "COutputListModel.h" 
+#include "COutputListModel.h"
 
 COutputListModel::COutputListModel(QObject *parent)
 	: QStandardItemModel(0, 3, parent) // 3 column
@@ -6,12 +6,12 @@ COutputListModel::COutputListModel(QObject *parent)
 	m_parent = static_cast<QWidget*> (parent);
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Last Modified"));
-	setHeaderData(2, Qt::Horizontal, QObject::tr("Size")); 
+	setHeaderData(2, Qt::Horizontal, QObject::tr("Size"));
 
-	m_outputListProxyModel = new QSortFilterProxyModel; 
-	m_outputListProxyModel->setSourceModel(static_cast <QStandardItemModel*> (this)); 
+	m_outputListProxyModel = new QSortFilterProxyModel;
+	m_outputListProxyModel->setSourceModel(static_cast <QStandardItemModel*> (this));
     m_outputListProxyModel->setDynamicSortFilter(true);
-	
+
 	m_outputListSelectionModel = new QItemSelectionModel(m_outputListProxyModel);
 
 	qDebug() << "COutputListModel, this = " << this;
@@ -20,12 +20,12 @@ COutputListModel::COutputListModel(QObject *parent)
 void COutputListModel::clearAndResetModel()
 {
   	clear();  // header data will also be clear
-	
-	setColumnCount(3); // need to set back column count when QStandardItemModel clear otherwise setData will return false 
+
+	setColumnCount(3); // need to set back column count when QStandardItemModel clear otherwise setData will return false
 
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Last Modified"));
-	setHeaderData(2, Qt::Horizontal, QObject::tr("Size")); 
+	setHeaderData(2, Qt::Horizontal, QObject::tr("Size"));
 }
 
 QSortFilterProxyModel* COutputListModel::getProxyModel()
@@ -47,11 +47,11 @@ void COutputListModel::addItem(const COutputItem& outputItem)
 
 	setData(index(0, 0), outputItem.m_fileName);
 
-	setData(index(0, 0), QIcon(":/Icons/text-x-preview.ico"), Qt::DecorationRole); 
-	
+	setData(index(0, 0), QIcon(":/Icons/text-x-preview.ico"), Qt::DecorationRole);
+
 	lastModifiedDateTime = QDateTime::fromString(outputItem.m_fileLastModified, "dd/MM/yyyy HH:mm:ss");
 	setData(index(0, 1), lastModifiedDateTime);
-	
+
 	fileSize = outputItem.m_fileSize;
 
 	setData(index(0, 2), fileSize);
@@ -59,22 +59,9 @@ void COutputListModel::addItem(const COutputItem& outputItem)
 
 QVariant COutputListModel::data(const QModelIndex& index, int role) const
 {
-	/* YCH modified (begin) 13/03/12, no changing of color */
-	/*
-	QColor bgColor;
-	
-   	switch(role){
-		case Qt::BackgroundRole:
-			bgColor.setNamedColor("paleturquoise"); 
-			return QBrush(bgColor);
-			break;
-	}
-	*/
-	/* YCH modified  (end)  13/03/12, no changing of color */
-
 	return QStandardItemModel::data(index,role);
 }
 
 
 
-	
+

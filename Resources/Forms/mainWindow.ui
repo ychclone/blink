@@ -167,7 +167,7 @@ QSplitter::handle {
              <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
            </attribute>
            <attribute name="title">
-            <string>Profile</string>
+            <string>Project</string>
            </attribute>
            <layout class="QVBoxLayout">
             <property name="spacing">
@@ -752,7 +752,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </widget>
    <widget class="QMenu" name="menuProfile">
     <property name="title">
-     <string>&amp;Profile</string>
+     <string>&amp;Project</string>
     </property>
     <addaction name="actionProfileNew"/>
     <addaction name="actionProfileLoad"/>
@@ -781,9 +781,16 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionGroupModify"/>
     <addaction name="actionGroupDelete"/>
    </widget>
+   <widget class="QMenu" name="menuTool">
+    <property name="title">
+     <string>Tool</string>
+    </property>
+    <addaction name="actionFindReplaceDialog"/>
+   </widget>
    <addaction name="menuProfile"/>
    <addaction name="menuGroup"/>
    <addaction name="menuOptions"/>
+   <addaction name="menuTool"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -1147,7 +1154,16 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
      <normaloff>:/Icons/22x22/gtk-refresh.png</normaloff>:/Icons/22x22/gtk-refresh.png</iconset>
    </property>
    <property name="text">
-    <string>Rebuild Symbol</string>
+    <string>&amp;Rebuild Symbol</string>
+   </property>
+  </action>
+  <action name="actionFindReplaceDialog">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/zoom-3.png</normaloff>:/Icons/22x22/zoom-3.png</iconset>
+   </property>
+   <property name="text">
+    <string>Find &amp;Replace</string>
    </property>
   </action>
  </widget>

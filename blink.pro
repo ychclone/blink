@@ -1,6 +1,3 @@
-#QMAKE_CC = gocache gcc
-#QMAKE_CXX = gocache g++
-
 TEMPLATE    = app
 #CONFIG += release
 
@@ -15,7 +12,8 @@ FORMS       = Resources/Forms/mainWindow.ui \
               Resources/Forms/profileDialog.ui \
               Resources/Forms/groupDialog.ui \ 
               Resources/Forms/aboutDialog.ui \
-              Resources/Forms/configDialog.ui
+              Resources/Forms/configDialog.ui \
+              Resources/Forms/findReplaceDialog.ui 
 
 SOURCES     += main.cpp \
                Utils/CUtils.cpp \
@@ -29,9 +27,11 @@ SOURCES     += main.cpp \
                Display/CConfigDlg.cpp \
                Display/CEventFilterObj.cpp \
                Display/CSearchTextBrowser.cpp \
+               Display/CFindReplaceDlg.cpp \
                Model/qTagger/CTagResultItem.cpp \
                Model/qTagger/qTagger.cpp \
                Model/qTagger/CSourceFileList.cpp \ 
+               Model/qFindReplacer/qFindReplacer.cpp \
                Model/CProfileListModel.cpp \
                Model/CGroupListModel.cpp \ 
                Model/COutputListModel.cpp \
@@ -44,6 +44,7 @@ SOURCES     += main.cpp \
                Model/CProfileItem.cpp \
                Model/COutputItem.cpp \
                Model/CRunCommand.cpp \ 
+               Model/CFindReplaceModel.cpp \
                Storage/CXmlStorageHandler.cpp \
 
 
@@ -59,9 +60,11 @@ HEADERS     += Utils/commonType.h \
                Display/CConfigDlg.h \
                Display/CEventFilterObj.h \  
                Display/CSearchTextBrowser.h \
+               Display/CFindReplaceDlg.h \
                Model/qTagger/CTagResultItem.h \
                Model/qTagger/qTagger.h \ 
                Model/qTagger/CSourceFileList.h \
+			   Model/qFindReplacer/qFindReplacer.h \
                Model/CProfileListModel.h \ 
                Model/CGroupListModel.h \
                Model/COutputListModel.h \
@@ -74,6 +77,7 @@ HEADERS     += Utils/commonType.h \
                Model/CGroupItem.h \
                Model/COutputItem.h \
                Model/CRunCommand.h \
+               Model/CFindReplaceModel.h \
                Storage/CXmlStorageHandler.h \
                Storage/IStorageHandler.h \
 

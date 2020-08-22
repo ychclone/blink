@@ -29,6 +29,8 @@
 #include "Model/CGroupListModel.h"
 #include "Model/COutputListModel.h"
 
+#include "Model/CFindReplaceModel.h"
+
 #include "Model/CConfigManager.h"
 
 #include "ui_mainWindow.h"
@@ -82,6 +84,7 @@ private slots:
 
     void on_actionExit_triggered();
 	void on_actionSetting_triggered();
+	void on_actionFindReplaceDialog_triggered();
 
 	void on_outputEditPressed();
 	void on_outputCopyPressed();
@@ -158,6 +161,8 @@ private:
     CGroupListModel* m_groupListModel;
     COutputListModel* m_outputListModel;
 
+	CFindReplaceModel m_findReplaceModel;
+
     CProfileLoadThread m_profileLoadThread;
     CProfileUpdateThread m_profileUpdateThread;
 
@@ -213,6 +218,8 @@ private:
 
 	QTextDocument textDocument_;
 	QPlainTextDocumentLayout* textLayout_;
+
+	QMap<QString, unsigned char> findReplaceFileList_; // unsigned char value not used
 
 };
 #endif // CMAINWINDOW_H

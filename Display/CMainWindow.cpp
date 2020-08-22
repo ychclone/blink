@@ -30,6 +30,7 @@
 #include "CProfileDlg.h"
 #include "CGroupDlg.h"
 #include "CConfigDlg.h"
+#include "CFindReplaceDlg.h"
 
 #include "Model/CProfileListModel.h"
 #include "Model/CGroupListModel.h"
@@ -1150,6 +1151,51 @@ void CMainWindow::on_actionSetting_triggered()
 	}
 }
 
+// find & replace dialog
+void CMainWindow::on_actionFindReplaceDialog_triggered()
+{
+	int i = 0;
+
+	const int fileTabIndex = infoTabWidget->indexOf(fileTab);
+	const int symbolTabIndex = infoTabWidget->indexOf(symbolTab);
+
+	QStringList fileList;
+
+	// if current tab is file tab
+	if (infoTabWidget->currentIndex() == fileTabIndex) {
+		// copy from selected file list in file filter
+		QModelIndexList selectedIndexList = m_outputListModel->getSelectionModel()->selectedIndexes();
+
+		if (selectedIndexList.size() > 0) { // got selected files
+			foreach(const QModelIndex &index, selectedIndexList) {
+				if (index.column() == 0) { // only 0 column corresponding to filename
+					fileList.append(index.data(Qt::DisplayRole ).toString());
+				}
+			}
+		} else { // default to all files if no selection
+			for (i = 0; i < m_outputItemList.size(); i++) {
+				fileList.append(m_outputItemList[i].m_fileName);
+			}
+		}
+
+		m_findReplaceModel.setFileList(fileList);
+	} else {
+		fileList = findReplaceFileList_.keys();
+
+		// set default find replace file list model updated when symbol queries
+		m_findReplaceModel.setFileList(fileList);
+	}
+
+	CFindReplaceDlg* dialog = new CFindReplaceDlg(this, &m_findReplaceModel);
+
+	if (infoTabWidget->currentIndex() == symbolTabIndex) {
+	   dialog->setFindLineEdit(search_lineEdit->text());
+	}
+
+	// non model dialog
+	dialog->show();
+}
+
 void CMainWindow::saveWidgetPosition()
 {
 	QList<int> splitterSizeList;
@@ -1371,6 +1417,7 @@ void CMainWindow::searchLineEditChanged()
 	m_completer.setModel(&m_stringListModel);
 	m_completer.setModelSorting(QCompleter::CaseSensitivelySortedModel);
 	m_completer.setCaseSensitivity(caseSensitivity);
+	m_completer.setFilterMode(Qt::MatchContains);
 
 	search_lineEdit->setCompleter(&m_completer);
 }
@@ -1742,6 +1789,8 @@ void CMainWindow::queryTag(const QString& tag)
 		QList<int>::const_iterator indentIt;
 		int minIndent = 0;
 
+		findReplaceFileList_.clear();
+
 		foreach (const CTagResultItem& resultItem, resultList) {
 			// drive letter colon for first field
 
@@ -1832,6 +1881,8 @@ void CMainWindow::queryTag(const QString& tag)
 						"</code></div><div><spacesize>&nbsp;</spacesize></div>";
 
 			//qDebug() << "resultHtml = " << resultHtml << endl;
+
+            findReplaceFileList_.insert(resultItem.filePath_, 0);
 		}
 
 		resultHtml += "</pre>";

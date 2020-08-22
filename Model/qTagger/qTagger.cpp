@@ -1,3 +1,5 @@
+#include <QRegularExpression>
+
 #include "qTagger.h"
 
 //#define kDEBUG_QTAGGER_QUERY
@@ -243,10 +245,15 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 	int manualIndentLevel = 0;
 
-	QVector<QRegExp> lineFilterRegExpMatcher;
+	QVector<QRegularExpression> lineFilterRegExpMatcher;
+	QRegularExpressionMatch lineFilterRegExpMatch;
 
 	for (i = 0; i < lineFilterStrList.size(); i++) {
-		lineFilterRegExpMatcher.push_back(QRegExp(lineFilterStrList[i], caseSensitivity));
+		if (caseSensitivity == Qt::CaseSensitive) {
+            lineFilterRegExpMatcher.push_back(QRegularExpression(lineFilterStrList[i]));
+		} else {
+			lineFilterRegExpMatcher.push_back(QRegularExpression(lineFilterStrList[i], QRegularExpression::CaseInsensitiveOption));
+		}
 	}
 
 	while (!sourceFileStream.atEnd()) {
@@ -321,7 +328,8 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 				} else { // consider as not matching if a single item is not matched
 					bMatchedLineFilterStringList = true;
 					for (k = 0; k < lineFilterRegExpMatcher.size(); k++) {
-						if (lineFilterRegExpMatcher[k].indexIn(line) == -1) {
+						lineFilterRegExpMatch = lineFilterRegExpMatcher[k].match(line);
+						if (!lineFilterRegExpMatch.hasMatch()) {
 							bMatchedLineFilterStringList = false;
 							break;
 						}
@@ -481,13 +489,9 @@ QStringList QTagger::getTagList()
 
 int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
-	QString tagQueryStr = "^" + tagToQuery;
-	QString tagQueryMatched = "";
-	QRegExp tagQueryRegEx(tagQueryStr, caseSensitivity);
-
 	QStringList result;
 	foreach (const QString &tag, m_tagList) {
-		if (tag.contains(tagQueryRegEx)) {
+		if (tag.contains(tagToQuery, caseSensitivity)) {
 			matchedTokenList += tag;
 		}
 		if (matchedTokenList.size() > 20) {
