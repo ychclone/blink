@@ -7,16 +7,16 @@
 
 #include <QShortcut>
 
-#include "Model/COutputListModel.h"
+#include "Model/CFileListModel.h"
 
-class COutputListWidget : public QTreeView
+class CFileListWidget : public QTreeView
 {
     Q_OBJECT
 
 public:
-    COutputListWidget(QWidget *parent = 0);
+    CFileListWidget(QWidget *parent = 0);
 
-	void setOutputListModel(COutputListModel *outputModel);
+	void setFileListModel(CFileListModel *outputModel);
 
 	void mousePressEvent(QMouseEvent *event);
 
@@ -35,13 +35,13 @@ signals:
 	void outputItemTriggered();
 
 private:
-	void updateOutputListWidget();
+	void updateFileListWidget();
 	void fileZoomIn();
 	void fileZoomOut();
 
 	QStringList getSelectedItemNameList();
 
-	COutputListModel* outputListModel_;
+	CFileListModel* fileListModel_;
 
 	long fileFontSize_;
     

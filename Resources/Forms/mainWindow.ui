@@ -398,7 +398,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
              <number>5</number>
             </property>
             <item>
-             <widget class="COutputListWidget" name="output_listView">
+             <widget class="CFileListWidget" name="output_listView">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -883,7 +883,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Delete</string>
    </property>
   </action>
-  <action name="actionOutputCopy">
+  <action name="actionFileCopy">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
@@ -1010,7 +1010,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Zoom Out</string>
    </property>
   </action>
-  <action name="actionOutputExplore">
+  <action name="actionFileExplore">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/document-open-folder.png</normaloff>:/Icons/22x22/document-open-folder.png</iconset>
@@ -1025,7 +1025,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actionOutputConsole">
+  <action name="actionFileConsole">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/xconsole-2.png</normaloff>:/Icons/22x22/xconsole-2.png</iconset>
@@ -1055,12 +1055,12 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Console</string>
    </property>
   </action>
-  <action name="actionOutputProperties">
+  <action name="actionFileProperties">
    <property name="text">
     <string>Properties</string>
    </property>
   </action>
-  <action name="actionOutputEdit">
+  <action name="actionFileEdit">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
@@ -1180,9 +1180,9 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    <header>Display/CProfileListWidget.h</header>
   </customwidget>
   <customwidget>
-   <class>COutputListWidget</class>
+   <class>CFileListWidget</class>
    <extends>QTreeView</extends>
-   <header>Display/COutputListWidget.h</header>
+   <header>Display/CFileListWidget.h</header>
   </customwidget>
   <customwidget>
    <class>CGroupListWidget</class>

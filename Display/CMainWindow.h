@@ -27,7 +27,7 @@
 
 #include "Model/CProfileListModel.h"
 #include "Model/CGroupListModel.h"
-#include "Model/COutputListModel.h"
+#include "Model/CFileListModel.h"
 
 #include "Model/CFindReplaceModel.h"
 
@@ -51,7 +51,7 @@ public:
 public slots:
     void loadProfileList();
     void loadGroupList();
-	void loadOutputList();
+	void loadFileList();
 
 private slots:
     void on_newProfileButton_clicked();
@@ -136,7 +136,7 @@ private slots:
 private:
 	void updateProfileListWidget();
     void updateGroupListWidget();
-	void updateOutputListWidget();
+	void updateFileListWidget();
 
 	void setSymbolFont(QFont symbolFont);
     void createActions();
@@ -159,7 +159,7 @@ private:
 
 	CProfileListModel* profileListModel_;
     CGroupListModel* groupListModel_;
-    COutputListModel* outputListModel_;
+    CFileListModel* fileListModel_;
 
 	CFindReplaceModel findReplaceModel_;
 

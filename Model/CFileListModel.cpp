@@ -1,6 +1,6 @@
-#include "COutputListModel.h"
+#include "CFileListModel.h"
 
-COutputListModel::COutputListModel(QObject *parent)
+CFileListModel::CFileListModel(QObject *parent)
 	: QStandardItemModel(0, 3, parent) // 3 column
 {
 	parent_ = static_cast<QWidget*> (parent);
@@ -8,16 +8,16 @@ COutputListModel::COutputListModel(QObject *parent)
     setHeaderData(1, Qt::Horizontal, QObject::tr("Last Modified"));
 	setHeaderData(2, Qt::Horizontal, QObject::tr("Size"));
 
-	outputListProxyModel_ = new QSortFilterProxyModel;
-	outputListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (this));
-    outputListProxyModel_->setDynamicSortFilter(true);
+	fileListProxyModel_ = new QSortFilterProxyModel;
+	fileListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (this));
+    fileListProxyModel_->setDynamicSortFilter(true);
 
-	outputListSelectionModel_ = new QItemSelectionModel(outputListProxyModel_);
+	fileListSelectionModel_ = new QItemSelectionModel(fileListProxyModel_);
 
-	qDebug() << "COutputListModel, this = " << this;
+	qDebug() << "CFileListModel, this = " << this;
 }
 
-void COutputListModel::clearAndResetModel()
+void CFileListModel::clearAndResetModel()
 {
   	clear();  // header data will also be clear
 
@@ -28,17 +28,17 @@ void COutputListModel::clearAndResetModel()
 	setHeaderData(2, Qt::Horizontal, QObject::tr("Size"));
 }
 
-QSortFilterProxyModel* COutputListModel::getProxyModel()
+QSortFilterProxyModel* CFileListModel::getProxyModel()
 {
-	return outputListProxyModel_;
+	return fileListProxyModel_;
 }
 
-QItemSelectionModel* COutputListModel::getSelectionModel()
+QItemSelectionModel* CFileListModel::getSelectionModel()
 {
-	return outputListSelectionModel_;
+	return fileListSelectionModel_;
 }
 
-void COutputListModel::addItem(const COutputItem& outputItem)
+void CFileListModel::addItem(const COutputItem& outputItem)
 {
 	quint64 fileSize;
 	QDateTime lastModifiedDateTime;
@@ -57,7 +57,7 @@ void COutputListModel::addItem(const COutputItem& outputItem)
 	setData(index(0, 2), fileSize);
 }
 
-QVariant COutputListModel::data(const QModelIndex& index, int role) const
+QVariant CFileListModel::data(const QModelIndex& index, int role) const
 {
 	return QStandardItemModel::data(index,role);
 }

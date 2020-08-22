@@ -150,15 +150,15 @@ bTagBuildInProgress_(false)
 	group_listView->setDropIndicatorShown(true);
     updateGroupListWidget();
 
-	// output_listView, outputListModel_
-	outputListModel_ = new COutputListModel(this);
+	// output_listView, fileListModel_
+	fileListModel_ = new CFileListModel(this);
 
-	output_listView->setOutputListModel(outputListModel_);
+	output_listView->setFileListModel(fileListModel_);
 
 	output_listView->setRootIsDecorated(false);
-	output_listView->setModel(outputListModel_->getProxyModel());
+	output_listView->setModel(fileListModel_->getProxyModel());
 
-	output_listView->setSelectionModel(outputListModel_->getSelectionModel());
+	output_listView->setSelectionModel(fileListModel_->getSelectionModel());
 	output_listView->setSortingEnabled(true);
 
 	output_listView->setDragEnabled(true);
@@ -347,7 +347,7 @@ void CMainWindow::updateGroupListWidget()
 }
 
 
-void CMainWindow::updateOutputListWidget()
+void CMainWindow::updateFileListWidget()
 {
 	output_listView->resizeColumnToContents(0);
 	output_listView->resizeColumnToContents(1);
@@ -412,16 +412,16 @@ void CMainWindow::loadGroupList()
 }
 
 
-void CMainWindow::loadOutputList()
+void CMainWindow::loadFileList()
 {
 	COutputItem outputItem;
 
-	outputListModel_->clearAndResetModel();
+	fileListModel_->clearAndResetModel();
 
 	foreach (const COutputItem& outputItem, outputItemList_) {
-		outputListModel_->addItem(outputItem);
+		fileListModel_->addItem(outputItem);
 	}
-	updateOutputListWidget();
+	updateFileListWidget();
 }
 
 void CMainWindow::createActions()
@@ -461,15 +461,15 @@ void CMainWindow::createActions()
 	connect(actionGroupDelete, SIGNAL(triggered()), this, SLOT(on_deleteGroupButton_clicked()));
 
     // [File action]
-    connect(actionOutputEdit, SIGNAL(triggered()), this, SLOT(on_outputEditPressed()));
+    connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_outputEditPressed()));
 
     // default double click, enter action for output list item
 	connect(output_listView, SIGNAL(outputItemTriggered()), this, SLOT(on_outputEditPressed()));
 
-	connect(actionOutputCopy, SIGNAL(triggered()), this, SLOT(on_outputCopyPressed()));
-	connect(actionOutputExplore, SIGNAL(triggered()), this, SLOT(on_outputExplorePressed()));
-	connect(actionOutputConsole, SIGNAL(triggered()), this, SLOT(on_outputConsolePressed()));
-    connect(actionOutputProperties, SIGNAL(triggered()), this, SLOT(on_outputPropertiesPressed()));
+	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_outputCopyPressed()));
+	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_outputExplorePressed()));
+	connect(actionFileConsole, SIGNAL(triggered()), this, SLOT(on_outputConsolePressed()));
+    connect(actionFileProperties, SIGNAL(triggered()), this, SLOT(on_outputPropertiesPressed()));
 
 	connect(actionSearch, SIGNAL(triggered()), this, SLOT(on_searchButton_clicked()));
 
@@ -788,15 +788,15 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
 	QStringList outputItemNameList;
 
     // get selected items index list
-    indexSelectedList = outputListModel_->getSelectionModel()->selectedIndexes();
+    indexSelectedList = fileListModel_->getSelectionModel()->selectedIndexes();
 
 	foreach (const QModelIndex& indexSelected, indexSelectedList) {
 		// map back from proxy model
-		mappedIndex = outputListModel_->getProxyModel()->mapToSource(indexSelected);
+		mappedIndex = fileListModel_->getProxyModel()->mapToSource(indexSelected);
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = outputListModel_->item(rowSelected, 0);
+			itemSelected = fileListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				outputItemName = itemSelected->text();
 			}
@@ -1170,7 +1170,7 @@ void CMainWindow::on_actionFindReplaceDialog_triggered()
 	// if current tab is file tab
 	if (infoTabWidget->currentIndex() == fileTabIndex) {
 		// copy from selected file list in file filter
-		QModelIndexList selectedIndexList = outputListModel_->getSelectionModel()->selectedIndexes();
+		QModelIndexList selectedIndexList = fileListModel_->getSelectionModel()->selectedIndexes();
 
 		if (selectedIndexList.size() > 0) { // got selected files
 			foreach(const QModelIndex &index, selectedIndexList) {
@@ -1252,7 +1252,7 @@ void CMainWindow::updateTagBuildProgress(int percentage)
 void CMainWindow::updateProfileLoadProgress(int percentage)
 {
     if (percentage == 100) {
-		loadOutputList();
+		loadFileList();
 
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
@@ -1266,7 +1266,7 @@ void CMainWindow::updateProfileLoadProgress(int percentage)
 void CMainWindow::updateGroupLoadProgress(int percentage)
 {
     if (percentage == 100) {
-		loadOutputList();
+		loadFileList();
 
         statusBar()->showMessage("Group " + currentGroupItem_.name_ + " loaded.");
     } else if (percentage == 0) {
@@ -1400,7 +1400,7 @@ void CMainWindow::fileFilterRegExpChanged()
 
 	QRegExp regExp(trimmedFilePattern, caseSensitivity, QRegExp::RegExp);
 
-    outputListModel_->getProxyModel()->setFilterRegExp(regExp);
+    fileListModel_->getProxyModel()->setFilterRegExp(regExp);
 }
 
 void CMainWindow::searchLineEditChanged()
@@ -1588,19 +1588,19 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 			if (outputItemSelected > 1) {
 				QMenu menu(this);
 
-				menu.addAction(actionOutputCopy);
+				menu.addAction(actionFileCopy);
 				menu.exec(event->globalPos());
 			} else {
 				QMenu menu(this);
 
-				menu.addAction(actionOutputEdit);
-				menu.addAction(actionOutputExplore);
+				menu.addAction(actionFileEdit);
+				menu.addAction(actionFileExplore);
 
-				menu.addAction(actionOutputCopy);
-				menu.addAction(actionOutputConsole);
+				menu.addAction(actionFileCopy);
+				menu.addAction(actionFileConsole);
 
 #ifdef Q_OS_WIN
-				menu.addAction(actionOutputProperties);
+				menu.addAction(actionFileProperties);
 #endif
 				menu.exec(event->globalPos());
 			}

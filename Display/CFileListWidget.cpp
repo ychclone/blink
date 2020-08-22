@@ -5,21 +5,21 @@
 
 #include <QDebug>
 
-#include "COutputListWidget.h"
+#include "CFileListWidget.h"
 
-COutputListWidget::COutputListWidget(QWidget *parent)
+CFileListWidget::CFileListWidget(QWidget *parent)
 : QTreeView(parent)
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font(); 
 	fileFontSize_ = currentFont.pointSize(); 
 }
 
-void COutputListWidget::setOutputListModel(COutputListModel *outputListModel)
+void CFileListWidget::setFileListModel(CFileListModel *fileListModel)
 {
-	outputListModel_ = outputListModel;
+	fileListModel_ = fileListModel;
 } 
 
-void COutputListWidget::mousePressEvent(QMouseEvent *event)
+void CFileListWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
 		dragStartPosition_ = event->pos();
@@ -27,13 +27,13 @@ void COutputListWidget::mousePressEvent(QMouseEvent *event)
 	QTreeView::mousePressEvent(event);
 }
 
-void COutputListWidget::mouseDoubleClickEvent(QMouseEvent* event)
+void CFileListWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	emit outputItemTriggered(); 
     QTreeView::mouseDoubleClickEvent(event);
 }
 
-void COutputListWidget::keyPressEvent(QKeyEvent* event)
+void CFileListWidget::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Return) {
 		emit outputItemTriggered(); 
@@ -45,7 +45,7 @@ void COutputListWidget::keyPressEvent(QKeyEvent* event)
 	QTreeView::keyPressEvent(event);
 }
 
-void COutputListWidget::updateOutputFont(const QFont& outputFont) 
+void CFileListWidget::updateOutputFont(const QFont& outputFont) 
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font();
 
@@ -53,12 +53,12 @@ void COutputListWidget::updateOutputFont(const QFont& outputFont)
 		static_cast <QWidget*> (this)->setFont(outputFont);
 
 		fileFontSize_ = outputFont.pointSize();
-		updateOutputListWidget();
+		updateFileListWidget();
 	}
 }
 
 
-QStringList COutputListWidget::getSelectedItemNameList()
+QStringList CFileListWidget::getSelectedItemNameList()
 {
     QModelIndexList indexSelectedList;
 	QModelIndex indexSelected, mappedIndex;
@@ -84,7 +84,7 @@ QStringList COutputListWidget::getSelectedItemNameList()
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = outputListModel_->item(rowSelected, 0);
+			itemSelected = fileListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				outputItemName = itemSelected->text();
 			};
@@ -100,7 +100,7 @@ QStringList COutputListWidget::getSelectedItemNameList()
     return outputItemNameList;
 }
 
-void COutputListWidget::mouseMoveEvent(QMouseEvent *event)
+void CFileListWidget::mouseMoveEvent(QMouseEvent *event)
 {
 	if (!(event->buttons() & Qt::LeftButton)) {
 		return;
@@ -132,24 +132,24 @@ void COutputListWidget::mouseMoveEvent(QMouseEvent *event)
 	QTreeView::mouseMoveEvent(event);
 }
 
-void COutputListWidget::updateOutputListWidget()
+void CFileListWidget::updateFileListWidget()
 {
 	resizeColumnToContents(0);
 	resizeColumnToContents(1);
 	resizeColumnToContents(2);
 }
 
-void COutputListWidget::fileZoomIn()
+void CFileListWidget::fileZoomIn()
 {
 	fileFontSize_++;
 	QFont fnt = static_cast <QWidget*> (this)->font();
 	fnt.setPointSize(fileFontSize_); 
 	static_cast <QWidget*> (this)->setFont(fnt);
 
-	updateOutputListWidget();
+	updateFileListWidget();
 }
 
-void COutputListWidget::fileZoomOut()
+void CFileListWidget::fileZoomOut()
 {
 	if (fileFontSize_ > 1) {
 		fileFontSize_--;
@@ -158,11 +158,11 @@ void COutputListWidget::fileZoomOut()
 		static_cast <QWidget*> (this)->setFont(fnt);
 	}
 
-	updateOutputListWidget(); 
+	updateFileListWidget(); 
 }
 
 
-void COutputListWidget::wheelEvent(QWheelEvent *e)
+void CFileListWidget::wheelEvent(QWheelEvent *e)
 {
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();

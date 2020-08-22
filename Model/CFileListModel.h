@@ -15,12 +15,12 @@
 
 #include "Model/COutputItem.h"
 
-class COutputListModel: public QStandardItemModel
+class CFileListModel: public QStandardItemModel
 {
     Q_OBJECT
 
 public:
-    COutputListModel(QObject *parent = 0);
+    CFileListModel(QObject *parent = 0);
 	void clearAndResetModel();
 
 	QSortFilterProxyModel* getProxyModel();
@@ -33,8 +33,8 @@ public:
 private:
 	QWidget* parent_;
 
-	QSortFilterProxyModel* outputListProxyModel_;
-	QItemSelectionModel* outputListSelectionModel_; 
+	QSortFilterProxyModel* fileListProxyModel_;
+	QItemSelectionModel* fileListSelectionModel_; 
 
 };
 

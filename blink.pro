@@ -23,7 +23,7 @@ SOURCES     += main.cpp \
                Display/CAboutDlg.cpp \
                Display/CProfileListWidget.cpp \
                Display/CGroupListWidget.cpp \ 
-               Display/COutputListWidget.cpp \
+               Display/CFileListWidget.cpp \
                Display/CConfigDlg.cpp \
                Display/CEventFilterObj.cpp \
                Display/CSearchTextBrowser.cpp \
@@ -34,7 +34,7 @@ SOURCES     += main.cpp \
                Model/qFindReplacer/qFindReplacer.cpp \
                Model/CProfileListModel.cpp \
                Model/CGroupListModel.cpp \ 
-               Model/COutputListModel.cpp \
+               Model/CFileListModel.cpp \
                Model/CProfileManager.cpp \
                Model/CProfileUpdateThread.cpp \
                Model/CProfileLoadThread.cpp \
@@ -56,7 +56,7 @@ HEADERS     += Utils/commonType.h \
                Display/CAboutDlg.h \
                Display/CProfileListWidget.h \
                Display/CGroupListWidget.h \
-               Display/COutputListWidget.h \
+               Display/CFileListWidget.h \
                Display/CConfigDlg.h \
                Display/CEventFilterObj.h \  
                Display/CSearchTextBrowser.h \
@@ -67,7 +67,7 @@ HEADERS     += Utils/commonType.h \
 			   Model/qFindReplacer/qFindReplacer.h \
                Model/CProfileListModel.h \ 
                Model/CGroupListModel.h \
-               Model/COutputListModel.h \
+               Model/CFileListModel.h \
                Model/CProfileManager.h \
                Model/CProfileUpdateThread.h \
                Model/CProfileLoadThread.h \
