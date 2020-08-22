@@ -3,16 +3,16 @@
 COutputListModel::COutputListModel(QObject *parent)
 	: QStandardItemModel(0, 3, parent) // 3 column
 {
-	m_parent = static_cast<QWidget*> (parent);
+	parent_ = static_cast<QWidget*> (parent);
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Last Modified"));
 	setHeaderData(2, Qt::Horizontal, QObject::tr("Size"));
 
-	m_outputListProxyModel = new QSortFilterProxyModel;
-	m_outputListProxyModel->setSourceModel(static_cast <QStandardItemModel*> (this));
-    m_outputListProxyModel->setDynamicSortFilter(true);
+	outputListProxyModel_ = new QSortFilterProxyModel;
+	outputListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (this));
+    outputListProxyModel_->setDynamicSortFilter(true);
 
-	m_outputListSelectionModel = new QItemSelectionModel(m_outputListProxyModel);
+	outputListSelectionModel_ = new QItemSelectionModel(outputListProxyModel_);
 
 	qDebug() << "COutputListModel, this = " << this;
 }
@@ -30,12 +30,12 @@ void COutputListModel::clearAndResetModel()
 
 QSortFilterProxyModel* COutputListModel::getProxyModel()
 {
-	return m_outputListProxyModel;
+	return outputListProxyModel_;
 }
 
 QItemSelectionModel* COutputListModel::getSelectionModel()
 {
-	return m_outputListSelectionModel;
+	return outputListSelectionModel_;
 }
 
 void COutputListModel::addItem(const COutputItem& outputItem)
@@ -45,14 +45,14 @@ void COutputListModel::addItem(const COutputItem& outputItem)
 
 	insertRow(0);
 
-	setData(index(0, 0), outputItem.m_fileName);
+	setData(index(0, 0), outputItem.fileName_);
 
 	setData(index(0, 0), QIcon(":/Icons/text-x-preview.ico"), Qt::DecorationRole);
 
-	lastModifiedDateTime = QDateTime::fromString(outputItem.m_fileLastModified, "dd/MM/yyyy HH:mm:ss");
+	lastModifiedDateTime = QDateTime::fromString(outputItem.fileLastModified_, "dd/MM/yyyy HH:mm:ss");
 	setData(index(0, 1), lastModifiedDateTime);
 
-	fileSize = outputItem.m_fileSize;
+	fileSize = outputItem.fileSize_;
 
 	setData(index(0, 2), fileSize);
 }

@@ -13,12 +13,12 @@ public:
     CGroupItem(const QString& name, const QString& profileList, const QString& tagUpdateDateTime, 
 				const QString& groupCreateDateTime, const QString& labels);
 
-    QString m_name,
-			m_profileList,
+    QString name_,
+			profileList_,
 			
-			m_tagUpdateDateTime,
-			m_groupCreateDateTime,
-			m_labels;
+			tagUpdateDateTime_,
+			groupCreateDateTime_,
+			labels_;
 
     virtual ~CGroupItem() {};
 };

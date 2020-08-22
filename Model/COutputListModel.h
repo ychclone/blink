@@ -31,10 +31,10 @@ public:
 	QVariant data(const QModelIndex& index, int role) const;
 
 private:
-	QWidget* m_parent;
+	QWidget* parent_;
 
-	QSortFilterProxyModel* m_outputListProxyModel;
-	QItemSelectionModel* m_outputListSelectionModel; 
+	QSortFilterProxyModel* outputListProxyModel_;
+	QItemSelectionModel* outputListSelectionModel_; 
 
 };
 

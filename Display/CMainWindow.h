@@ -152,29 +152,29 @@ private:
 
     void closeEvent(QCloseEvent *event);
 
-    QProgressBar m_progressBar;
+    QProgressBar progressBar_;
 
 	QActionGroup *filterMethodGroup;
 	QRegExp::PatternSyntax patternSyntax_;
 
-	CProfileListModel* m_profileListModel;
-    CGroupListModel* m_groupListModel;
-    COutputListModel* m_outputListModel;
+	CProfileListModel* profileListModel_;
+    CGroupListModel* groupListModel_;
+    COutputListModel* outputListModel_;
 
-	CFindReplaceModel m_findReplaceModel;
+	CFindReplaceModel findReplaceModel_;
 
-    CProfileLoadThread m_profileLoadThread;
-    CProfileUpdateThread m_profileUpdateThread;
+    CProfileLoadThread profileLoadThread_;
+    CProfileUpdateThread profileUpdateThread_;
 
-	CGroupLoadThread m_groupLoadThread;
+	CGroupLoadThread groupLoadThread_;
 
-	QSortFilterProxyModel* m_profileListProxyModel;
-	QItemSelectionModel* m_profileListSelectionModel;
+	QSortFilterProxyModel* profileListProxyModel_;
+	QItemSelectionModel* profileListSelectionModel_;
 
-	QSortFilterProxyModel* m_groupListProxyModel;
-	QItemSelectionModel* m_groupListSelectionModel;
+	QSortFilterProxyModel* groupListProxyModel_;
+	QItemSelectionModel* groupListSelectionModel_;
 
-    QTimeLine m_timeLine;
+    QTimeLine timeLine_;
 
     QShortcut* profilePatternLineEditShortcut;
 	QShortcut* groupPatternLineEditShortcut;
@@ -197,24 +197,24 @@ private:
     QShortcut* previousSymbolSearchShortcut_win;
 #endif
 
-	QToolButton *m_pInfoTabWidgetToolBn;
+	QToolButton *pInfoTabWidgetToolBn_;
 
-	bool m_bTagBuildInProgress;
+	bool bTagBuildInProgress_;
 
-	QSize m_priorMainTabWidgetSize;
+	QSize priorMainTabWidgetSize_;
 	int infoTabWidgetWidth;
 
-	CProfileItem m_currentProfileItem;
-	CGroupItem m_currentGroupItem;
+	CProfileItem currentProfileItem_;
+	CGroupItem currentGroupItem_;
 
-	CConfigManager* m_confManager;
+	CConfigManager* confManager_;
 
-	QTagger m_tagger;
+	QTagger tagger_;
 
-	T_OutputItemList m_outputItemList;
+	T_OutputItemList outputItemList_;
 
-	QCompleter m_completer;
-	QStringListModel m_stringListModel;
+	QCompleter completer_;
+	QStringListModel stringListModel_;
 
 	QTextDocument textDocument_;
 	QPlainTextDocumentLayout* textLayout_;

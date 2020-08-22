@@ -41,15 +41,15 @@ private:
 
 	int countTotalRunCmd();
 	
-    CProfileItem m_profileItem;
+    CProfileItem profileItem_;
 
-	CRunCommand m_cmd;
+	CRunCommand cmd_;
     
-    int m_stepCompleted;
-    int m_totalStep;
+    int stepCompleted_;
+    int totalStep_;
 
-	bool m_bCancelUpdate;
-	bool m_bRebuildTag;
+	bool bCancelUpdate_;
+	bool bRebuildTag_;
 
 	static const int MAX_SUPPORTED_RUN_COMMAND = 999;
     

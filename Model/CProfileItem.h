@@ -14,15 +14,15 @@ public:
     CProfileItem(const QString& name, const QString& srcDir, const QString& srcMask, const QString& headerMask, 
 						   const QString& tagUpdateDateTime, const QString& profileCreateDateTime, const QString& labels);
 
-    QString m_name,
-            m_srcDir,
-            m_srcMask,
-            m_headerMask,
+    QString name_,
+            srcDir_,
+            srcMask_,
+            headerMask_,
 			
-			m_tagUpdateDateTime,
-			m_profileCreateDateTime,
+			tagUpdateDateTime_,
+			profileCreateDateTime_,
 			
-			m_labels;
+			labels_;
 
     virtual ~CProfileItem() {};
 };

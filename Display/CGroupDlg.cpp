@@ -19,7 +19,7 @@ CGroupDlg::CGroupDlg(QWidget* parent)
 	CProfileManager::getInstance()->getGroupMap(groupMap);   
 
 	foreach (const CGroupItem& groupItem, groupMap) { 
-		allGroup_comboBox->addItem(groupItem.m_name, QVariant(Qt::DisplayRole));
+		allGroup_comboBox->addItem(groupItem.name_, QVariant(Qt::DisplayRole));
 	}
 
 	// default as empty for group combox box
@@ -32,7 +32,7 @@ CGroupDlg::CGroupDlg(QWidget* parent)
 	CProfileManager::getInstance()->getProfileMap(profileMap);
 
 	foreach (const CProfileItem& profileItem, profileMap) { 
-		allProfile_listWidget->addItem(profileItem.m_name);
+		allProfile_listWidget->addItem(profileItem.name_);
 	}
 
 	createActions(); 
@@ -45,8 +45,8 @@ CGroupDlg::CGroupDlg(const QString& groupName, const CGroupItem& groupItem, QWid
 
 	currentGroupName_ = groupName;
 
-    groupName_lineEdit->setText(groupItem.m_name);
-	labels_lineEdit->setText(groupItem.m_labels);  
+    groupName_lineEdit->setText(groupItem.name_);
+	labels_lineEdit->setText(groupItem.labels_);  
 
     // connect slot only after when CGroupDlg has already been loaded and initial content filled in
     QObject::connect(groupName_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(groupContentChanged()));
@@ -84,7 +84,7 @@ void CGroupDlg::loadGroupProfileListView(const QString& groupName)
 	// selected profile list
 	groupItem = CProfileManager::getInstance()->getGroupItem(groupName);
 
-	groupProfileList = groupItem.m_profileList.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
+	groupProfileList = groupItem.profileList_.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
 	includedProfile_listWidget->addItems(groupProfileList); 
 
 	// not selected profile list
@@ -93,8 +93,8 @@ void CGroupDlg::loadGroupProfileListView(const QString& groupName)
 	CProfileManager::getInstance()->getProfileMap(profileMap);
 
 	foreach (const CProfileItem& profileItem, profileMap) { 
-		if (!groupProfileList.contains(profileItem.m_name)) {
-			allProfile_listWidget->addItem(profileItem.m_name);
+		if (!groupProfileList.contains(profileItem.name_)) {
+			allProfile_listWidget->addItem(profileItem.name_);
 		}
 	} 
 }
@@ -146,13 +146,13 @@ void CGroupDlg::on_applyButton_clicked()
 	}
 	// labels can be empty so no checking 
     
-    modifiedItem.m_name = groupName_lineEdit->text();
+    modifiedItem.name_ = groupName_lineEdit->text();
 
 	currDateTime = QDateTime::currentDateTime();
 
-	modifiedItem.m_groupCreateDateTime = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+	modifiedItem.groupCreateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
-	modifiedItem.m_labels = labels_lineEdit->text(); 
+	modifiedItem.labels_ = labels_lineEdit->text(); 
 
 	// get included item list
 	QList<QListWidgetItem* > includedItemList = 
@@ -165,10 +165,10 @@ void CGroupDlg::on_applyButton_clicked()
 	}
 
 	// update profile list in item
-	modifiedItem.m_profileList = updateGroupProfileList.join(CProfileManager::kGROUP_PROFILE_SEPERATOR);
+	modifiedItem.profileList_ = updateGroupProfileList.join(CProfileManager::kGROUP_PROFILE_SEPERATOR);
 
     if (currentGroupName_ == "") { // new Group
-        CProfileManager::getInstance()->updateGroupItem(modifiedItem.m_name, modifiedItem); 
+        CProfileManager::getInstance()->updateGroupItem(modifiedItem.name_, modifiedItem); 
 	} else {
 		// use currentGroupName_ for updateProfileItem as name may have be changed 
 		CProfileManager::getInstance()->updateGroupItem(currentGroupName_, modifiedItem);

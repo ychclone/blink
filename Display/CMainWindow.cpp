@@ -38,7 +38,7 @@
 
 CMainWindow::CMainWindow(QWidget* parent)
 : QMainWindow(parent),
-m_bTagBuildInProgress(false)
+bTagBuildInProgress_(false)
 {
 	bool bAutoHideMenu;
 
@@ -47,25 +47,25 @@ m_bTagBuildInProgress(false)
 	setWindowIcon(QIcon(":/Images/graphics3.png"));
 
     // setting for progress bar
-    m_progressBar.setTextVisible(false);
-    m_progressBar.setMaximumSize(100, 16);
-    m_progressBar.setRange(0, 100);
-    m_progressBar.setValue(0);
-    m_progressBar.hide();
+    progressBar_.setTextVisible(false);
+    progressBar_.setMaximumSize(100, 16);
+    progressBar_.setRange(0, 100);
+    progressBar_.setValue(0);
+    progressBar_.hide();
 
 	// hiding menuBar if needed
-	m_confManager = CConfigManager::getInstance();
-	bAutoHideMenu = m_confManager->getAppSettingValue("AutoHideMenu", false).toBool();
+	confManager_ = CConfigManager::getInstance();
+	bAutoHideMenu = confManager_->getAppSettingValue("AutoHideMenu", false).toBool();
 	if (bAutoHideMenu) {
 		menuBar()->hide();
 	}
 
     // add progressbar for status bar
-    statusBar()->addPermanentWidget(&m_progressBar, 1);
+    statusBar()->addPermanentWidget(&progressBar_, 1);
 
     // setting for timeline
-    m_timeLine.setDuration(200);
-    m_timeLine.setFrameRange(0, 100);
+    timeLine_.setDuration(200);
+    timeLine_.setFrameRange(0, 100);
 
     // defining shortcut
 
@@ -110,19 +110,19 @@ m_bTagBuildInProgress(false)
 	profileLoadShortcut->setContext(Qt::ApplicationShortcut);
 	profileUpdateShortcut->setContext(Qt::ApplicationShortcut);
 
-	// profile_listView, m_profileListModel
-	m_profileListModel = new CProfileListModel(this);
+	// profile_listView, profileListModel_
+	profileListModel_ = new CProfileListModel(this);
 
-	m_profileListProxyModel = new QSortFilterProxyModel;
-	m_profileListProxyModel->setSourceModel(static_cast <QStandardItemModel*> (m_profileListModel));
-    m_profileListProxyModel->setDynamicSortFilter(true);
+	profileListProxyModel_ = new QSortFilterProxyModel;
+	profileListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (profileListModel_));
+    profileListProxyModel_->setDynamicSortFilter(true);
 
-	m_profileListSelectionModel = new QItemSelectionModel(m_profileListProxyModel);
+	profileListSelectionModel_ = new QItemSelectionModel(profileListProxyModel_);
 
 	profile_listView->setRootIsDecorated(false);
-	profile_listView->setModel(m_profileListProxyModel);
+	profile_listView->setModel(profileListProxyModel_);
 
-	profile_listView->setSelectionModel(m_profileListSelectionModel);
+	profile_listView->setSelectionModel(profileListSelectionModel_);
 	profile_listView->setSortingEnabled(true);
 
 	profile_listView->setDragEnabled(false);
@@ -130,19 +130,19 @@ m_bTagBuildInProgress(false)
 	profile_listView->setDropIndicatorShown(true);
     updateProfileListWidget();
 
-	// group_listView, m_groupListModel
-	m_groupListModel = new CGroupListModel(this);
+	// group_listView, groupListModel_
+	groupListModel_ = new CGroupListModel(this);
 
-	m_groupListProxyModel = new QSortFilterProxyModel;
-	m_groupListProxyModel->setSourceModel(static_cast <QStandardItemModel*> (m_groupListModel));
-    m_groupListProxyModel->setDynamicSortFilter(true);
+	groupListProxyModel_ = new QSortFilterProxyModel;
+	groupListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (groupListModel_));
+    groupListProxyModel_->setDynamicSortFilter(true);
 
-	m_groupListSelectionModel = new QItemSelectionModel(m_groupListProxyModel);
+	groupListSelectionModel_ = new QItemSelectionModel(groupListProxyModel_);
 
 	group_listView->setRootIsDecorated(false);
-	group_listView->setModel(m_groupListProxyModel);
+	group_listView->setModel(groupListProxyModel_);
 
-	group_listView->setSelectionModel(m_groupListSelectionModel);
+	group_listView->setSelectionModel(groupListSelectionModel_);
 	group_listView->setSortingEnabled(true);
 
 	group_listView->setDragEnabled(false);
@@ -150,15 +150,15 @@ m_bTagBuildInProgress(false)
 	group_listView->setDropIndicatorShown(true);
     updateGroupListWidget();
 
-	// output_listView, m_outputListModel
-	m_outputListModel = new COutputListModel(this);
+	// output_listView, outputListModel_
+	outputListModel_ = new COutputListModel(this);
 
-	output_listView->setOutputListModel(m_outputListModel);
+	output_listView->setOutputListModel(outputListModel_);
 
 	output_listView->setRootIsDecorated(false);
-	output_listView->setModel(m_outputListModel->getProxyModel());
+	output_listView->setModel(outputListModel_->getProxyModel());
 
-	output_listView->setSelectionModel(m_outputListModel->getSelectionModel());
+	output_listView->setSelectionModel(outputListModel_->getSelectionModel());
 	output_listView->setSortingEnabled(true);
 
 	output_listView->setDragEnabled(true);
@@ -172,19 +172,19 @@ m_bTagBuildInProgress(false)
 	bool bViewProfilePanel;
 	bool bViewFilePanel;
 
-	bAlwaysOnTop = m_confManager->getAppSettingValue("AlwaysOnTop", false).toBool();
+	bAlwaysOnTop = confManager_->getAppSettingValue("AlwaysOnTop", false).toBool();
 	if (bAlwaysOnTop) {
 		setAlwaysOnTop(true);
 		actionAlways_on_top->setChecked(true);
 	}
 
-    bTransparent = m_confManager->getAppSettingValue("Transparency", false).toBool();
+    bTransparent = confManager_->getAppSettingValue("Transparency", false).toBool();
 	if (bTransparent) {
 		setTransparency(true);
 		actionTransparent->setChecked(true);
 	}
 
-	bViewToolbar = m_confManager->getAppSettingValue("ViewToolbar", true).toBool();
+	bViewToolbar = confManager_->getAppSettingValue("ViewToolbar", true).toBool();
 	if (!bViewToolbar) {
 		toolBar->hide();
 		actionToolbar->setChecked(false);
@@ -193,7 +193,7 @@ m_bTagBuildInProgress(false)
 		actionToolbar->setChecked(true);
 	}
 
-	bViewProfilePanel = m_confManager->getAppSettingValue("ViewProfilePanel", true).toBool();
+	bViewProfilePanel = confManager_->getAppSettingValue("ViewProfilePanel", true).toBool();
 	if (!bViewProfilePanel) {
 	    mainTabWidget->hide();
 		actionProfile_Panel->setChecked(false);
@@ -202,7 +202,7 @@ m_bTagBuildInProgress(false)
 		actionProfile_Panel->setChecked(true);
 	}
 
-	bViewFilePanel = m_confManager->getAppSettingValue("ViewFilePanel", true).toBool();
+	bViewFilePanel = confManager_->getAppSettingValue("ViewFilePanel", true).toBool();
 	if (!bViewFilePanel) {
 	    infoTabWidget->hide();
 		actionFile_Panel->setChecked(false);
@@ -218,14 +218,14 @@ m_bTagBuildInProgress(false)
 	bool bSymbolSearchCaseSensitive;
 	bool bSymbolSearchRegularExpression;
 
-	bProfileAndGroupFilterCaseSensitive = m_confManager->getAppSettingValue("ProfileAndGroupFilterCaseSensitive", false).toBool();
+	bProfileAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProfileAndGroupFilterCaseSensitive", false).toBool();
 	if (bProfileAndGroupFilterCaseSensitive) {
 		actionProfileAndGroupCaseSensitive->setChecked(true);
 	} else {
 		actionProfileAndGroupCaseSensitive->setChecked(false);
 	}
 
-	bFileFilterCaseSensitive = m_confManager->getAppSettingValue("FileFilterCaseSensitive", false).toBool();
+	bFileFilterCaseSensitive = confManager_->getAppSettingValue("FileFilterCaseSensitive", false).toBool();
 	if (bFileFilterCaseSensitive) {
 		actionFileCaseSensitive->setChecked(true);
 	} else {
@@ -236,7 +236,7 @@ m_bTagBuildInProgress(false)
 	QString profileFontSettingStr;
 	QFont profileFont;
 
-	profileFontSettingStr = m_confManager->getAppSettingValue("ProfileFont").toString();
+	profileFontSettingStr = confManager_->getAppSettingValue("ProfileFont").toString();
 	profileFont.fromString(profileFontSettingStr);
 
 	if (profileFontSettingStr != "") {
@@ -257,7 +257,7 @@ m_bTagBuildInProgress(false)
 	QString symbolFontSettingStr;
 	QFont symbolFont;
 
-	symbolFontSettingStr = m_confManager->getAppSettingValue("SymbolFont").toString();
+	symbolFontSettingStr = confManager_->getAppSettingValue("SymbolFont").toString();
 	symbolFont.fromString(symbolFontSettingStr);
 
 	if (symbolFontSettingStr != "") {
@@ -267,7 +267,7 @@ m_bTagBuildInProgress(false)
 	}
 
 	// case sensitive
-    bSymbolSearchCaseSensitive = m_confManager->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
+    bSymbolSearchCaseSensitive = confManager_->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
 	if (bSymbolSearchCaseSensitive) {
 		actionSymbolCaseSensitive->setChecked(true);
 	} else {
@@ -275,7 +275,7 @@ m_bTagBuildInProgress(false)
 	}
 
 	// symbol regular expression
-    bSymbolSearchRegularExpression = m_confManager->getAppSettingValue("SymbolSearchRegularExpression", false).toBool();
+    bSymbolSearchRegularExpression = confManager_->getAppSettingValue("SymbolSearchRegularExpression", false).toBool();
 	if (bSymbolSearchRegularExpression) {
 		actionSymbolRegularExpression->setChecked(true);
 	} else {
@@ -293,8 +293,8 @@ void CMainWindow::setSplitterSizes(const QList<int>& splitterSizeList)
 void CMainWindow::restoreTabWidgetPos()
 {
     // tab widget
-    int profileTabIndex = m_confManager->getValue("Window", "profileTabIndex", 0).toInt();
-    int fileTabIndex = m_confManager->getValue("Window", "fileTabIndex", 0).toInt();
+    int profileTabIndex = confManager_->getValue("Window", "profileTabIndex", 0).toInt();
+    int fileTabIndex = confManager_->getValue("Window", "fileTabIndex", 0).toInt();
 
     // group instead of profile tab first
     if (profileTabIndex == 1) {
@@ -369,20 +369,20 @@ void CMainWindow::loadProfileList()
 {
     QStringList profileList;
 
-  	m_profileListModel->clear();  // header data will also be clear
-	m_profileListModel->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
+  	profileListModel_->clear();  // header data will also be clear
+	profileListModel_->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
 
-    m_profileListModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
-    m_profileListModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    m_profileListModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
-    m_profileListModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
+    profileListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
+    profileListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
+    profileListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
+    profileListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
 	QMap<QString, CProfileItem> profileMap;
 
 	CProfileManager::getInstance()->getProfileMap(profileMap);
 
     foreach (const CProfileItem& profileItem, profileMap) {
-		m_profileListModel->addProfileItem(profileItem);
+		profileListModel_->addProfileItem(profileItem);
     }
 
 	updateProfileListWidget();
@@ -393,19 +393,19 @@ void CMainWindow::loadGroupList()
     QStringList groupList;
 	CGroupItem groupItem;
 
-  	m_groupListModel->clear();  // header data will also be clear
-	m_groupListModel->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
+  	groupListModel_->clear();  // header data will also be clear
+	groupListModel_->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
 
-    m_groupListModel->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
-    m_groupListModel->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    m_groupListModel->setHeaderData(2, Qt::Horizontal, QObject::tr("Group Create Datetime"));
-    m_groupListModel->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
+    groupListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
+    groupListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
+    groupListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Group Create Datetime"));
+    groupListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
 	QMap<QString, CGroupItem> groupMap;
 	CProfileManager::getInstance()->getGroupMap(groupMap);
 
     foreach (const CGroupItem& groupItem, groupMap) {
-		m_groupListModel->addGroupItem(groupItem);
+		groupListModel_->addGroupItem(groupItem);
     }
 
 	updateGroupListWidget();
@@ -416,10 +416,10 @@ void CMainWindow::loadOutputList()
 {
 	COutputItem outputItem;
 
-	m_outputListModel->clearAndResetModel();
+	outputListModel_->clearAndResetModel();
 
-	foreach (const COutputItem& outputItem, m_outputItemList) {
-		m_outputListModel->addItem(outputItem);
+	foreach (const COutputItem& outputItem, outputItemList_) {
+		outputListModel_->addItem(outputItem);
 	}
 	updateOutputListWidget();
 }
@@ -481,17 +481,17 @@ void CMainWindow::createActions()
     connect(CProfileManager::getInstance(), SIGNAL(profileMapUpdated()), this, SLOT(loadProfileList()));
 	connect(CProfileManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
 
-    connect(&m_timeLine, SIGNAL(frameChanged(int)), &m_progressBar, SLOT(setValue(int)));
-    connect(&m_profileUpdateThread, SIGNAL(percentageCompleted(int)), this, SLOT(updateTagBuildProgress(int)));
+    connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
+    connect(&profileUpdateThread_, SIGNAL(percentageCompleted(int)), this, SLOT(updateTagBuildProgress(int)));
 
 	// update progress bar for cancelled tag build
-	connect(&m_profileUpdateThread, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
+	connect(&profileUpdateThread_, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
 	// error occurs during run command
-	connect(&m_profileUpdateThread, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
+	connect(&profileUpdateThread_, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
 
-	connect(&m_profileLoadThread, SIGNAL(profileLoadPercentageCompleted(int)), this, SLOT(updateProfileLoadProgress(int)));
+	connect(&profileLoadThread_, SIGNAL(profileLoadPercentageCompleted(int)), this, SLOT(updateProfileLoadProgress(int)));
 
-	connect(&m_groupLoadThread, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)));
+	connect(&groupLoadThread_, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)));
 
     // connecting shortcut action
 	connect(profilePatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_profilePatternLineEditShortcutPressed()));
@@ -530,7 +530,7 @@ void CMainWindow::createActions()
 	connect(search_lineEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(searchLineEditChanged()));
 
-	connect(&m_completer, SIGNAL(activated(const QString &)),
+	connect(&completer_, SIGNAL(activated(const QString &)),
             this, SLOT(queryTag(const QString&)));
 
     // symbol search frame
@@ -601,21 +601,21 @@ void CMainWindow::on_loadProfileButton_clicked()
 			profileItemName = profileItemNameList.at(0);
 			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
 
-			m_currentProfileItem = profileItem;
+			currentProfileItem_ = profileItem;
 
 			QDir currentDir(QDir::currentPath());
 
 			// only load profile if source directory exists
-			if (currentDir.exists(profileItem.m_srcDir)) {
-				statusBar()->showMessage("Loading profile " + profileItem.m_name + "...");
+			if (currentDir.exists(profileItem.srcDir_)) {
+				statusBar()->showMessage("Loading profile " + profileItem.name_ + "...");
 
                 filePattern_lineEdit->clear();
 
-				m_profileLoadThread.setCurrentProfileItem(profileItem);
-				m_profileLoadThread.setTaggerPtr(&m_tagger);
-				m_profileLoadThread.setOutputItemListPtr(&m_outputItemList);
+				profileLoadThread_.setCurrentProfileItem(profileItem);
+				profileLoadThread_.setTaggerPtr(&tagger_);
+				profileLoadThread_.setOutputItemListPtr(&outputItemList_);
 
-				m_profileLoadThread.start();
+				profileLoadThread_.start();
 
 			} else {
 				QMessageBox::warning(this, "Load", "Cannot load profile. Source directory doesn't exists.", QMessageBox::Ok);
@@ -645,18 +645,18 @@ void CMainWindow::on_updateProfileButton_clicked()
 			QDir currentDir(QDir::currentPath());
 
 			// only update profile if source directory exists
-			if (currentDir.exists(profileItem.m_srcDir)) {
+			if (currentDir.exists(profileItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
-				profileItem.m_tagUpdateDateTime = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
 				// tag last update date time updated so need update in profile manager
 				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
 
-				statusBar()->showMessage("Updating tag for " + profileItem.m_name + "...");
+				statusBar()->showMessage("Updating tag for " + profileItem.name_ + "...");
 
-				m_profileUpdateThread.setRebuildTag(false);
-				m_profileUpdateThread.setCurrentProfileItem(profileItem);
-				m_profileUpdateThread.start(QThread::HighestPriority); // priority for update thread
+				profileUpdateThread_.setRebuildTag(false);
+				profileUpdateThread_.setCurrentProfileItem(profileItem);
+				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
                 QMessageBox::warning(this, "Load", "Cannot update profile. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -684,18 +684,18 @@ void CMainWindow::on_rebuildTagProfileButton_clicked()
 			QDir currentDir(QDir::currentPath());
 
 			// only update profile if source directory exists
-			if (currentDir.exists(profileItem.m_srcDir)) {
+			if (currentDir.exists(profileItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
-				profileItem.m_tagUpdateDateTime = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
 				// tag last update date time updated so need update in profile manager
 				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
 
-				statusBar()->showMessage("Rebuilding tag for " + profileItem.m_name + "...");
+				statusBar()->showMessage("Rebuilding tag for " + profileItem.name_ + "...");
 
-				m_profileUpdateThread.setRebuildTag(true);
-				m_profileUpdateThread.setCurrentProfileItem(profileItem);
-				m_profileUpdateThread.start(QThread::HighestPriority); // priority for update thread
+				profileUpdateThread_.setRebuildTag(true);
+				profileUpdateThread_.setCurrentProfileItem(profileItem);
+				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
                 QMessageBox::warning(this, "Load", "Cannot rebuilt profile. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -716,15 +716,15 @@ QStringList CMainWindow::getSelectedProfileItemNameList()
 	QStringList profileItemNameList;
 
     // get selected items index list
-    indexSelectedList = m_profileListSelectionModel->selectedIndexes();
+    indexSelectedList = profileListSelectionModel_->selectedIndexes();
 
 	foreach (const QModelIndex& indexSelected, indexSelectedList) {
 		// map back from proxy model
-		mappedIndex = m_profileListProxyModel->mapToSource(indexSelected);
+		mappedIndex = profileListProxyModel_->mapToSource(indexSelected);
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = m_profileListModel->item(rowSelected, 0);
+			itemSelected = profileListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				profileItemName = itemSelected->text();
 			}
@@ -752,15 +752,15 @@ QStringList CMainWindow::getSelectedGroupItemNameList()
 	QStringList groupItemNameList;
 
     // get selected items index list
-    indexSelectedList = m_groupListSelectionModel->selectedIndexes();
+    indexSelectedList = groupListSelectionModel_->selectedIndexes();
 
 	foreach (const QModelIndex& indexSelected, indexSelectedList) {
 		// map back from proxy model
-		mappedIndex = m_groupListProxyModel->mapToSource(indexSelected);
+		mappedIndex = groupListProxyModel_->mapToSource(indexSelected);
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = m_groupListModel->item(rowSelected, 0);
+			itemSelected = groupListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				groupItemName = itemSelected->text();
 			}
@@ -788,15 +788,15 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
 	QStringList outputItemNameList;
 
     // get selected items index list
-    indexSelectedList = m_outputListModel->getSelectionModel()->selectedIndexes();
+    indexSelectedList = outputListModel_->getSelectionModel()->selectedIndexes();
 
 	foreach (const QModelIndex& indexSelected, indexSelectedList) {
 		// map back from proxy model
-		mappedIndex = m_outputListModel->getProxyModel()->mapToSource(indexSelected);
+		mappedIndex = outputListModel_->getProxyModel()->mapToSource(indexSelected);
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = m_outputListModel->item(rowSelected, 0);
+			itemSelected = outputListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				outputItemName = itemSelected->text();
 			}
@@ -883,7 +883,7 @@ void CMainWindow::on_exploreProfileButton_clicked()
 			profileItemName = selectedItemList.at(0);
 			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
 
-			executeDir = profileItem.m_srcDir;
+			executeDir = profileItem.srcDir_;
 
 #ifdef Q_OS_WIN
 			QString excuteMethod = "explore";
@@ -913,7 +913,7 @@ void CMainWindow::on_consoleProfileButton_clicked()
 			profileItemName = selectedItemList.at(0);
 			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
 
-			executeDir = profileItem.m_srcDir;
+			executeDir = profileItem.srcDir_;
 
 #ifdef Q_OS_WIN
 			QString excuteMethod = "open";
@@ -949,21 +949,21 @@ void CMainWindow::on_loadGroupButton_clicked()
 			groupItemName = groupItemNameList.at(0);
 			groupItem = CProfileManager::getInstance()->getGroupItem(groupItemName);
 
-			m_currentGroupItem = groupItem;
+			currentGroupItem_ = groupItem;
 
 			QDir currentDir(QDir::currentPath());
 
 			// only load group if source directory exists
-//			if (currentDir.exists(groupItem.m_srcDir)) {
-				statusBar()->showMessage("Loading group " + groupItem.m_name + "...");
+//			if (currentDir.exists(groupItem.srcDir_)) {
+				statusBar()->showMessage("Loading group " + groupItem.name_ + "...");
 
                 filePattern_lineEdit->clear();
 
-				m_groupLoadThread.setCurrentGroupItem(groupItem);
-				m_groupLoadThread.setTaggerPtr(&m_tagger);
-				m_groupLoadThread.setOutputItemListPtr(&m_outputItemList);
+				groupLoadThread_.setCurrentGroupItem(groupItem);
+				groupLoadThread_.setTaggerPtr(&tagger_);
+				groupLoadThread_.setOutputItemListPtr(&outputItemList_);
 
-				m_groupLoadThread.start();
+				groupLoadThread_.start();
 
 /*
 			} else {
@@ -1065,7 +1065,7 @@ void CMainWindow::setAlwaysOnTop(bool enable)
     this->show();
 
 	// save setting
-	m_confManager->setAppSettingValue("AlwaysOnTop", enable);
+	confManager_->setAppSettingValue("AlwaysOnTop", enable);
 }
 
 void CMainWindow::on_actionAlways_on_top_toggled()
@@ -1087,7 +1087,7 @@ void CMainWindow::setTransparency(bool enable)
     }
 
 	// save setting
-	m_confManager->setAppSettingValue("Transparency", enable);
+	confManager_->setAppSettingValue("Transparency", enable);
 }
 
 void CMainWindow::on_actionTransparent_toggled()
@@ -1103,10 +1103,10 @@ void CMainWindow::on_actionToolbar_toggled()
 {
     if (actionToolbar->isChecked()) {
 		toolBar->show();
-		m_confManager->setAppSettingValue("ViewToolbar", true);
+		confManager_->setAppSettingValue("ViewToolbar", true);
     } else {
         toolBar->hide();
-		m_confManager->setAppSettingValue("ViewToolbar", false);
+		confManager_->setAppSettingValue("ViewToolbar", false);
     }
 }
 
@@ -1114,10 +1114,10 @@ void CMainWindow::on_actionProfile_Panel_toggled()
 {
     if (actionProfile_Panel->isChecked()) {
 		mainTabWidget->show();
-		m_confManager->setAppSettingValue("ViewProfilePanel", true);
+		confManager_->setAppSettingValue("ViewProfilePanel", true);
     } else {
         mainTabWidget->hide();
-		m_confManager->setAppSettingValue("ViewProfilePanel", true);
+		confManager_->setAppSettingValue("ViewProfilePanel", true);
     }
 }
 
@@ -1125,10 +1125,10 @@ void CMainWindow::on_actionFile_Panel_toggled()
 {
     if (actionFile_Panel->isChecked()) {
 		infoTabWidget->show();
-		m_confManager->setAppSettingValue("ViewFilePanel", true);
+		confManager_->setAppSettingValue("ViewFilePanel", true);
     } else {
         infoTabWidget->hide();
-		m_confManager->setAppSettingValue("ViewFilePanel", true);
+		confManager_->setAppSettingValue("ViewFilePanel", true);
     }
 }
 
@@ -1170,7 +1170,7 @@ void CMainWindow::on_actionFindReplaceDialog_triggered()
 	// if current tab is file tab
 	if (infoTabWidget->currentIndex() == fileTabIndex) {
 		// copy from selected file list in file filter
-		QModelIndexList selectedIndexList = m_outputListModel->getSelectionModel()->selectedIndexes();
+		QModelIndexList selectedIndexList = outputListModel_->getSelectionModel()->selectedIndexes();
 
 		if (selectedIndexList.size() > 0) { // got selected files
 			foreach(const QModelIndex &index, selectedIndexList) {
@@ -1179,20 +1179,20 @@ void CMainWindow::on_actionFindReplaceDialog_triggered()
 				}
 			}
 		} else { // default to all files if no selection
-			for (i = 0; i < m_outputItemList.size(); i++) {
-				fileList.append(m_outputItemList[i].m_fileName);
+			for (i = 0; i < outputItemList_.size(); i++) {
+				fileList.append(outputItemList_[i].fileName_);
 			}
 		}
 
-		m_findReplaceModel.setFileList(fileList);
+		findReplaceModel_.setFileList(fileList);
 	} else {
 		fileList = findReplaceFileList_.keys();
 
 		// set default find replace file list model updated when symbol queries
-		m_findReplaceModel.setFileList(fileList);
+		findReplaceModel_.setFileList(fileList);
 	}
 
-	CFindReplaceDlg* dialog = new CFindReplaceDlg(this, &m_findReplaceModel);
+	CFindReplaceDlg* dialog = new CFindReplaceDlg(this, &findReplaceModel_);
 
 	if (infoTabWidget->currentIndex() == symbolTabIndex) {
 	   dialog->setFindLineEdit(search_lineEdit->text());
@@ -1207,22 +1207,22 @@ void CMainWindow::saveWidgetPosition()
 	QList<int> splitterSizeList;
 	QString splitterSizeListStr = "";
 
-	m_confManager->setValue("Window", "geometry", saveGeometry());
+	confManager_->setValue("Window", "geometry", saveGeometry());
 
     splitterSizeList = splitter->sizes();
 	foreach (const int& splitterSize, splitterSizeList) {
 		splitterSizeListStr += QString::number(splitterSize) + " ";
 	}
 
-	m_confManager->setValue("Window", "splitter", splitterSizeListStr);
+	confManager_->setValue("Window", "splitter", splitterSizeListStr);
 
 	int profileTabIndex = mainTabWidget->indexOf(profileTab);
 	int fileTabIndex = infoTabWidget->indexOf(fileTab);
 
-	m_confManager->setValue("Window", "profileTabIndex", QString::number(profileTabIndex));
-	m_confManager->setValue("Window", "fileTabIndex", QString::number(fileTabIndex));
+	confManager_->setValue("Window", "profileTabIndex", QString::number(profileTabIndex));
+	confManager_->setValue("Window", "fileTabIndex", QString::number(fileTabIndex));
 
-    m_confManager->updateConfig();
+    confManager_->updateConfig();
 }
 
 void CMainWindow::closeEvent(QCloseEvent *event)
@@ -1235,17 +1235,17 @@ void CMainWindow::updateTagBuildProgress(int percentage)
 {
     // show the progress bar when pecentage completed >= 0
     if (percentage >= 0) {
-        m_progressBar.show();
-		m_bTagBuildInProgress = true;
+        progressBar_.show();
+		bTagBuildInProgress_ = true;
     }
 
-    m_progressBar.setValue(percentage);
+    progressBar_.setValue(percentage);
 
     // hide the progress bar when completed
     if (percentage == 100) {
         statusBar()->showMessage("Tag update completed.");
-		m_bTagBuildInProgress = false;
-        m_progressBar.hide();
+		bTagBuildInProgress_ = false;
+        progressBar_.hide();
     }
 }
 
@@ -1257,9 +1257,9 @@ void CMainWindow::updateProfileLoadProgress(int percentage)
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
 
-        statusBar()->showMessage("Profile " + m_currentProfileItem.m_name + " loaded.");
+        statusBar()->showMessage("Profile " + currentProfileItem_.name_ + " loaded.");
     } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Profile " + m_currentProfileItem.m_name + ".");
+		statusBar()->showMessage("Failed to load Profile " + currentProfileItem_.name_ + ".");
 	}
 }
 
@@ -1268,29 +1268,29 @@ void CMainWindow::updateGroupLoadProgress(int percentage)
     if (percentage == 100) {
 		loadOutputList();
 
-        statusBar()->showMessage("Group " + m_currentGroupItem.m_name + " loaded.");
+        statusBar()->showMessage("Group " + currentGroupItem_.name_ + " loaded.");
     } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Group " + m_currentGroupItem.m_name + ".");
+		statusBar()->showMessage("Failed to load Group " + currentGroupItem_.name_ + ".");
 	}
 }
 
 
 void CMainWindow::updateCancelledTagBuild()
 {
-	m_progressBar.reset();
-	m_progressBar.setValue(0);
-	m_progressBar.hide();
-	m_bTagBuildInProgress = false;
+	progressBar_.reset();
+	progressBar_.setValue(0);
+	progressBar_.hide();
+	bTagBuildInProgress_ = false;
 
 	statusBar()->showMessage("Tag update cancelled.");
 }
 
 void CMainWindow::on_errorDuringRun(const QString& cmdStr)
 {
-	m_progressBar.reset();
-	m_progressBar.setValue(0);
-	m_progressBar.hide();
-	m_bTagBuildInProgress = false;
+	progressBar_.reset();
+	progressBar_.setValue(0);
+	progressBar_.hide();
+	bTagBuildInProgress_ = false;
 
 	appendLogList(TRACE_ERROR, cmdStr);
 
@@ -1335,7 +1335,7 @@ void CMainWindow::on_infoTabWidgetToolBn_clicked()
 	if (infoTabWidget->isHidden()) {
 		infoTabWidget->show();
 	} else {
-		m_priorMainTabWidgetSize = infoTabWidget->size();
+		priorMainTabWidgetSize_ = infoTabWidget->size();
 
 		infoTabWidget->hide();
 
@@ -1356,15 +1356,15 @@ void CMainWindow::profileFilterRegExpChanged()
 
     if (actionProfileAndGroupCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		m_confManager->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
+		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		m_confManager->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
+		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
     }
 
 	QRegExp regExp(profilePattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
 
-    m_profileListProxyModel->setFilterRegExp(regExp);
+    profileListProxyModel_->setFilterRegExp(regExp);
 }
 
 void CMainWindow::groupFilterRegExpChanged()
@@ -1373,15 +1373,15 @@ void CMainWindow::groupFilterRegExpChanged()
 
     if (actionProfileAndGroupCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		m_confManager->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
+		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		m_confManager->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
+		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
     }
 
 	QRegExp regExp(groupPattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
 
-    m_groupListProxyModel->setFilterRegExp(regExp);
+    groupListProxyModel_->setFilterRegExp(regExp);
 }
 
 void CMainWindow::fileFilterRegExpChanged()
@@ -1390,17 +1390,17 @@ void CMainWindow::fileFilterRegExpChanged()
 
     if (actionFileCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		m_confManager->setAppSettingValue("FileFilterCaseSensitive", true);
+		confManager_->setAppSettingValue("FileFilterCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		m_confManager->setAppSettingValue("FileFilterCaseSensitive", false);
+		confManager_->setAppSettingValue("FileFilterCaseSensitive", false);
     }
 
 	QString trimmedFilePattern = filePattern_lineEdit->text().trimmed() ;
 
 	QRegExp regExp(trimmedFilePattern, caseSensitivity, QRegExp::RegExp);
 
-    m_outputListModel->getProxyModel()->setFilterRegExp(regExp);
+    outputListModel_->getProxyModel()->setFilterRegExp(regExp);
 }
 
 void CMainWindow::searchLineEditChanged()
@@ -1409,29 +1409,29 @@ void CMainWindow::searchLineEditChanged()
 
     if (actionSymbolCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		m_confManager->setAppSettingValue("SymbolSearchCaseSensitive", true);
+		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		m_confManager->setAppSettingValue("SymbolSearchCaseSensitive", false);
+		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", false);
     }
 
     if (actionSymbolRegularExpression->isChecked()) {
-		m_confManager->setAppSettingValue("SymbolSearchRegularExpression", true);
+		confManager_->setAppSettingValue("SymbolSearchRegularExpression", true);
     } else {
-		m_confManager->setAppSettingValue("SymbolSearchRegularExpression", false);
+		confManager_->setAppSettingValue("SymbolSearchRegularExpression", false);
     }
 
 	QStringList tagList;
-	m_tagger.getMatchedTags(search_lineEdit->text(), tagList, caseSensitivity);
+	tagger_.getMatchedTags(search_lineEdit->text(), tagList, caseSensitivity);
 
-	m_stringListModel.setStringList(tagList);
+	stringListModel_.setStringList(tagList);
 
-	m_completer.setModel(&m_stringListModel);
-	m_completer.setModelSorting(QCompleter::CaseSensitivelySortedModel);
-	m_completer.setCaseSensitivity(caseSensitivity);
-	m_completer.setFilterMode(Qt::MatchContains);
+	completer_.setModel(&stringListModel_);
+	completer_.setModelSorting(QCompleter::CaseSensitivelySortedModel);
+	completer_.setCaseSensitivity(caseSensitivity);
+	completer_.setFilterMode(Qt::MatchContains);
 
-	search_lineEdit->setCompleter(&m_completer);
+	search_lineEdit->setCompleter(&completer_);
 }
 
 void CMainWindow::on_symbolSearchFrameShortcutPressed()
@@ -1493,7 +1493,7 @@ void CMainWindow::on_cancelTagUpdate()
 	ret = QMessageBox::question(this, "Tag update", "Cancel tag update?", QMessageBox::Yes, QMessageBox::No);
 	if (ret == QMessageBox::Yes) {
 		statusBar()->showMessage("Cancelling tag update...");
-		m_profileUpdateThread.cancelUpdate();
+		profileUpdateThread_.cancelUpdate();
 	}
 }
 
@@ -1611,7 +1611,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 	// in area of status bar
 	p = statusBar()->mapFromGlobal(event->globalPos());
 	// only show cancel tag update menu when tag build in progress
-	if (statusBar()->rect().contains(p) && m_bTagBuildInProgress) {
+	if (statusBar()->rect().contains(p) && bTagBuildInProgress_) {
 		QMenu menu(this);
 
 		menu.addAction(actionCancelTagUpdate);
@@ -1636,7 +1636,7 @@ void CMainWindow::on_outputEditPressed()
 			QFileInfo fileInfo(selectedItemList.at(0));
 			executeDir = fileInfo.absoluteDir().absolutePath();
 
-			QString consoleCommnad = m_confManager->getAppSettingValue("DefaultEditor").toString();
+			QString consoleCommnad = confManager_->getAppSettingValue("DefaultEditor").toString();
 
 #ifdef Q_OS_WIN
 			editFilename = "\"" + selectedItemList.at(0) + "\"";
@@ -1789,12 +1789,12 @@ void CMainWindow::queryTag(const QString& tag)
 	QString modifiedLineSrc;
 	QString tagToQueryFiltered;
 
-	if (!m_currentProfileItem.m_name.isEmpty()) {
+	if (!currentProfileItem_.name_.isEmpty()) {
 
-		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + m_currentProfileItem.m_name + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
-		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + m_currentProfileItem.m_name + "/" + QString(CSourceFileList::kFILE_LIST);
+		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProfileItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProfileItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
 
-		m_tagger.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
+		tagger_.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
 
 		//QString tagToQuery = tag.toHtmlEscaped();
 		QString tagToQuery = tagToQueryFiltered.toHtmlEscaped();

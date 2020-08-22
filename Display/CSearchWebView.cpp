@@ -14,7 +14,7 @@ CSearchWebView::CSearchWebView(QWidget *parent)
 	page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
 	connect(this, SIGNAL(linkClicked(const QUrl &)), this, SLOT(on_urlClicked(const QUrl &))); 
 
-	m_confManager = CConfigManager::getInstance();
+	confManager_ = CConfigManager::getInstance();
 }
 
 void CSearchWebView::webZoomIn()
@@ -84,7 +84,7 @@ void CSearchWebView::on_urlClicked(const QUrl& urlClicked)
 	QString cmdParam;
 
 	QString executeMethod = "open";
-	QString consoleCommnad = m_confManager->getAppSettingValue("DefaultEditor").toString();
+	QString consoleCommnad = confManager_->getAppSettingValue("DefaultEditor").toString();
 
 	if (consoleCommnad.endsWith("gvim.exe")) {
         cmdParam = "+" + lineNum + " " + filePath;  // +lineNum fileName 

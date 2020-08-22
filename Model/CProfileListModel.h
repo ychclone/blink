@@ -19,7 +19,7 @@ public:
 
     Qt::DropActions supportedDropActions() const;
 
-	QWidget* m_parent;
+	QWidget* parent_;
 };
 
 #endif // CPROFILE_LIST_MODEL_H

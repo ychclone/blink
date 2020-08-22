@@ -27,7 +27,7 @@ public slots:
 private:
 	QShortcut* selectAllShortcut;
 
-	CConfigManager* m_confManager; 
+	CConfigManager* confManager_; 
 
 private slots:
 	void on_selectAllPressed();

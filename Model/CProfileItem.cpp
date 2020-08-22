@@ -2,26 +2,26 @@
 
 CProfileItem::CProfileItem()
 {
-    m_name = "";
-    m_srcDir = ""; 
-    m_srcMask = ""; 
-    m_headerMask = ""; 
-    m_tagUpdateDateTime = "";
-    m_profileCreateDateTime = "";
-    m_labels = ""; 
+    name_ = "";
+    srcDir_ = ""; 
+    srcMask_ = ""; 
+    headerMask_ = ""; 
+    tagUpdateDateTime_ = "";
+    profileCreateDateTime_ = "";
+    labels_ = ""; 
 }
 
 CProfileItem::CProfileItem(const QString& name, const QString& srcDir, const QString& srcMask, const QString& headerMask, 
 						   const QString& tagUpdateDateTime, const QString& profileCreateDateTime, const QString& labels)
 {
-    m_name = name;
-    m_srcDir = srcDir;
-    m_srcMask = srcMask;
-    m_headerMask = headerMask;
+    name_ = name;
+    srcDir_ = srcDir;
+    srcMask_ = srcMask;
+    headerMask_ = headerMask;
 
-	m_tagUpdateDateTime = tagUpdateDateTime;
-	m_profileCreateDateTime = profileCreateDateTime;
-    m_labels = labels;
+	tagUpdateDateTime_ = tagUpdateDateTime;
+	profileCreateDateTime_ = profileCreateDateTime;
+    labels_ = labels;
 }
 
 

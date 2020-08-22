@@ -34,15 +34,15 @@ int QTagger::createTag(const T_OutputItemList& inputFileList)
 	QString currentFilePath;
 
 	loadKeywordFile();
-	m_tokenMap.clear();
+	tokenMap_.clear();
 
 	for (i = 0; i < inputFileList.size(); i++) {
-		currentFilePath = inputFileList.at(i).m_fileName; // index start from 0
-		fileId = inputFileList.at(i).m_fileId;
+		currentFilePath = inputFileList.at(i).fileName_; // index start from 0
+		fileId = inputFileList.at(i).fileId_;
 
 		qDebug() << fileId << ":" << currentFilePath;
 
-		parseSourceFile(fileId, currentFilePath, m_tokenMap);
+		parseSourceFile(fileId, currentFilePath, tokenMap_);
 	}
 	return 0;
 }
@@ -50,7 +50,7 @@ int QTagger::createTag(const T_OutputItemList& inputFileList)
 int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QString& tagDbFileName, const QMap<long, long>& fileIdCreatedMap, const QMap<long, long>& fileIdModifiedMap, const QMap<long, long>& fileIdDeletedMap)
 {
 	loadKeywordFile();
-	m_tokenMap.clear();
+	tokenMap_.clear();
 
 	QFile tagDbFile(tagDbFileName);
 	if (!tagDbFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -119,7 +119,7 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 			}
 
 			if (updatedFileRecordListStr != "") { // only add to token map if there is record
-				m_tokenMap[tagStr] = updatedFileRecordListStr;
+				tokenMap_[tagStr] = updatedFileRecordListStr;
 			}
 		}
 	}
@@ -137,11 +137,11 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "fileIdCreated =" << fileIdCreated << endl;
 #endif
-		currentFilePath = inputFileList[fileIdCreated].m_fileName;
+		currentFilePath = inputFileList[fileIdCreated].fileName_;
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "currentFilePath =" << currentFilePath << endl;
 #endif
-		parseSourceFile(fileIdCreated, currentFilePath, m_tokenMap);
+		parseSourceFile(fileIdCreated, currentFilePath, tokenMap_);
 	}
 
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
@@ -153,11 +153,11 @@ int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QStri
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "fileIdCreated =" << fileIdCreated << endl;
 #endif
-		currentFilePath = inputFileList[fileIdCreated].m_fileName;
+		currentFilePath = inputFileList[fileIdCreated].fileName_;
 #ifdef kDEBUG_QTAGGER_UPDATE_TAG
 		qDebug() << "currentFilePath =" << currentFilePath << endl;
 #endif
-		parseSourceFile(fileIdCreated, currentFilePath, m_tokenMap);
+		parseSourceFile(fileIdCreated, currentFilePath, tokenMap_);
 	}
 
 	return 0;
@@ -173,18 +173,18 @@ int QTagger::writeTagDb(const QString& tagDbFileName)
 
 	QTextStream tagDb(&tagDbFile);
 
-	QList<QString> tagList = m_tokenMap.keys();
+	QList<QString> tagList = tokenMap_.keys();
 
-	qDebug() << "Before writing. Tag total: " << m_tokenMap.size() << endl;
+	qDebug() << "Before writing. Tag total: " << tokenMap_.size() << endl;
 
 	for (int i = 0; i < tagList.size(); ++i) {
-		tagDb << tagList[i] << kDB_TAG_RECORD_SEPERATOR << m_tokenMap[tagList[i]] << '\n';
+		tagDb << tagList[i] << kDB_TAG_RECORD_SEPERATOR << tokenMap_[tagList[i]] << '\n';
 	}
 
 	tagDb.flush();
 	tagDbFile.close();
 
-	qDebug() << "Finish writing. Tag total: " << m_tokenMap.size() << endl;
+	qDebug() << "Finish writing. Tag total: " << tokenMap_.size() << endl;
 
 	return 0;
 }
@@ -297,8 +297,8 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			QString functionName;
 			extractLastToken(lastLinesJoined, functionName);
 
-			if (!m_keywordSet.isEmpty()) {
-				if (!m_keywordSet.contains(functionName)) {
+			if (!keywordSet_.isEmpty()) {
+				if (!keywordSet_.contains(functionName)) {
 					resultItem.functionSignature_ = functionName;
 				}
 			}
@@ -464,7 +464,7 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	}
 
 	QTextStream tagDb(&tagDbFile);
-	m_tagList.clear();
+	tagList_.clear();
 
 	while (!tagDb.atEnd()) {
 		line = tagDb.readLine();
@@ -473,7 +473,7 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 		if (tagFieldIndex != -1) {
 			tagName = line.mid(0, tagFieldIndex);
 		}
-		m_tagList.append(tagName);
+		tagList_.append(tagName);
 	}
 
 	tagDbFile.close();
@@ -484,13 +484,13 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 
 QStringList QTagger::getTagList()
 {
-	return m_tagList;
+	return tagList_;
 }
 
 int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;
-	foreach (const QString &tag, m_tagList) {
+	foreach (const QString &tag, tagList_) {
 		if (tag.contains(tagToQuery, caseSensitivity)) {
 			matchedTokenList += tag;
 		}
@@ -520,7 +520,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		tagToQueryList = tagToQuery.split(" ", QString::SkipEmptyParts);
 
         if (tagToQueryList.size() >= 2) {
-			if (m_keywordSet.contains(tagToQueryList.at(0))) { // not using keyword for query, i.e. no keyword for first word
+			if (keywordSet_.contains(tagToQueryList.at(0))) { // not using keyword for query, i.e. no keyword for first word
 				tagToQueryList.swap(0, 1);
 			}
 		}
@@ -655,7 +655,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 					qDebug() << "fileId = " << fileId;
 #endif
 
-					queryResultFileName = inputFileItemList[fileId].m_fileName;
+					queryResultFileName = inputFileItemList[fileId].fileName_;
 
 #ifdef kDEBUG_QTAGGER_QUERY
 					qDebug() << "queryResultFileName = " << queryResultFileName;
@@ -876,7 +876,7 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 			if (!tagCurrentLineSet.contains(token)) { // as not storing tag duplicate in same line
 				tagCurrentLineSet.insert(token);
 
-				if (!m_keywordSet.contains(token)) { // not storing language keyword
+				if (!keywordSet_.contains(token)) { // not storing language keyword
 
 					fileIdField = kDB_FIELD_FILE_RECORD_SEPERATOR + fileIdStr + kDB_FIELD_FILE_SEPERATOR;
 
@@ -967,13 +967,13 @@ void QTagger::loadKeywordFile()
 
 	QTextStream inputFileStream(&file);
 
-	m_keywordSet.clear();
+	keywordSet_.clear();
 	while (!inputFileStream.atEnd()) {
 		QString line = inputFileStream.readLine();
 		QStringList keywordList = line.split(" ", QString::SkipEmptyParts);
 
 		foreach (const QString& keyword, keywordList) {
-			m_keywordSet.insert(keyword);
+			keywordSet_.insert(keyword);
 	   	}
 	}
 	file.close();

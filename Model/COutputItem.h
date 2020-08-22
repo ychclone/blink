@@ -13,11 +13,11 @@ public:
 
     virtual ~COutputItem() {};
 
-	long m_fileId;
-	QString m_fileName;
-	QString m_fileLastModified;
+	long fileId_;
+	QString fileName_;
+	QString fileLastModified_;
 
-	long m_fileSize;
+	long fileSize_;
 };
 
 #endif // COUTPUT_ITEM_H

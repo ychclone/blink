@@ -79,13 +79,13 @@ QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CPro
 {
     QDomElement element = document.createElement("profileItem");
 
-    element.setAttribute("name", profileItem.m_name);
-    element.setAttribute("srcDir", profileItem.m_srcDir);
-    element.setAttribute("srcMask", profileItem.m_srcMask);
-    element.setAttribute("headerMask", profileItem.m_headerMask);
-	element.setAttribute("tagUpdateDateTime", profileItem.m_tagUpdateDateTime); 
-	element.setAttribute("profileCreateDateTime", profileItem.m_profileCreateDateTime); 
-    element.setAttribute("labels", profileItem.m_labels);  
+    element.setAttribute("name", profileItem.name_);
+    element.setAttribute("srcDir", profileItem.srcDir_);
+    element.setAttribute("srcMask", profileItem.srcMask_);
+    element.setAttribute("headerMask", profileItem.headerMask_);
+	element.setAttribute("tagUpdateDateTime", profileItem.tagUpdateDateTime_); 
+	element.setAttribute("profileCreateDateTime", profileItem.profileCreateDateTime_); 
+    element.setAttribute("labels", profileItem.labels_);  
 
     return element;
 }
@@ -94,11 +94,11 @@ QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CGro
 {
     QDomElement element = document.createElement("groupItem");
 
-    element.setAttribute("name", groupItem.m_name);
-    element.setAttribute("profileList", groupItem.m_profileList);
-	element.setAttribute("tagUpdateDateTime", groupItem.m_tagUpdateDateTime); 
-	element.setAttribute("groupCreateDateTime", groupItem.m_groupCreateDateTime); 
-    element.setAttribute("labels", groupItem.m_labels);  
+    element.setAttribute("name", groupItem.name_);
+    element.setAttribute("profileList", groupItem.profileList_);
+	element.setAttribute("tagUpdateDateTime", groupItem.tagUpdateDateTime_); 
+	element.setAttribute("groupCreateDateTime", groupItem.groupCreateDateTime_); 
+    element.setAttribute("labels", groupItem.labels_);  
 
     return element;
 } 

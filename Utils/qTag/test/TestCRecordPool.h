@@ -16,8 +16,8 @@ private slots:
 	void cleanupTestCase();
 
 private:
-	CRecord* m_record;
-	CRecordItem* m_recordItem;
+	CRecord* record_;
+	CRecordItem* recordItem_;
 
 };
 

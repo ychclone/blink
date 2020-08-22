@@ -29,7 +29,7 @@ public:
 
 	void wheelEvent(QWheelEvent *e);
 
-	QPoint m_dragStartPosition;
+	QPoint dragStartPosition_;
 
 signals:
 	void outputItemTriggered();
@@ -41,7 +41,7 @@ private:
 
 	QStringList getSelectedItemNameList();
 
-	COutputListModel* m_outputListModel;
+	COutputListModel* outputListModel_;
 
 	long fileFontSize_;
     

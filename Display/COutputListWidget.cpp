@@ -16,13 +16,13 @@ COutputListWidget::COutputListWidget(QWidget *parent)
 
 void COutputListWidget::setOutputListModel(COutputListModel *outputListModel)
 {
-	m_outputListModel = outputListModel;
+	outputListModel_ = outputListModel;
 } 
 
 void COutputListWidget::mousePressEvent(QMouseEvent *event)
 {
 	if (event->button() == Qt::LeftButton) {
-		m_dragStartPosition = event->pos();
+		dragStartPosition_ = event->pos();
 	}
 	QTreeView::mousePressEvent(event);
 }
@@ -84,7 +84,7 @@ QStringList COutputListWidget::getSelectedItemNameList()
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = m_outputListModel->item(rowSelected, 0);
+			itemSelected = outputListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				outputItemName = itemSelected->text();
 			};
@@ -105,7 +105,7 @@ void COutputListWidget::mouseMoveEvent(QMouseEvent *event)
 	if (!(event->buttons() & Qt::LeftButton)) {
 		return;
 	}
-	if ((event->pos() - m_dragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
+	if ((event->pos() - dragStartPosition_).manhattanLength() < QApplication::startDragDistance()) {
 		return;
 	}
 

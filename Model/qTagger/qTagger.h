@@ -64,11 +64,11 @@ private:
 
 	void loadKeywordFile();
 
-	QSet<QString> m_keywordSet;
+	QSet<QString> keywordSet_;
 
-	QStringList m_tagList;
+	QStringList tagList_;
 
-	T_TokenMapType m_tokenMap;
+	T_TokenMapType tokenMap_;
 
 	int getFileLineContent(const QString& fileName, const QList<unsigned long>& lineNumList, QList<CTagResultItem>& resultLineList,
 			const QStringList& lineFilterStrList, const QStringList& functionNameFilterStrList, const QStringList& excludePatternFilterStrList,

@@ -3,7 +3,7 @@
 
 #include "Utils/CUtils.h" 
 
-CProfileManager* CProfileManager::m_manager = 0;
+CProfileManager* CProfileManager::manager_ = 0;
 
 const char* CProfileManager::kGROUP_PROFILE_SEPERATOR = ","; 
 
@@ -14,64 +14,64 @@ CProfileManager::CProfileManager()
 
 CProfileManager* CProfileManager::getInstance()
 {
-    if (m_manager == 0) {
-        m_manager = new CProfileManager();
+    if (manager_ == 0) {
+        manager_ = new CProfileManager();
     }
-    return m_manager;
+    return manager_;
 }
 
 void CProfileManager::setProfileFile(const QString& profileFileName)  
 {
-    m_profileFile = profileFileName;
+    profileFile_ = profileFileName;
 }
 
 void CProfileManager::setStorageHandler(const CXmlStorageHandler& handler)
 {
-    m_handler = handler;
+    handler_ = handler;
 }
 
 void CProfileManager::attachStorage()
 {
-    m_handler.loadFromFile(m_profileFile, m_profileMap, m_groupMap);
+    handler_.loadFromFile(profileFile_, profileMap_, groupMap_);
 }
 
 void CProfileManager::flushStorage()
 {
-    m_handler.saveToFile(m_profileFile, m_profileMap, m_groupMap);
+    handler_.saveToFile(profileFile_, profileMap_, groupMap_);
 }
 
 void CProfileManager::detachStorage()
 {
-    m_handler.saveToFile(m_profileFile, m_profileMap, m_groupMap);
+    handler_.saveToFile(profileFile_, profileMap_, groupMap_);
 }
 
 void CProfileManager::getProfileMap(QMap<QString, CProfileItem>& profileMap)
 {
-	profileMap = m_profileMap;
+	profileMap = profileMap_;
 }
 
 void CProfileManager::getGroupMap(QMap<QString, CGroupItem>& groupMap)
 {
-	groupMap = m_groupMap;
+	groupMap = groupMap_;
 }
 
 CProfileItem CProfileManager::getProfileItem(const QString& profileItemName) const
 {
 //    qDebug() << "getItem" << profileItemName << "called!\n";
-//    qDebug() << "m_profileMap[profileItemName].m_name = " << m_profileMap[profileItemName].m_name << endl;
-//    qDebug() << "m_profileMap[profileItemName].m_srcDir = " << m_profileMap[profileItemName].m_srcDir << endl;
-    return m_profileMap[profileItemName];
+//    qDebug() << "profileMap_[profileItemName].name_ = " << profileMap_[profileItemName].name_ << endl;
+//    qDebug() << "profileMap_[profileItemName].srcDir_ = " << profileMap_[profileItemName].srcDir_ << endl;
+    return profileMap_[profileItemName];
 }
 
 CGroupItem CProfileManager::getGroupItem(const QString& groupItemName) const
 {
-    return m_groupMap[groupItemName];
+    return groupMap_[groupItemName];
 }
 
 
 void CProfileManager::addItem(const CProfileItem& newItem)
 {
-    m_profileMap[newItem.m_name] = newItem;
+    profileMap_[newItem.name_] = newItem;
     emit profileMapUpdated();
     flushStorage();
 }
@@ -83,8 +83,8 @@ void CProfileManager::updateProfileItem(const QString& profileItemName, const CP
 	// current directory
 	QDir currentDir(QDir::currentPath());
 
-	if (profileItemName != newItem.m_name) { // profile renamed
-        m_profileMap.remove(profileItemName); // remove old one
+	if (profileItemName != newItem.name_) { // profile renamed
+        profileMap_.remove(profileItemName); // remove old one
 
 		// current directory
 		QDir currentDir(QDir::currentPath()); 
@@ -97,18 +97,18 @@ void CProfileManager::updateProfileItem(const QString& profileItemName, const CP
 		CUtils::removeDirectory(dir);
 	}
 
-    m_profileMap[newItem.m_name] = newItem;
+    profileMap_[newItem.name_] = newItem;
     emit profileMapUpdated();
     flushStorage();
 }
 
 void CProfileManager::updateGroupItem(const QString& groupItemName, const CGroupItem& newItem)
 {
-	if (groupItemName != newItem.m_name) { // group renamed
-		m_groupMap.remove(groupItemName); // remove old one
+	if (groupItemName != newItem.name_) { // group renamed
+		groupMap_.remove(groupItemName); // remove old one
 	}
 
-    m_groupMap[newItem.m_name] = newItem;
+    groupMap_[newItem.name_] = newItem;
     emit groupMapUpdated();
     flushStorage();
 }
@@ -129,7 +129,7 @@ void CProfileManager::removeProfileItem(const QString& profileItemName)
 	CUtils::removeDirectory(dir);
 
     // remove from map
-    m_profileMap.remove(profileItemName);
+    profileMap_.remove(profileItemName);
     emit profileMapUpdated();
     flushStorage();
 
@@ -137,14 +137,14 @@ void CProfileManager::removeProfileItem(const QString& profileItemName)
 
 void CProfileManager::removeGroupItem(const QString& groupItemName)
 {
-    m_groupMap.remove(groupItemName);
+    groupMap_.remove(groupItemName);
     emit groupMapUpdated();
     flushStorage();
 }
 
 void CProfileManager::destroy()
 {
-    delete m_manager;
+    delete manager_;
 }
 
 

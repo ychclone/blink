@@ -10,7 +10,7 @@
 CGroupListModel::CGroupListModel(QObject *parent)
 	: QStandardItemModel(0, 4, parent)
 {
-	m_parent = static_cast<QWidget*> (parent);
+	parent_ = static_cast<QWidget*> (parent);
     
 	// view when list is empty, view with content in CMainWindow::loadGroupList() 
 	setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
@@ -25,23 +25,23 @@ void CGroupListModel::addGroupItem(const CGroupItem& groupItem)
 
     insertRow(0);
 
-	setData(index(0, 0), groupItem.m_name);
+	setData(index(0, 0), groupItem.name_);
 
-	if (groupItem.m_tagUpdateDateTime == "") {
+	if (groupItem.tagUpdateDateTime_ == "") {
 		setData(index(0, 1), "");
 	} else {
-		tagUpdateDateTime = QDateTime::fromString(groupItem.m_tagUpdateDateTime, "dd/MM/yyyy HH:mm:ss");  
+		tagUpdateDateTime = QDateTime::fromString(groupItem.tagUpdateDateTime_, "dd/MM/yyyy HH:mm:ss");  
 		setData(index(0, 1), tagUpdateDateTime); 
 	}
 
-	if (groupItem.m_groupCreateDateTime == "") {
+	if (groupItem.groupCreateDateTime_ == "") {
 		setData(index(0, 2), ""); 
 	} else {
-		groupCreateDatetime = QDateTime::fromString(groupItem.m_groupCreateDateTime, "dd/MM/yyyy HH:mm:ss");
+		groupCreateDatetime = QDateTime::fromString(groupItem.groupCreateDateTime_, "dd/MM/yyyy HH:mm:ss");
 		setData(index(0, 2), groupCreateDatetime);
 	}
 
-	setData(index(0, 3), groupItem.m_labels); 
+	setData(index(0, 3), groupItem.labels_); 
 	
 }
 
@@ -67,13 +67,13 @@ bool CGroupListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
         if (info.isDir()) {
 
             // fill default value according to item dropped
-            droppedItem.m_name = info.fileName();
+            droppedItem.name_ = info.fileName();
 
-            QDialog* dialog = new CGroupDlg(droppedItem.m_name, droppedItem, m_parent);
+            QDialog* dialog = new CGroupDlg(droppedItem.name_, droppedItem, parent_);
             dialog->exec();
 
         } else {
-            QMessageBox::information(m_parent, "Add group", "Only folder is supported!", QMessageBox::Ok);
+            QMessageBox::information(parent_, "Add group", "Only folder is supported!", QMessageBox::Ok);
         }
     }
     return true;

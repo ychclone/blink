@@ -10,7 +10,7 @@
 CProfileListModel::CProfileListModel(QObject *parent)
 	: QStandardItemModel(0, 4, parent)
 {
-	m_parent = static_cast<QWidget*> (parent);
+	parent_ = static_cast<QWidget*> (parent);
 
     // view when list is empty, view with content in CMainWindow::loadProfileList()
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
@@ -25,23 +25,23 @@ void CProfileListModel::addProfileItem(const CProfileItem& profileItem)
 
     insertRow(0);
 
-	setData(index(0, 0), profileItem.m_name);
+	setData(index(0, 0), profileItem.name_);
 
-	if (profileItem.m_tagUpdateDateTime == "") {
+	if (profileItem.tagUpdateDateTime_ == "") {
 		setData(index(0, 1), "");
 	} else {
-		tagUpdateDateTime = QDateTime::fromString(profileItem.m_tagUpdateDateTime, "dd/MM/yyyy HH:mm:ss");
+		tagUpdateDateTime = QDateTime::fromString(profileItem.tagUpdateDateTime_, "dd/MM/yyyy HH:mm:ss");
 		setData(index(0, 1), tagUpdateDateTime);
 	}
 
-	if (profileItem.m_profileCreateDateTime == "") {
+	if (profileItem.profileCreateDateTime_ == "") {
 		setData(index(0, 2), "");
 	} else {
-		profileCreateDatetime = QDateTime::fromString(profileItem.m_profileCreateDateTime, "dd/MM/yyyy HH:mm:ss");
+		profileCreateDatetime = QDateTime::fromString(profileItem.profileCreateDateTime_, "dd/MM/yyyy HH:mm:ss");
 		setData(index(0, 2), profileCreateDatetime);
 	}
 
-    setData(index(0, 3), profileItem.m_labels);
+    setData(index(0, 3), profileItem.labels_);
 
 }
 
@@ -67,17 +67,17 @@ bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
         if (info.isDir()) {
 
             // fill default value according to item dropped
-            droppedItem.m_name = info.fileName();
-            droppedItem.m_srcDir = fName;
-            droppedItem.m_srcMask = "*.cpp *.c *.go *.java *.js *.py *.scala *.ts";
-            droppedItem.m_headerMask = "*.hpp *.h";
-            droppedItem.m_labels = "";
+            droppedItem.name_ = info.fileName();
+            droppedItem.srcDir_ = fName;
+            droppedItem.srcMask_ = "*.cpp *.c *.go *.java *.js *.py *.scala *.ts";
+            droppedItem.headerMask_ = "*.hpp *.h";
+            droppedItem.labels_ = "";
 
-            QDialog* dialog = new CProfileDlg(droppedItem.m_name, droppedItem, m_parent);
+            QDialog* dialog = new CProfileDlg(droppedItem.name_, droppedItem, parent_);
             dialog->exec();
 
         } else {
-            QMessageBox::information(m_parent, "Add profile", "Only folder is supported!", QMessageBox::Ok);
+            QMessageBox::information(parent_, "Add profile", "Only folder is supported!", QMessageBox::Ok);
         }
     }
     return true;

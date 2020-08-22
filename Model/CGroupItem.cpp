@@ -2,24 +2,24 @@
 
 CGroupItem::CGroupItem()
 {
-    m_name = "";
-	m_profileList = ""; 
-    m_tagUpdateDateTime = "";
-    m_groupCreateDateTime = "";
-	m_labels = "";
+    name_ = "";
+	profileList_ = ""; 
+    tagUpdateDateTime_ = "";
+    groupCreateDateTime_ = "";
+	labels_ = "";
 }
 
 CGroupItem::CGroupItem(const QString& name, const QString& profileList, const QString& tagUpdateDateTime, 
 						const QString& groupCreateDateTime, const QString& labels)
 {
-    m_name = name;
+    name_ = name;
 
-	m_profileList = profileList;
+	profileList_ = profileList;
 
-	m_tagUpdateDateTime = tagUpdateDateTime;
-	m_groupCreateDateTime = groupCreateDateTime;
+	tagUpdateDateTime_ = tagUpdateDateTime;
+	groupCreateDateTime_ = groupCreateDateTime;
 
-	m_labels = labels; 
+	labels_ = labels; 
 }
 
 

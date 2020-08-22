@@ -31,12 +31,12 @@ signals:
 
 private:
     bool runCommand(const QString& program, const QString& workDir, const QString& redirectFile = "");
-    CProfileItem m_profileItem;
+    CProfileItem profileItem_;
 
-	CRunCommand m_cmd;
-	QTagger* m_taggerPtr;
+	CRunCommand cmd_;
+	QTagger* taggerPtr_;
 
-	T_OutputItemList* m_outputItemListPtr;
+	T_OutputItemList* outputItemListPtr_;
     
 };
 

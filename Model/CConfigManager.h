@@ -28,7 +28,7 @@ public:
 	void updateConfig();
 
 private:
-	static CConfigManager* m_manager;
+	static CConfigManager* manager_;
 	QSettings* confSetting;
 };
 

@@ -43,19 +43,19 @@ int CSourceFileList::loadFileList(const QString& fileListFilename, T_OutputItemL
 			lineItem = lineItem.trimmed();
 
 			// start, end section
-			outputItem.m_fileId = lineItem.section('\t', 0, 0).toLong();
+			outputItem.fileId_ = lineItem.section('\t', 0, 0).toLong();
 			currentEntry = lineItem.section('\t', 1, 1);
 
             filePathIndex = currentEntry.lastIndexOf("/");
 			if (filePathIndex >= 0) { // full path
-				outputItem.m_fileName = currentEntry;
+				outputItem.fileName_ = currentEntry;
 				lastFilePath = currentEntry.left(filePathIndex); // index start from 0, exclude separator
 			} else {
-                outputItem.m_fileName = lastFilePath + "/" + currentEntry;
+                outputItem.fileName_ = lastFilePath + "/" + currentEntry;
 			}
 
-            outputItem.m_fileLastModified = lineItem.section('\t', 2, 2);
-			outputItem.m_fileSize = lineItem.section('\t', 3, 3).toLong();
+            outputItem.fileLastModified_ = lineItem.section('\t', 2, 2);
+			outputItem.fileSize_ = lineItem.section('\t', 3, 3).toLong();
 
 			resultFileList << outputItem;
         }
@@ -85,14 +85,14 @@ int CSourceFileList::saveFileList(const QString& fileListFilename, const QMap<lo
 
 	foreach (const COutputItem& outputItem, resultFileList) {
 		// file id
-		listFileStream << QString::number(outputItem.m_fileId);
+		listFileStream << QString::number(outputItem.fileId_);
 		listFileStream << "\t";
 
 		// filename
-        filePathIndex = outputItem.m_fileName.lastIndexOf(QDir::separator());
+        filePathIndex = outputItem.fileName_.lastIndexOf(QDir::separator());
 		if (filePathIndex >= 0) {
-			currentFileName = outputItem.m_fileName.mid(filePathIndex + 1); // exclude separator
-			currentPath = outputItem.m_fileName.left(filePathIndex);
+			currentFileName = outputItem.fileName_.mid(filePathIndex + 1); // exclude separator
+			currentPath = outputItem.fileName_.left(filePathIndex);
 
 			if (currentPath == lastFilePath) {
 				listFileStream << currentFileName;
@@ -105,11 +105,11 @@ int CSourceFileList::saveFileList(const QString& fileListFilename, const QMap<lo
 		listFileStream << "\t";
 
 		// last modified datetime
-		listFileStream << outputItem.m_fileLastModified;
+		listFileStream << outputItem.fileLastModified_;
 		listFileStream << "\t";
 
 		// file size
-		listFileStream << QString::number(outputItem.m_fileSize);
+		listFileStream << QString::number(outputItem.fileSize_);
 		listFileStream << "\n";
 	}
 
@@ -146,28 +146,28 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 
 	while (iter.hasNext()) {
 		if (QDir::match(nameFilters, iter.fileName())) {
-			outputItem.m_fileName = iter.filePath();
+			outputItem.fileName_ = iter.filePath();
 
-			QFileInfo fileInfo(outputItem.m_fileName);
+			QFileInfo fileInfo(outputItem.fileName_);
 			fileInfo.setCaching(false);
 
-            outputItem.m_fileId = fileId;
+            outputItem.fileId_ = fileId;
 
 			lastModifiedDateTime = fileInfo.lastModified().toString("dd/MM/yyyy hh:mm:ss");
-			outputItem.m_fileLastModified = lastModifiedDateTime; // update outputItem last modified datetime
+			outputItem.fileLastModified_ = lastModifiedDateTime; // update outputItem last modified datetime
 
-			outputItem.m_fileSize = fileInfo.size(); // update outputItem file size
+			outputItem.fileSize_ = fileInfo.size(); // update outputItem file size
 
 			if (bSaveToFile) {
 				// file id
-				listFileStream << QString::number(outputItem.m_fileId);
+				listFileStream << QString::number(outputItem.fileId_);
 				listFileStream << "\t";
 
 				// filename; write filename only if same path as previous one
 				if (fileInfo.path() == lastFilePath) {
 					listFileStream << fileInfo.fileName();
 				} else {
-					listFileStream << outputItem.m_fileName;
+					listFileStream << outputItem.fileName_;
 					lastFilePath = fileInfo.path(); // update last path
 				}
 				listFileStream << "\t";
@@ -177,7 +177,7 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 				listFileStream << "\t";
 
 				// file size
-				listFileStream << QString::number(outputItem.m_fileSize);
+				listFileStream << QString::number(outputItem.fileSize_);
 				listFileStream << "\n";
 
 				listFileStream.flush();

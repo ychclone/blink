@@ -2,20 +2,20 @@
 
 COutputItem::COutputItem()
 {
-    m_fileId = 0;
-	m_fileName = "";
-    m_fileLastModified = ""; 
-	m_fileSize = 0;
+    fileId_ = 0;
+	fileName_ = "";
+    fileLastModified_ = ""; 
+	fileSize_ = 0;
 }
 
 COutputItem::COutputItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize)
 {
-	m_fileId = fileId;
+	fileId_ = fileId;
 
-    m_fileName = fileName;
-    m_fileLastModified = fileLastModified;
+    fileName_ = fileName;
+    fileLastModified_ = fileLastModified;
 
-	m_fileSize = fileSize; 
+	fileSize_ = fileSize; 
 }
 
 

@@ -2,25 +2,25 @@
 
 CProfileUpdateThread::CProfileUpdateThread(QObject *parent)
 : QThread(parent), 
-  m_bCancelUpdate(false)
+  bCancelUpdate_(false)
 {
 
 }
 
 void CProfileUpdateThread::setCurrentProfileItem(const CProfileItem& profileItem)
 {
-	m_profileItem = profileItem;
+	profileItem_ = profileItem;
 }
 
 void CProfileUpdateThread::setRebuildTag(bool bRebuildTag)
 {
-	m_bRebuildTag = bRebuildTag;
+	bRebuildTag_ = bRebuildTag;
 }
 
 void CProfileUpdateThread::initStep(int totalStep)
 {
-    m_stepCompleted = 0;
-	m_totalStep = totalStep;
+    stepCompleted_ = 0;
+	totalStep_ = totalStep;
 	
 	emit percentageCompleted(0); // emit 0 initially 
 }
@@ -28,11 +28,11 @@ void CProfileUpdateThread::initStep(int totalStep)
 void CProfileUpdateThread::finishOneStep()
 {
 	int endPercent;
-	m_stepCompleted++;    
-	endPercent = m_stepCompleted * (100 / m_totalStep);
+	stepCompleted_++;    
+	endPercent = stepCompleted_ * (100 / totalStep_);
 	emit percentageCompleted(endPercent); 
 
-	if (m_stepCompleted >= m_totalStep) {
+	if (stepCompleted_ >= totalStep_) {
 		emit percentageCompleted(100); // always 100% if finish all steps
 	}
 }
@@ -47,7 +47,7 @@ bool CProfileUpdateThread::runCommand(const QString& program, const QString& wor
 	QString errStr;
 	CRunCommand::ENUM_RunCommandErr cmdErr;
 
-	cmdErr = (CRunCommand::ENUM_RunCommandErr) m_cmd.startRun(program, workDir, redirectFile, errStr);
+	cmdErr = (CRunCommand::ENUM_RunCommandErr) cmd_.startRun(program, workDir, redirectFile, errStr);
 
 	switch (cmdErr) {
 		case CRunCommand::E_RUNCMD_NO_ERROR:
@@ -78,8 +78,8 @@ bool CProfileUpdateThread::runCommand(const QString& program, const QString& wor
 
 void CProfileUpdateThread::cancelUpdate()
 {
-	m_bCancelUpdate = true;
-	m_cmd.cancelCommand(true);
+	bCancelUpdate_ = true;
+	cmd_.cancelCommand(true);
 }
 
 int CProfileUpdateThread::countTotalRunCmd()
@@ -114,7 +114,7 @@ void CProfileUpdateThread::run()
 	CConfigManager* confManager;
 	confManager	= CConfigManager::getInstance(); 
 
-	m_bCancelUpdate = false;
+	bCancelUpdate_ = false;
 
 	// current directory
 	QDir currentDir(QDir::currentPath());
@@ -123,7 +123,7 @@ void CProfileUpdateThread::run()
 	QString tmpDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TmpDir").toString());
 
 	// using absoluteFilePath so relative and absolute path also possible 
-	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + m_profileItem.m_name);
+	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + profileItem_.name_);
 	QString tagName = "tags";
 
 	QString fileListFilename = tagDir + "/" + CSourceFileList::kFILE_LIST;
@@ -140,15 +140,15 @@ void CProfileUpdateThread::run()
 
 	/* first step, recursively list the source and header files to currentListFile */
 	QStringList nameFilters;
-	QStringList srcMaskList = m_profileItem.m_srcMask.split(" ");
-	QStringList headerMaskList = m_profileItem.m_headerMask.split(" "); 
+	QStringList srcMaskList = profileItem_.srcMask_.split(" ");
+	QStringList headerMaskList = profileItem_.headerMask_.split(" "); 
 
 	nameFilters = srcMaskList + headerMaskList;
 
-	if (m_bRebuildTag) {
+	if (bRebuildTag_) {
 		T_OutputItemList resultFileList;
 
-		CSourceFileList::generateFileList(fileListFilename, m_profileItem.m_srcDir, nameFilters, resultFileList);
+		CSourceFileList::generateFileList(fileListFilename, profileItem_.srcDir_, nameFilters, resultFileList);
 
 		finishOneStep(); // for updating progress bar 
 		
@@ -161,7 +161,7 @@ void CProfileUpdateThread::run()
 
 		finishOneStep(); // for updating progress bar
 
-		if (m_bCancelUpdate) {
+		if (bCancelUpdate_) {
 			emit cancelledTagBuild();
 			return;
 		}
@@ -196,15 +196,15 @@ void CProfileUpdateThread::run()
 
 		// put the existing file list into a map
 		foreach (const COutputItem& outputItem, existingFileList) {
-			existingFileInfoMap[outputItem.m_fileName] = outputItem;
+			existingFileInfoMap[outputItem.fileName_] = outputItem;
 
-			assignedFileId[outputItem.m_fileId] = outputItem.m_fileId; // file id assigned
+			assignedFileId[outputItem.fileId_] = outputItem.fileId_; // file id assigned
 		}
 
 		finishOneStep(); // for updating progress bar  
 
 		// new file list, for this update tag, not save the file list to file yet as need to update file id
-		CSourceFileList::generateFileList(fileListFilename, m_profileItem.m_srcDir, nameFilters, newFileList, false); 
+		CSourceFileList::generateFileList(fileListFilename, profileItem_.srcDir_, nameFilters, newFileList, false); 
 
 		long newFileId = 0;
 
@@ -213,7 +213,7 @@ void CProfileUpdateThread::run()
 			updatedOutputItem = outputItem;
 
 			// use previous file id if file exist before
-			QMap<QString, COutputItem>::iterator it = existingFileInfoMap.find(outputItem.m_fileName); 
+			QMap<QString, COutputItem>::iterator it = existingFileInfoMap.find(outputItem.fileName_); 
 
 			if (it == existingFileInfoMap.end()) { // not exist before
 				
@@ -224,18 +224,18 @@ void CProfileUpdateThread::run()
 					newFileId = itMap.key() + 1;
 				}
 
-				updatedOutputItem.m_fileId = newFileId;
+				updatedOutputItem.fileId_ = newFileId;
 				newFileId++; // the next file id will be +1 
 
 			} else {  // exist before
-				updatedOutputItem.m_fileId = it.value().m_fileId; // reuse previous file id for assignment
+				updatedOutputItem.fileId_ = it.value().fileId_; // reuse previous file id for assignment
 			}
 			
-			newFileInfoMap[updatedOutputItem.m_fileName] = updatedOutputItem;
-			fileMapIdxByFileId[updatedOutputItem.m_fileId] = updatedOutputItem;  
+			newFileInfoMap[updatedOutputItem.fileName_] = updatedOutputItem;
+			fileMapIdxByFileId[updatedOutputItem.fileId_] = updatedOutputItem;  
 
-			qDebug() << "filename in newlist" << updatedOutputItem.m_fileName;
-			qDebug() << "fileid in newlist" << updatedOutputItem.m_fileId;
+			qDebug() << "filename in newlist" << updatedOutputItem.fileName_;
+			qDebug() << "fileid in newlist" << updatedOutputItem.fileId_;
 		}
 
 		bListFileSaveResult = CSourceFileList::saveFileList(fileListFilename, fileMapIdxByFileId);
@@ -246,17 +246,17 @@ void CProfileUpdateThread::run()
 
 		foreach (const COutputItem& outputItem, existingFileList) {  
 
-			QMap<QString, COutputItem>::iterator it = newFileInfoMap.find(outputItem.m_fileName);
+			QMap<QString, COutputItem>::iterator it = newFileInfoMap.find(outputItem.fileName_);
 			
 			if (it == newFileInfoMap.end()) { // deleted file: in existingFileList, but not in newModifyTimeMap
-				qDebug() << "Deleted file: " << outputItem.m_fileName;
-                fileIdDeletedMap[outputItem.m_fileId] = outputItem.m_fileId;
+				qDebug() << "Deleted file: " << outputItem.fileName_;
+                fileIdDeletedMap[outputItem.fileId_] = outputItem.fileId_;
 			} else {
-				if (it.value().m_fileLastModified != outputItem.m_fileLastModified) { // modified file: check by file modification date time
-					qDebug() << "Modified file: " << outputItem.m_fileName;
-					fileIdModifiedMap[outputItem.m_fileId] = outputItem.m_fileId; 
+				if (it.value().fileLastModified_ != outputItem.fileLastModified_) { // modified file: check by file modification date time
+					qDebug() << "Modified file: " << outputItem.fileName_;
+					fileIdModifiedMap[outputItem.fileId_] = outputItem.fileId_; 
 				} else {
-                    qDebug() << "Same file: " << outputItem.m_fileName; 
+                    qDebug() << "Same file: " << outputItem.fileName_; 
 				}
 
 				newFileInfoMap.erase(it); // remove checked item so remaining would be new files
@@ -267,7 +267,7 @@ void CProfileUpdateThread::run()
 		QMap<QString, COutputItem>::const_iterator mapIt = newFileInfoMap.constBegin();
 		while (mapIt != newFileInfoMap.constEnd()) {
 			qDebug() << "New file: " << mapIt.key();
-			fileIdCreatedMap[mapIt.value().m_fileId] = mapIt.value().m_fileId;
+			fileIdCreatedMap[mapIt.value().fileId_] = mapIt.value().fileId_;
 			++mapIt;
 		}
 
@@ -283,7 +283,7 @@ void CProfileUpdateThread::run()
 
 		finishOneStep(); // for updating progress bar
 
-		if (m_bCancelUpdate) {
+		if (bCancelUpdate_) {
 			emit cancelledTagBuild();
 			return;
 		}
@@ -301,7 +301,7 @@ void CProfileUpdateThread::run()
 		} else {
 			cmdStr.replace("$tmpList", fileListFilename);
 			cmdStr.replace("$tagDir", tagDir); 
-			bRunResult = runCommand(cmdStr, m_profileItem.m_srcDir);
+			bRunResult = runCommand(cmdStr, profileItem_.srcDir_);
 			if (!bRunResult) { // also break if errors during run
 				break;
 			}
@@ -310,7 +310,7 @@ void CProfileUpdateThread::run()
 
     // for ctag
 	if (bRunResult) { // only continue if runCommand without problem
-		srcTagName = m_profileItem.m_srcDir + "/" + tagName;
+		srcTagName = profileItem_.srcDir_ + "/" + tagName;
 		targetTagName = tagDir + "/" + tagName;
 		QFile::rename(srcTagName, targetTagName);
 		//QFile::remove(srcTagName);

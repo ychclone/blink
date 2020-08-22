@@ -21,11 +21,11 @@ CProfileDlg::CProfileDlg(const QString& profileName, const CProfileItem& profile
 
 	currentProfileName_ = profileName; 
 
-    profileName_lineEdit->setText(profileItem.m_name);
-    srcDir_lineEdit->setText(profileItem.m_srcDir);
-    srcFileMask_lineEdit->setText(profileItem.m_srcMask);
-    headerfileMask_lineEdit->setText(profileItem.m_headerMask);
-    labels_lineEdit->setText(profileItem.m_labels); 
+    profileName_lineEdit->setText(profileItem.name_);
+    srcDir_lineEdit->setText(profileItem.srcDir_);
+    srcFileMask_lineEdit->setText(profileItem.srcMask_);
+    headerfileMask_lineEdit->setText(profileItem.headerMask_);
+    labels_lineEdit->setText(profileItem.labels_); 
 
     // connect slot only after when CProfileDlg has already been loaded and initial content filled in
     QObject::connect(profileName_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(profileContentChanged()));
@@ -67,19 +67,19 @@ void CProfileDlg::on_applyButton_clicked()
 	}
 	// labels can be empty so no checking
     
-    modifiedItem.m_name = profileName_lineEdit->text();
-    modifiedItem.m_srcDir = srcDir_lineEdit->text();
-    modifiedItem.m_srcMask = srcFileMask_lineEdit->text();
-    modifiedItem.m_headerMask = headerfileMask_lineEdit->text();
+    modifiedItem.name_ = profileName_lineEdit->text();
+    modifiedItem.srcDir_ = srcDir_lineEdit->text();
+    modifiedItem.srcMask_ = srcFileMask_lineEdit->text();
+    modifiedItem.headerMask_ = headerfileMask_lineEdit->text();
 
 	currDateTime = QDateTime::currentDateTime();
 
-	modifiedItem.m_profileCreateDateTime = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+	modifiedItem.profileCreateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
-    modifiedItem.m_labels = labels_lineEdit->text();
+    modifiedItem.labels_ = labels_lineEdit->text();
 
     if (currentProfileName_ == "") { // new Profile
-		CProfileManager::getInstance()->updateProfileItem(modifiedItem.m_name, modifiedItem); 
+		CProfileManager::getInstance()->updateProfileItem(modifiedItem.name_, modifiedItem); 
 	} else {
 		// use currentProfileName_ for updateProfileItem as name may have be changed
 		CProfileManager::getInstance()->updateProfileItem(currentProfileName_, modifiedItem);

@@ -1,13 +1,13 @@
 #include "CConfigManager.h"
 
-CConfigManager* CConfigManager::m_manager = 0;
+CConfigManager* CConfigManager::manager_ = 0;
 
 CConfigManager* CConfigManager::getInstance()
 {
-    if (m_manager == 0) {
-        m_manager = new CConfigManager();
+    if (manager_ == 0) {
+        manager_ = new CConfigManager();
     }
-    return m_manager;
+    return manager_;
 }
 
 CConfigManager::CConfigManager()

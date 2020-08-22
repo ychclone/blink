@@ -18,7 +18,7 @@ int CRunCommand::startRun(const QString& program, const QString& workDir, const 
 	bool bProcessNotRunning;
 	QString outputStr;
 
-	m_bCommandCancelled = false;
+	bCommandCancelled_ = false;
 
 	qDebug() << "startCommand IN, cmd = (" << program << ")";
 	qDebug() << "workDir = " << workDir;
@@ -53,7 +53,7 @@ int CRunCommand::startRun(const QString& program, const QString& workDir, const 
 			bProcessNotRunning = true;
 			break;
 		}
-	} while (((!m_bCommandCancelled) && (processErr == QProcess::Timedout)) && (extProcess.state() != QProcess::Running));
+	} while (((!bCommandCancelled_) && (processErr == QProcess::Timedout)) && (extProcess.state() != QProcess::Running));
 
 	qDebug("Process started, now running...");
 	
@@ -62,7 +62,7 @@ int CRunCommand::startRun(const QString& program, const QString& workDir, const 
 		return E_RUNCMD_FAILSTART;
 	}
 	
-	if (m_bCommandCancelled) {
+	if (bCommandCancelled_) {
 		// kill the runnning process
 		if (extProcess.state() == QProcess::Running) {
 			extProcess.kill();
@@ -88,10 +88,10 @@ int CRunCommand::startRun(const QString& program, const QString& workDir, const 
 			bProcessNotRunning = true;
 			break;
 		}
-	} while ((!m_bCommandCancelled) && (processErr == QProcess::Timedout));
+	} while ((!bCommandCancelled_) && (processErr == QProcess::Timedout));
 
 	// User cancel, kill the runnning process 
-	if (m_bCommandCancelled) {
+	if (bCommandCancelled_) {
 		if (extProcess.state() == QProcess::Running) {
 			extProcess.kill();
 		}
@@ -113,7 +113,7 @@ int CRunCommand::startRun(const QString& program, const QString& workDir, const 
 
 int CRunCommand::cancelCommand(bool bCancel)
 {
-	m_bCommandCancelled = true;
+	bCommandCancelled_ = true;
 	return 0;
 }
 

@@ -3,28 +3,28 @@
 CGroupLoadThread::CGroupLoadThread(QObject *parent)
     : QThread(parent)
 {
-	m_taggerPtr = NULL;
-	m_outputItemListPtr = NULL;
+	taggerPtr_ = NULL;
+	outputItemListPtr_ = NULL;
 }
 
 void CGroupLoadThread::setTaggerPtr(QTagger* taggerPtr)
 {
-	m_taggerPtr = taggerPtr;
+	taggerPtr_ = taggerPtr;
 }
 
 void CGroupLoadThread::setOutputItemListPtr(T_OutputItemList* outputItemListPtr)
 {
-	m_outputItemListPtr = outputItemListPtr;
+	outputItemListPtr_ = outputItemListPtr;
 }
 
 void CGroupLoadThread::setCurrentGroupItem(const CGroupItem& groupItem)
 {
-    m_groupItem = groupItem;
+    groupItem_ = groupItem;
 }
 
 CGroupItem CGroupLoadThread::getCurrentGroupItem()
 {
-    return m_groupItem;
+    return groupItem_;
 }
 
 
@@ -33,7 +33,7 @@ bool CGroupLoadThread::runCommand(const QString& program, const QString& workDir
 	QString errStr;
 	CRunCommand::ENUM_RunCommandErr cmdErr;
 
-	cmdErr = (CRunCommand::ENUM_RunCommandErr) m_cmd.startRun(program, workDir, redirectFile, errStr);
+	cmdErr = (CRunCommand::ENUM_RunCommandErr) cmd_.startRun(program, workDir, redirectFile, errStr);
 
 	switch (cmdErr) {
 		case CRunCommand::E_RUNCMD_NO_ERROR:
@@ -70,25 +70,25 @@ void CGroupLoadThread::run()
 
 	qTagConfigFile.open(QIODevice::WriteOnly | QIODevice::Text);
 	QTextStream qTagConfigFileOut(&qTagConfigFile);
-	qTagConfigFileOut << "groupLoad=" << m_groupItem.m_name << endl;
+	qTagConfigFileOut << "groupLoad=" << groupItem_.name_ << endl;
  
 	qTagConfigFile.close(); 
 
-	QString tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + m_groupItem.m_name + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+	QString tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + groupItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 	
-	if (m_taggerPtr != NULL) {
-		m_taggerPtr->loadTagList(tagDbFileName);
+	if (taggerPtr_ != NULL) {
+		taggerPtr_->loadTagList(tagDbFileName);
 	}
 */	
 
-	if (m_outputItemListPtr != NULL) {
-		m_outputItemListPtr->clear();
+	if (outputItemListPtr_ != NULL) {
+		outputItemListPtr_->clear();
 	}
 
 	QString tagRootDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString()); 
 	QStringList groupProfileList; 
 
-	groupProfileList = m_groupItem.m_profileList.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
+	groupProfileList = groupItem_.profileList_.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
 
 	foreach (const QString& profileName, groupProfileList) { 
 		QString outputFile;  
@@ -96,8 +96,8 @@ void CGroupLoadThread::run()
 
 		outputFile = tagRootDir + "/" + profileName + "/" + QTagger::kQTAG_DEFAULT_INPUTLIST_FILE;
 
-		if (m_outputItemListPtr != NULL) {
-			bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *m_outputItemListPtr);
+		if (outputItemListPtr_ != NULL) {
+			bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *outputItemListPtr_);
 		}
 	} 
 

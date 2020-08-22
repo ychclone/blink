@@ -18,7 +18,7 @@ public:
 	int cancelCommand(bool bCancel);
 
 private:
-	bool m_bCommandCancelled;
+	bool bCommandCancelled_;
 
 	const int MS_EACH_TIME_SLOT_WAIT;
 

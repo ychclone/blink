@@ -47,14 +47,14 @@ signals:
 	void groupMapUpdated(); 
     
 private:
-    CXmlStorageHandler m_handler;
+    CXmlStorageHandler handler_;
 
-    QMap<QString, CProfileItem> m_profileMap;
-	QMap<QString, CGroupItem> m_groupMap; 
+    QMap<QString, CProfileItem> profileMap_;
+	QMap<QString, CGroupItem> groupMap_; 
 
-    QString m_profileFile;
+    QString profileFile_;
 
-    static CProfileManager* m_manager;
+    static CProfileManager* manager_;
 
 };
 
