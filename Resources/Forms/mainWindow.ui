@@ -667,10 +667,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
                  </sizepolicy>
                 </property>
                 <property name="toolTip">
-                 <string>Search</string>
-                </property>
-                <property name="statusTip">
-                 <string>Search</string>
+                 <string>Search for the symbol</string>
                 </property>
                 <property name="text">
                  <string> Search</string>

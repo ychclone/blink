@@ -1903,6 +1903,8 @@ void CMainWindow::queryTag(const QString& tag)
             findReplaceFileList_.insert(resultItem.filePath_, 0);
 		}
 
+		statusBar()->showMessage("Found " + QString::number(resultList.size()) + " symbols in " + QString::number(findReplaceFileList_.size()) + " files.");
+
 		resultHtml += "</pre>";
 		resultHtml += "</body></html>";
 
