@@ -21,7 +21,7 @@ SOURCES     += main.cpp \
                Display/CProfileDlg.cpp \
                Display/CGroupDlg.cpp \ 
                Display/CAboutDlg.cpp \
-               Display/CProfileListWidget.cpp \
+               Display/CProjectListWidget.cpp \
                Display/CGroupListWidget.cpp \ 
                Display/CFileListWidget.cpp \
                Display/CConfigDlg.cpp \
@@ -32,7 +32,7 @@ SOURCES     += main.cpp \
                Model/qTagger/qTagger.cpp \
                Model/qTagger/CSourceFileList.cpp \ 
                Model/qFindReplacer/qFindReplacer.cpp \
-               Model/CProfileListModel.cpp \
+               Model/CProjectListModel.cpp \
                Model/CGroupListModel.cpp \ 
                Model/CFileListModel.cpp \
                Model/CProfileManager.cpp \
@@ -54,7 +54,7 @@ HEADERS     += Utils/commonType.h \
                Display/CProfileDlg.h \
                Display/CGroupDlg.h \ 
                Display/CAboutDlg.h \
-               Display/CProfileListWidget.h \
+               Display/CProjectListWidget.h \
                Display/CGroupListWidget.h \
                Display/CFileListWidget.h \
                Display/CConfigDlg.h \
@@ -65,7 +65,7 @@ HEADERS     += Utils/commonType.h \
                Model/qTagger/qTagger.h \ 
                Model/qTagger/CSourceFileList.h \
 			   Model/qFindReplacer/qFindReplacer.h \
-               Model/CProfileListModel.h \ 
+               Model/CProjectListModel.h \ 
                Model/CGroupListModel.h \
                Model/CFileListModel.h \
                Model/CProfileManager.h \

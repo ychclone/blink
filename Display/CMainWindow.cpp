@@ -110,25 +110,25 @@ bTagBuildInProgress_(false)
 	profileLoadShortcut->setContext(Qt::ApplicationShortcut);
 	profileUpdateShortcut->setContext(Qt::ApplicationShortcut);
 
-	// profile_listView, profileListModel_
-	profileListModel_ = new CProfileListModel(this);
+	// project_listView, projectListModel_
+	projectListModel_ = new CProjectListModel(this);
 
-	profileListProxyModel_ = new QSortFilterProxyModel;
-	profileListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (profileListModel_));
-    profileListProxyModel_->setDynamicSortFilter(true);
+	projectListProxyModel_ = new QSortFilterProxyModel;
+	projectListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (projectListModel_));
+    projectListProxyModel_->setDynamicSortFilter(true);
 
-	profileListSelectionModel_ = new QItemSelectionModel(profileListProxyModel_);
+	projectListSelectionModel_ = new QItemSelectionModel(projectListProxyModel_);
 
-	profile_listView->setRootIsDecorated(false);
-	profile_listView->setModel(profileListProxyModel_);
+	project_listView->setRootIsDecorated(false);
+	project_listView->setModel(projectListProxyModel_);
 
-	profile_listView->setSelectionModel(profileListSelectionModel_);
-	profile_listView->setSortingEnabled(true);
+	project_listView->setSelectionModel(projectListSelectionModel_);
+	project_listView->setSortingEnabled(true);
 
-	profile_listView->setDragEnabled(false);
-	profile_listView->setAcceptDrops(true);
-	profile_listView->setDropIndicatorShown(true);
-    updateProfileListWidget();
+	project_listView->setDragEnabled(false);
+	project_listView->setAcceptDrops(true);
+	project_listView->setDropIndicatorShown(true);
+    updateProjectListWidget();
 
 	// group_listView, groupListModel_
 	groupListModel_ = new CGroupListModel(this);
@@ -150,19 +150,19 @@ bTagBuildInProgress_(false)
 	group_listView->setDropIndicatorShown(true);
     updateGroupListWidget();
 
-	// output_listView, fileListModel_
+	// file_listView, fileListModel_
 	fileListModel_ = new CFileListModel(this);
 
-	output_listView->setFileListModel(fileListModel_);
+	file_listView->setFileListModel(fileListModel_);
 
-	output_listView->setRootIsDecorated(false);
-	output_listView->setModel(fileListModel_->getProxyModel());
+	file_listView->setRootIsDecorated(false);
+	file_listView->setModel(fileListModel_->getProxyModel());
 
-	output_listView->setSelectionModel(fileListModel_->getSelectionModel());
-	output_listView->setSortingEnabled(true);
+	file_listView->setSelectionModel(fileListModel_->getSelectionModel());
+	file_listView->setSortingEnabled(true);
 
-	output_listView->setDragEnabled(true);
-	output_listView->setAcceptDrops(false);
+	file_listView->setDragEnabled(true);
+	file_listView->setAcceptDrops(false);
 
 	// view
 	bool bAlwaysOnTop;
@@ -240,12 +240,12 @@ bTagBuildInProgress_(false)
 	profileFont.fromString(profileFontSettingStr);
 
 	if (profileFontSettingStr != "") {
-		profile_listView->updateProfileFont(profileFont);
-		output_listView->updateOutputFont(profileFont); // update output font as well
+		project_listView->updateProfileFont(profileFont);
+		file_listView->updateOutputFont(profileFont); // update output font as well
 		group_listView->updateGroupFont(profileFont); // update group font as well
 	} else {
-		profile_listView->updateProfileFont(QApplication::font()); // using system font by default
-		output_listView->updateOutputFont(QApplication::font());
+		project_listView->updateProfileFont(QApplication::font()); // using system font by default
+		file_listView->updateOutputFont(QApplication::font());
 		group_listView->updateGroupFont(QApplication::font());
 	}
 
@@ -330,12 +330,12 @@ void CMainWindow::restoreTabWidgetPos()
     }
 }
 
-void CMainWindow::updateProfileListWidget()
+void CMainWindow::updateProjectListWidget()
 {
-	profile_listView->resizeColumnToContents(0);
-	profile_listView->resizeColumnToContents(1);
-	profile_listView->resizeColumnToContents(2);
-    profile_listView->resizeColumnToContents(3);
+	project_listView->resizeColumnToContents(0);
+	project_listView->resizeColumnToContents(1);
+	project_listView->resizeColumnToContents(2);
+    project_listView->resizeColumnToContents(3);
 }
 
 void CMainWindow::updateGroupListWidget()
@@ -349,9 +349,9 @@ void CMainWindow::updateGroupListWidget()
 
 void CMainWindow::updateFileListWidget()
 {
-	output_listView->resizeColumnToContents(0);
-	output_listView->resizeColumnToContents(1);
-	output_listView->resizeColumnToContents(2);
+	file_listView->resizeColumnToContents(0);
+	file_listView->resizeColumnToContents(1);
+	file_listView->resizeColumnToContents(2);
 }
 
 void CMainWindow::setSymbolFont(QFont symbolFont)
@@ -365,27 +365,27 @@ void CMainWindow::setSymbolFont(QFont symbolFont)
 	textDocument_.setDefaultStyleSheet(textDocumentSyleStr);
 }
 
-void CMainWindow::loadProfileList()
+void CMainWindow::loadProjectList()
 {
-    QStringList profileList;
+    QStringList projectList;
 
-  	profileListModel_->clear();  // header data will also be clear
-	profileListModel_->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
+  	projectListModel_->clear();  // header data will also be clear
+	projectListModel_->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
 
-    profileListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
-    profileListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    profileListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
-    profileListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
+    projectListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
+    projectListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
+    projectListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
+    projectListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
 	QMap<QString, CProfileItem> profileMap;
 
 	CProfileManager::getInstance()->getProfileMap(profileMap);
 
     foreach (const CProfileItem& profileItem, profileMap) {
-		profileListModel_->addProfileItem(profileItem);
+		projectListModel_->addProfileItem(profileItem);
     }
 
-	updateProfileListWidget();
+	updateProjectListWidget();
 }
 
 void CMainWindow::loadGroupList()
@@ -434,7 +434,7 @@ void CMainWindow::createActions()
 	connect(actionProfileLoad, SIGNAL(triggered()), this, SLOT(on_loadProfileButton_clicked()));
 
 	// default double click, enter action for profile list item
-	connect(profile_listView, SIGNAL(profileItemTriggered()), this, SLOT(on_loadProfileButton_clicked()));
+	connect(project_listView, SIGNAL(profileItemTriggered()), this, SLOT(on_loadProfileButton_clicked()));
 
 	connect(actionProfileRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProfileButton_clicked()));
 
@@ -464,7 +464,7 @@ void CMainWindow::createActions()
     connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_outputEditPressed()));
 
     // default double click, enter action for output list item
-	connect(output_listView, SIGNAL(outputItemTriggered()), this, SLOT(on_outputEditPressed()));
+	connect(file_listView, SIGNAL(outputItemTriggered()), this, SLOT(on_outputEditPressed()));
 
 	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_outputCopyPressed()));
 	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_outputExplorePressed()));
@@ -478,7 +478,7 @@ void CMainWindow::createActions()
 
 	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
 
-    connect(CProfileManager::getInstance(), SIGNAL(profileMapUpdated()), this, SLOT(loadProfileList()));
+    connect(CProfileManager::getInstance(), SIGNAL(profileMapUpdated()), this, SLOT(loadProjectList()));
 	connect(CProfileManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
 
     connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
@@ -716,15 +716,15 @@ QStringList CMainWindow::getSelectedProfileItemNameList()
 	QStringList profileItemNameList;
 
     // get selected items index list
-    indexSelectedList = profileListSelectionModel_->selectedIndexes();
+    indexSelectedList = projectListSelectionModel_->selectedIndexes();
 
 	foreach (const QModelIndex& indexSelected, indexSelectedList) {
 		// map back from proxy model
-		mappedIndex = profileListProxyModel_->mapToSource(indexSelected);
+		mappedIndex = projectListProxyModel_->mapToSource(indexSelected);
 		rowSelected = mappedIndex.row();
 
 		if (indexSelected.isValid()) {
-			itemSelected = profileListModel_->item(rowSelected, 0);
+			itemSelected = projectListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
 				profileItemName = itemSelected->text();
 			}
@@ -1039,7 +1039,7 @@ void CMainWindow::on_aboutButton_clicked()
 
 void CMainWindow::on_clearOutputButton_clicked()
 {
-//    output_listView->clear();
+//    file_listView->clear();
 }
 
 void CMainWindow::on_clearLogButton_clicked()
@@ -1147,9 +1147,9 @@ void CMainWindow::on_actionSetting_triggered()
 	if (dialogCode == QDialog::Accepted) {
 		QFont updatedProfileFont = static_cast<CConfigDlg*> (dialog)->getProfileDefaultFont();
 
-		profile_listView->updateProfileFont(updatedProfileFont);
+		project_listView->updateProfileFont(updatedProfileFont);
 		group_listView->updateGroupFont(updatedProfileFont);
-		output_listView->updateOutputFont(updatedProfileFont);
+		file_listView->updateOutputFont(updatedProfileFont);
 
 		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
 
@@ -1364,7 +1364,7 @@ void CMainWindow::profileFilterRegExpChanged()
 
 	QRegExp regExp(profilePattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
 
-    profileListProxyModel_->setFilterRegExp(regExp);
+    projectListProxyModel_->setFilterRegExp(regExp);
 }
 
 void CMainWindow::groupFilterRegExpChanged()
@@ -1502,8 +1502,8 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 {
 	QPoint p;
 
-	// profile_listView area and have selected profile
-	p = profile_listView->mapFromGlobal(event->globalPos());
+	// project_listView area and have selected profile
+	p = project_listView->mapFromGlobal(event->globalPos());
 
 	// get current active tab
 	const int mainTabIndex = mainTabWidget->currentIndex();
@@ -1511,8 +1511,8 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 	const int groupTabIndex = mainTabWidget->indexOf(groupTab);
 
 	if (mainTabIndex == profileTabIndex) {
-		// in area of profile_listView
-		if (profile_listView->rect().contains(p)) {
+		// in area of project_listView
+		if (project_listView->rect().contains(p)) {
 			QStringList profileItemNameList = getSelectedProfileItemNameList();
 			int profileSelected = profileItemNameList.size();
 
@@ -1577,9 +1577,9 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 	const int fileTabIndex = infoTabWidget->indexOf(fileTab);
 
-	// in area of output_listView and correct tab page
-	p = output_listView->mapFromGlobal(event->globalPos());
-	if ((output_listView->rect().contains(p)) && (infoTabIndex == fileTabIndex)) {
+	// in area of file_listView and correct tab page
+	p = file_listView->mapFromGlobal(event->globalPos());
+	if ((file_listView->rect().contains(p)) && (infoTabIndex == fileTabIndex)) {
 
 		QStringList outputItemNameList = getSelectedOutputItemNameList();
 		int outputItemSelected = outputItemNameList.size();
@@ -1964,7 +1964,7 @@ void CMainWindow::wheelEvent(QWheelEvent *e)
 {
 	QPoint p;
 
-	p = profile_listView->mapFromGlobal(e->globalPos());
+	p = project_listView->mapFromGlobal(e->globalPos());
 
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();
@@ -1996,19 +1996,19 @@ void CMainWindow::keyPressEvent(QKeyEvent *event)
 	if (filePattern_lineEdit->hasFocus()) {
 		switch (event->key()) {
 			case Qt::Key_Up:
-				output_listView->setFocus();
+				file_listView->setFocus();
 				break;
 			case Qt::Key_Down:
-				output_listView->setFocus();
+				file_listView->setFocus();
 				break;
 		}
 	} else if (profilePattern_lineEdit->hasFocus()) {
 		switch (event->key()) {
 			case Qt::Key_Up:
-				profile_listView->setFocus();
+				project_listView->setFocus();
 				break;
 			case Qt::Key_Down:
-				profile_listView->setFocus();
+				project_listView->setFocus();
 				break;
 		}
 	}

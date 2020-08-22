@@ -95,7 +95,7 @@ QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CGro
     QDomElement element = document.createElement("groupItem");
 
     element.setAttribute("name", groupItem.name_);
-    element.setAttribute("profileList", groupItem.profileList_);
+    element.setAttribute("projectList", groupItem.projectList_);
 	element.setAttribute("tagUpdateDateTime", groupItem.tagUpdateDateTime_); 
 	element.setAttribute("groupCreateDateTime", groupItem.groupCreateDateTime_); 
     element.setAttribute("labels", groupItem.labels_);  
@@ -128,19 +128,19 @@ void CXmlStorageHandler::fillProfileItem(CProfileItem& profileItemToBeFill, cons
 void CXmlStorageHandler::fillGroupItem(CGroupItem& groupItemToBeFill, const QDomElement& element)
 {
 	QString name;
-	QString profileList;
+	QString projectList;
 	QString tagUpdateDateTime, groupCreateDateTime; 
     QString labels;
     
     name = element.attribute("name", "");
-	profileList = element.attribute("profileList", "");
+	projectList = element.attribute("projectList", "");
 
 	tagUpdateDateTime = element.attribute("tagUpdateDateTime", ""); 
 	groupCreateDateTime = element.attribute("groupCreateDateTime", ""); 
 	
     labels = element.attribute("labels", "");
 
-	CGroupItem groupItem(name, profileList, tagUpdateDateTime, groupCreateDateTime, labels);
+	CGroupItem groupItem(name, projectList, tagUpdateDateTime, groupCreateDateTime, labels);
 
 	groupItemToBeFill = groupItem;
 }

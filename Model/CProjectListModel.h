@@ -4,12 +4,12 @@
 #include <QStandardItemModel>
 #include "Model/CProfileItem.h"
 
-class CProfileListModel: public QStandardItemModel
+class CProjectListModel: public QStandardItemModel
 {
     Q_OBJECT
 
 public:
-    CProfileListModel(QObject *parent = 0);
+    CProjectListModel(QObject *parent = 0);
 
 	void addProfileItem(const CProfileItem& profileItem);
 

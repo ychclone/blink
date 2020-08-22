@@ -4,22 +4,22 @@
 #include <QMessageBox>
 #include <QDateTime>
 
-#include "CProfileListModel.h"
+#include "CProjectListModel.h"
 #include "Display/CProfileDlg.h"
 
-CProfileListModel::CProfileListModel(QObject *parent)
+CProjectListModel::CProjectListModel(QObject *parent)
 	: QStandardItemModel(0, 4, parent)
 {
 	parent_ = static_cast<QWidget*> (parent);
 
-    // view when list is empty, view with content in CMainWindow::loadProfileList()
+    // view when list is empty, view with content in CMainWindow::loadProjectList()
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
     setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
     setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 }
 
-void CProfileListModel::addProfileItem(const CProfileItem& profileItem)
+void CProjectListModel::addProfileItem(const CProfileItem& profileItem)
 {
 	QDateTime tagUpdateDateTime, profileCreateDatetime;
 
@@ -45,7 +45,7 @@ void CProfileListModel::addProfileItem(const CProfileItem& profileItem)
 
 }
 
-bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent)
 {
     QList <QUrl> urlList;
@@ -83,7 +83,7 @@ bool CProfileListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
     return true;
 }
 
-QStringList CProfileListModel::mimeTypes () const
+QStringList CProjectListModel::mimeTypes () const
 {
     QStringList qstrList;
     // list of accepted mime types accepted
@@ -91,7 +91,7 @@ QStringList CProfileListModel::mimeTypes () const
     return qstrList;
 }
 
-Qt::DropActions CProfileListModel::supportedDropActions () const
+Qt::DropActions CProjectListModel::supportedDropActions () const
 {
     // actions supported
     return Qt::CopyAction | Qt::MoveAction;

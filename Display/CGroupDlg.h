@@ -32,8 +32,8 @@ private:
 
 	void createActions();
 
-	void loadAllProfileListView();
-	void loadGroupProfileListView(const QString& groupName);
+	void loadAllProjectListView();
+	void loadGroupProjectListView(const QString& groupName);
 
 	QString currentGroupName_;
 };

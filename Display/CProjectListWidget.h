@@ -4,12 +4,12 @@
 #include <QTreeView>
 #include <QWheelEvent>
 
-class CProfileListWidget : public QTreeView
+class CProjectListWidget : public QTreeView
 {
     Q_OBJECT
 
 public:
-    CProfileListWidget(QWidget *parent = 0);
+    CProjectListWidget(QWidget *parent = 0);
 
 	void mouseDoubleClickEvent(QMouseEvent* event);
 	void keyPressEvent(QKeyEvent* event);
@@ -24,7 +24,7 @@ signals:
 private:
 	long profileFontSize_;
 
-	void updateProfileListWidget();
+	void updateProjectListWidget();
 
 	void profileZoomIn();
 	void profileZoomOut();

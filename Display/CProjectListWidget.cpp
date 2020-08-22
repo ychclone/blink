@@ -1,6 +1,6 @@
-#include "CProfileListWidget.h"
+#include "CProjectListWidget.h"
 
-CProfileListWidget::CProfileListWidget(QWidget *parent)
+CProjectListWidget::CProjectListWidget(QWidget *parent)
 : QTreeView(parent)
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font(); 
@@ -8,7 +8,7 @@ CProfileListWidget::CProfileListWidget(QWidget *parent)
 	profileFontSize_ = currentFont.pointSize();
 }
 
-void CProfileListWidget::updateProfileListWidget()
+void CProjectListWidget::updateProjectListWidget()
 {
 	resizeColumnToContents(0);
 	resizeColumnToContents(1);
@@ -16,13 +16,13 @@ void CProfileListWidget::updateProfileListWidget()
     resizeColumnToContents(3); 
 }
 
-void CProfileListWidget::mouseDoubleClickEvent(QMouseEvent* event)
+void CProjectListWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	emit profileItemTriggered(); 
     QTreeView::mouseDoubleClickEvent(event);
 }
 
-void CProfileListWidget::keyPressEvent(QKeyEvent* event)
+void CProjectListWidget::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Return) {
 		emit profileItemTriggered(); 
@@ -35,28 +35,28 @@ void CProfileListWidget::keyPressEvent(QKeyEvent* event)
 	QTreeView::keyPressEvent(event);
 }
 
-void CProfileListWidget::updateProfileFont(const QFont& profileFont) 
+void CProjectListWidget::updateProfileFont(const QFont& profileFont) 
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font();
 
 	if (currentFont != profileFont) { 
 		static_cast <QWidget*> (this)->setFont(profileFont);
 		profileFontSize_ = profileFont.pointSize(); 
-		updateProfileListWidget();
+		updateProjectListWidget();
 	}
 }
 
-void CProfileListWidget::profileZoomIn()
+void CProjectListWidget::profileZoomIn()
 {
 	profileFontSize_++;
 	QFont fnt = static_cast <QWidget*> (this)->font();;
 	fnt.setPointSize(profileFontSize_); 
 	static_cast <QWidget*> (this)->setFont(fnt);
 
-	updateProfileListWidget();
+	updateProjectListWidget();
 }
 
-void CProfileListWidget::profileZoomOut()
+void CProjectListWidget::profileZoomOut()
 {
 	if (profileFontSize_ > 1) {
 		profileFontSize_--;
@@ -64,11 +64,11 @@ void CProfileListWidget::profileZoomOut()
 		fnt.setPointSize(profileFontSize_); 
 		static_cast <QWidget*> (this)->setFont(fnt);
 
-		updateProfileListWidget(); 
+		updateProjectListWidget(); 
 	}
 }
 
-void CProfileListWidget::wheelEvent(QWheelEvent *e)
+void CProjectListWidget::wheelEvent(QWheelEvent *e)
 {
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();

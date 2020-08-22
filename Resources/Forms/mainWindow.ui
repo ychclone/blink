@@ -186,7 +186,7 @@ QSplitter::handle {
              <number>5</number>
             </property>
             <item>
-             <widget class="CProfileListWidget" name="profile_listView">
+             <widget class="CProjectListWidget" name="project_listView">
               <property name="font">
                <font>
                 <family>Ubuntu</family>
@@ -398,7 +398,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
              <number>5</number>
             </property>
             <item>
-             <widget class="CFileListWidget" name="output_listView">
+             <widget class="CFileListWidget" name="file_listView">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                 <horstretch>0</horstretch>
@@ -1175,9 +1175,9 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CProfileListWidget</class>
+   <class>CProjectListWidget</class>
    <extends>QTreeView</extends>
-   <header>Display/CProfileListWidget.h</header>
+   <header>Display/CProjectListWidget.h</header>
   </customwidget>
   <customwidget>
    <class>CFileListWidget</class>
@@ -1192,11 +1192,11 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
  </customwidgets>
  <tabstops>
   <tabstop>mainTabWidget</tabstop>
-  <tabstop>profile_listView</tabstop>
+  <tabstop>project_listView</tabstop>
   <tabstop>profilePattern_lineEdit</tabstop>
   <tabstop>infoTabWidget</tabstop>
   <tabstop>group_listView</tabstop>
-  <tabstop>output_listView</tabstop>
+  <tabstop>file_listView</tabstop>
   <tabstop>filePattern_lineEdit</tabstop>
  </tabstops>
  <resources>

@@ -10,11 +10,11 @@ class CGroupItem
 public:
 
     CGroupItem();
-    CGroupItem(const QString& name, const QString& profileList, const QString& tagUpdateDateTime, 
+    CGroupItem(const QString& name, const QString& projectList, const QString& tagUpdateDateTime, 
 				const QString& groupCreateDateTime, const QString& labels);
 
     QString name_,
-			profileList_,
+			projectList_,
 			
 			tagUpdateDateTime_,
 			groupCreateDateTime_,

@@ -25,7 +25,7 @@
 
 #include "Model/CGroupLoadThread.h"
 
-#include "Model/CProfileListModel.h"
+#include "Model/CProjectListModel.h"
 #include "Model/CGroupListModel.h"
 #include "Model/CFileListModel.h"
 
@@ -49,7 +49,7 @@ public:
     void restoreTabWidgetPos();
 
 public slots:
-    void loadProfileList();
+    void loadProjectList();
     void loadGroupList();
 	void loadFileList();
 
@@ -134,7 +134,7 @@ private slots:
 	void queryTag(const QString& tag);
 
 private:
-	void updateProfileListWidget();
+	void updateProjectListWidget();
     void updateGroupListWidget();
 	void updateFileListWidget();
 
@@ -157,7 +157,7 @@ private:
 	QActionGroup *filterMethodGroup;
 	QRegExp::PatternSyntax patternSyntax_;
 
-	CProfileListModel* profileListModel_;
+	CProjectListModel* projectListModel_;
     CGroupListModel* groupListModel_;
     CFileListModel* fileListModel_;
 
@@ -168,8 +168,8 @@ private:
 
 	CGroupLoadThread groupLoadThread_;
 
-	QSortFilterProxyModel* profileListProxyModel_;
-	QItemSelectionModel* profileListSelectionModel_;
+	QSortFilterProxyModel* projectListProxyModel_;
+	QItemSelectionModel* projectListSelectionModel_;
 
 	QSortFilterProxyModel* groupListProxyModel_;
 	QItemSelectionModel* groupListSelectionModel_;

@@ -3,18 +3,18 @@
 CGroupItem::CGroupItem()
 {
     name_ = "";
-	profileList_ = ""; 
+	projectList_ = ""; 
     tagUpdateDateTime_ = "";
     groupCreateDateTime_ = "";
 	labels_ = "";
 }
 
-CGroupItem::CGroupItem(const QString& name, const QString& profileList, const QString& tagUpdateDateTime, 
+CGroupItem::CGroupItem(const QString& name, const QString& projectList, const QString& tagUpdateDateTime, 
 						const QString& groupCreateDateTime, const QString& labels)
 {
     name_ = name;
 
-	profileList_ = profileList;
+	projectList_ = projectList;
 
 	tagUpdateDateTime_ = tagUpdateDateTime;
 	groupCreateDateTime_ = groupCreateDateTime;

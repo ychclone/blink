@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
     CProfileManager::getInstance()->attachStorage();
 
     // load profile list after storage ready
-	window->loadProfileList();
+	window->loadProjectList();
 
     // load group list after storage ready
 	window->loadGroupList();
