@@ -35,7 +35,7 @@ public:
 	int getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
 	int queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
-				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity);
+				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
 
 	int resetCommentSkip();
 	bool skipInsideCommentAndRemoveComment(QString& currentLineRead, const unsigned long lineNumReading);

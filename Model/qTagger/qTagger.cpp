@@ -503,7 +503,7 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 }
 
 int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
-					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity)
+					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression)
 {
 	if (!tagToQuery.isEmpty()) {
 		QStringList tagToQueryList;
@@ -586,6 +586,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		QRegularExpression tagQueryRegEx(tagToQueryStr);
 		QRegularExpressionMatch tagQueryMatch;
 		QString tagField;
+		bool bSymbolMatch;
 
 		int tagFieldIndex;
 		int lineFieldIndex;
@@ -620,9 +621,20 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 			tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR, 0);
 			tagField = line.left(tagFieldIndex);
 
-			tagQueryMatch = tagQueryRegEx.match(tagField);
+			bSymbolMatch = false;
 
-			if (tagQueryMatch.hasMatch()) {
+			if (symbolRegularExpression) {
+				tagQueryMatch = tagQueryRegEx.match(tagField);
+				if (tagQueryMatch.hasMatch()) {
+					bSymbolMatch = true;
+				}
+			} else {
+                if (tagField == tagToQueryStr) { // exact match
+                    bSymbolMatch = true;
+				}
+			}
+
+			if (bSymbolMatch) {
 
 				// Result format: ";" | file 1 ID | ":" | location 1 line num | "," | location 2 line num | ... | ";" | file 2 ID | ":" | location 1 line num | ...
 

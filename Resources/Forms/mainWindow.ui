@@ -749,6 +749,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionProfileAndGroupCaseSensitive"/>
     <addaction name="actionFileCaseSensitive"/>
     <addaction name="actionSymbolCaseSensitive"/>
+    <addaction name="actionSymbolRegularExpression"/>
    </widget>
    <widget class="QMenu" name="menuProfile">
     <property name="title">
@@ -1164,6 +1165,14 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="text">
     <string>Find &amp;Replace</string>
+   </property>
+  </action>
+  <action name="actionSymbolRegularExpression">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Symbol Regular Expression</string>
    </property>
   </action>
  </widget>

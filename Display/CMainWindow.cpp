@@ -216,7 +216,7 @@ m_bTagBuildInProgress(false)
 	bool bProfileAndGroupFilterCaseSensitive;
 	bool bFileFilterCaseSensitive;
 	bool bSymbolSearchCaseSensitive;
-
+	bool bSymbolSearchRegularExpression;
 
 	bProfileAndGroupFilterCaseSensitive = m_confManager->getAppSettingValue("ProfileAndGroupFilterCaseSensitive", false).toBool();
 	if (bProfileAndGroupFilterCaseSensitive) {
@@ -272,6 +272,14 @@ m_bTagBuildInProgress(false)
 		actionSymbolCaseSensitive->setChecked(true);
 	} else {
 		actionSymbolCaseSensitive->setChecked(false);
+	}
+
+	// symbol regular expression
+    bSymbolSearchRegularExpression = m_confManager->getAppSettingValue("SymbolSearchRegularExpression", false).toBool();
+	if (bSymbolSearchRegularExpression) {
+		actionSymbolRegularExpression->setChecked(true);
+	} else {
+		actionSymbolRegularExpression->setChecked(false);
 	}
 
     createActions();
@@ -515,6 +523,8 @@ void CMainWindow::createActions()
     connect(actionFileCaseSensitive, SIGNAL(toggled(bool)),
             this, SLOT(fileFilterRegExpChanged()));
     connect(actionSymbolCaseSensitive, SIGNAL(toggled(bool)),
+            this, SLOT(searchLineEditChanged()));
+    connect(actionSymbolRegularExpression, SIGNAL(toggled(bool)),
             this, SLOT(searchLineEditChanged()));
 
 	connect(search_lineEdit, SIGNAL(textChanged(const QString &)),
@@ -1405,6 +1415,12 @@ void CMainWindow::searchLineEditChanged()
 		m_confManager->setAppSettingValue("SymbolSearchCaseSensitive", false);
     }
 
+    if (actionSymbolRegularExpression->isChecked()) {
+		m_confManager->setAppSettingValue("SymbolSearchRegularExpression", true);
+    } else {
+		m_confManager->setAppSettingValue("SymbolSearchRegularExpression", false);
+    }
+
 	QStringList tagList;
 	m_tagger.getMatchedTags(search_lineEdit->text(), tagList, caseSensitivity);
 
@@ -1747,9 +1763,15 @@ void CMainWindow::queryTag(const QString& tag)
 	QString resultItemSrcLine;
     QFileInfo resultItemFileInfo;
 
+	bool bSymbolRegularExpression = false;
+
     Qt::CaseSensitivity caseSensitivity =
             actionSymbolCaseSensitive->isChecked() ? Qt::CaseSensitive
                                                        : Qt::CaseInsensitive;
+
+    if (actionSymbolRegularExpression->isChecked()) {
+       bSymbolRegularExpression = true;
+	}
 
 	/*
 	webView->load(QUrl(search_lineEdit->text()));
@@ -1772,7 +1794,7 @@ void CMainWindow::queryTag(const QString& tag)
 		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + m_currentProfileItem.m_name + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + m_currentProfileItem.m_name + "/" + QString(CSourceFileList::kFILE_LIST);
 
-		m_tagger.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity);
+		m_tagger.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
 
 		//QString tagToQuery = tag.toHtmlEscaped();
 		QString tagToQuery = tagToQueryFiltered.toHtmlEscaped();
