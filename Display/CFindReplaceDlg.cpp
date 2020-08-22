@@ -16,8 +16,6 @@ CFindReplaceDlg::CFindReplaceDlg(QWidget* parent, CFindReplaceModel* findReplace
 	progressBar->setMaximum(100);
 
 	// connect slot only after when dialog has already been loaded and initial content filled in
-	createActions();
-
 	progressBar->hide();
 
 	findReplaceModel_ = findReplaceModel;
@@ -30,10 +28,14 @@ CFindReplaceDlg::CFindReplaceDlg(QWidget* parent, CFindReplaceModel* findReplace
 
 	QStringList fileList = findReplaceModel_->getFileList();
 	statusbar->showMessage("Total " + QString::number(fileList.size()) + " files.");
+
+	// create actions need to be after setModel
+	createActions();
 }
 
 void CFindReplaceDlg::createActions()
 {
+	connect(findReplaceModel_->getFileListModel(), SIGNAL(itemChanged(QStandardItem *)), this, SLOT(on_fileList_itemChanged(QStandardItem *)));
 }
 
 void CFindReplaceDlg::setFindLineEdit(QString findStr)
@@ -87,20 +89,30 @@ void CFindReplaceDlg::on_cancelButton_clicked()
     this->done(QDialog::Rejected);
 }
 
+void CFindReplaceDlg::showFileSelectedInStatusBar()
+{
+	QStringList fileList = findReplaceModel_->getFileList();
+	statusbar->showMessage("Total " + QString::number(fileList.size()) + " files.");
+}
+
 void CFindReplaceDlg::on_selectAllButton_clicked()
 {
 	findReplaceModel_->selectAllFiles();
 
-	QStringList fileList = findReplaceModel_->getFileList();
-	statusbar->showMessage("Total " + QString::number(fileList.size()) + " files selected.");
+	showFileSelectedInStatusBar();
 }
 
 void CFindReplaceDlg::on_clearAllButton_clicked()
 {
 	findReplaceModel_->clearSelectAllFiles();
 
-	QStringList fileList = findReplaceModel_->getFileList();
-	statusbar->showMessage("Total " + QString::number(fileList.size()) + " files selected.");
+	showFileSelectedInStatusBar();
 }
+
+void CFindReplaceDlg::on_fileList_itemChanged(QStandardItem *item)
+{
+	showFileSelectedInStatusBar();
+}
+
 
 

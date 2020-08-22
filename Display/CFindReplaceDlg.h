@@ -27,9 +27,12 @@ private slots:
 	void on_selectAllButton_clicked();
 	void on_clearAllButton_clicked();
 
+	void on_fileList_itemChanged(QStandardItem *item);
+
 
 private:
 	void createActions();
+	void showFileSelectedInStatusBar();
 
 	QStatusBar *statusbar;
 

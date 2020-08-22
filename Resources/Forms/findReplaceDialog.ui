@@ -24,6 +24,9 @@
        <property name="text">
         <string>Match whole word only</string>
        </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
       </widget>
      </item>
      <item>
