@@ -1192,6 +1192,13 @@ void CMainWindow::on_actionFindReplaceDialog_triggered()
 		findReplaceModel_.setFileList(fileList);
 	}
 
+	if (infoTabWidget->currentIndex() == symbolTabIndex) {
+		if (findReplaceFileList_.size() == 0) {
+			QMessageBox::information(this, "Find Replace", "No file found for the symbol. Please search the symbol first or select files from the file tab.", QMessageBox::Ok);
+			return;
+		}
+	}
+
 	CFindReplaceDlg* dialog = new CFindReplaceDlg(this, &findReplaceModel_);
 
 	if (infoTabWidget->currentIndex() == symbolTabIndex) {
@@ -1945,6 +1952,9 @@ void CMainWindow::queryTag(const QString& tag)
 		resultHtmlStream.flush();
 		resultHtmlFile.close();
 		*/
+	} else {
+		QMessageBox::information(this, "Search", "Please load an existing project or create a new project and load it", QMessageBox::Ok);
+
 	}
 
 }
