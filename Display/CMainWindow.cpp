@@ -27,7 +27,7 @@
 
 #include "CMainWindow.h"
 #include "CAboutDlg.h"
-#include "CProfileDlg.h"
+#include "CProjectDlg.h"
 #include "CGroupDlg.h"
 #include "CConfigDlg.h"
 #include "CFindReplaceDlg.h"
@@ -70,7 +70,7 @@ bTagBuildInProgress_(false)
     // defining shortcut
 
 	// filter under project tab
-	profilePatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_P), this);
+	projectPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_P), this);
 	// filter under group tab
 	groupPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_G), this);
 
@@ -80,8 +80,8 @@ bTagBuildInProgress_(false)
 	outputExploreShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_E), this);
 	outputConsoleShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_M), this);
 
-	profileLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
-	profileUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_U), this);
+	projectLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
+	projectUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_U), this);
 
 	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
 	symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
@@ -98,7 +98,7 @@ bTagBuildInProgress_(false)
 #endif
 
     // shortcut in application context
-	profilePatternLineEditShortcut->setContext(Qt::ApplicationShortcut);
+	projectPatternLineEditShortcut->setContext(Qt::ApplicationShortcut);
 	groupPatternLineEditShortcut->setContext(Qt::ApplicationShortcut);
 
 	fileSearchShortcut->setContext(Qt::ApplicationShortcut);
@@ -107,8 +107,8 @@ bTagBuildInProgress_(false)
 	outputExploreShortcut->setContext(Qt::ApplicationShortcut);
 	outputConsoleShortcut->setContext(Qt::ApplicationShortcut);
 
-	profileLoadShortcut->setContext(Qt::ApplicationShortcut);
-	profileUpdateShortcut->setContext(Qt::ApplicationShortcut);
+	projectLoadShortcut->setContext(Qt::ApplicationShortcut);
+	projectUpdateShortcut->setContext(Qt::ApplicationShortcut);
 
 	// project_listView, projectListModel_
 	projectListModel_ = new CProjectListModel(this);
@@ -169,7 +169,7 @@ bTagBuildInProgress_(false)
 	bool bTransparent;
 
 	bool bViewToolbar;
-	bool bViewProfilePanel;
+	bool bViewProjectPanel;
 	bool bViewFilePanel;
 
 	bAlwaysOnTop = confManager_->getAppSettingValue("AlwaysOnTop", false).toBool();
@@ -193,13 +193,13 @@ bTagBuildInProgress_(false)
 		actionToolbar->setChecked(true);
 	}
 
-	bViewProfilePanel = confManager_->getAppSettingValue("ViewProfilePanel", true).toBool();
-	if (!bViewProfilePanel) {
+	bViewProjectPanel = confManager_->getAppSettingValue("ViewProjectPanel", true).toBool();
+	if (!bViewProjectPanel) {
 	    mainTabWidget->hide();
-		actionProfile_Panel->setChecked(false);
+		actionProject_Panel->setChecked(false);
 	} else {
         mainTabWidget->show();
-		actionProfile_Panel->setChecked(true);
+		actionProject_Panel->setChecked(true);
 	}
 
 	bViewFilePanel = confManager_->getAppSettingValue("ViewFilePanel", true).toBool();
@@ -213,16 +213,16 @@ bTagBuildInProgress_(false)
 
 	searchFrame->hide();
 
-	bool bProfileAndGroupFilterCaseSensitive;
+	bool bProjectAndGroupFilterCaseSensitive;
 	bool bFileFilterCaseSensitive;
 	bool bSymbolSearchCaseSensitive;
 	bool bSymbolSearchRegularExpression;
 
-	bProfileAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProfileAndGroupFilterCaseSensitive", false).toBool();
-	if (bProfileAndGroupFilterCaseSensitive) {
-		actionProfileAndGroupCaseSensitive->setChecked(true);
+	bProjectAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProjectAndGroupFilterCaseSensitive", false).toBool();
+	if (bProjectAndGroupFilterCaseSensitive) {
+		actionProjectAndGroupCaseSensitive->setChecked(true);
 	} else {
-		actionProfileAndGroupCaseSensitive->setChecked(false);
+		actionProjectAndGroupCaseSensitive->setChecked(false);
 	}
 
 	bFileFilterCaseSensitive = confManager_->getAppSettingValue("FileFilterCaseSensitive", false).toBool();
@@ -233,18 +233,18 @@ bTagBuildInProgress_(false)
 	}
 
 	// Project Font
-	QString profileFontSettingStr;
-	QFont profileFont;
+	QString projectFontSettingStr;
+	QFont projectFont;
 
-	profileFontSettingStr = confManager_->getAppSettingValue("ProfileFont").toString();
-	profileFont.fromString(profileFontSettingStr);
+	projectFontSettingStr = confManager_->getAppSettingValue("ProjectFont").toString();
+	projectFont.fromString(projectFontSettingStr);
 
-	if (profileFontSettingStr != "") {
-		project_listView->updateProfileFont(profileFont);
-		file_listView->updateOutputFont(profileFont); // update output font as well
-		group_listView->updateGroupFont(profileFont); // update group font as well
+	if (projectFontSettingStr != "") {
+		project_listView->updateProjectFont(projectFont);
+		file_listView->updateOutputFont(projectFont); // update output font as well
+		group_listView->updateGroupFont(projectFont); // update group font as well
 	} else {
-		project_listView->updateProfileFont(QApplication::font()); // using system font by default
+		project_listView->updateProjectFont(QApplication::font()); // using system font by default
 		file_listView->updateOutputFont(QApplication::font());
 		group_listView->updateGroupFont(QApplication::font());
 	}
@@ -293,11 +293,11 @@ void CMainWindow::setSplitterSizes(const QList<int>& splitterSizeList)
 void CMainWindow::restoreTabWidgetPos()
 {
     // tab widget
-    int profileTabIndex = confManager_->getValue("Window", "profileTabIndex", 0).toInt();
+    int projectTabIndex = confManager_->getValue("Window", "projectTabIndex", 0).toInt();
     int fileTabIndex = confManager_->getValue("Window", "fileTabIndex", 0).toInt();
 
     // group instead of project tab first
-    if (profileTabIndex == 1) {
+    if (projectTabIndex == 1) {
         mainTabWidget->clear();
 
         // from ui_mainWindow.h
@@ -307,9 +307,9 @@ void CMainWindow::restoreTabWidgetPos()
 
         QIcon icon14;
         icon14.addFile(QString::fromUtf8(":/Icons/22x22/view-process-all.png"), QSize(), QIcon::Normal, QIcon::Off);
-        mainTabWidget->addTab(profileTab, icon14, QString());
+        mainTabWidget->addTab(projectTab, icon14, QString());
 
-        mainTabWidget->setTabText(mainTabWidget->indexOf(profileTab), QCoreApplication::translate("mainWindow", "Project", 0, 0));
+        mainTabWidget->setTabText(mainTabWidget->indexOf(projectTab), QCoreApplication::translate("mainWindow", "Project", 0, 0));
         mainTabWidget->setTabText(mainTabWidget->indexOf(groupTab), QCoreApplication::translate("mainWindow", "Group", 0, 0));
     }
 
@@ -377,12 +377,12 @@ void CMainWindow::loadProjectList()
     projectListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Project Create Datetime"));
     projectListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
-	QMap<QString, CProfileItem> profileMap;
+	QMap<QString, CProjectItem> projectMap;
 
-	CProfileManager::getInstance()->getProfileMap(profileMap);
+	CProjectManager::getInstance()->getProjectMap(projectMap);
 
-    foreach (const CProfileItem& profileItem, profileMap) {
-		projectListModel_->addProfileItem(profileItem);
+    foreach (const CProjectItem& projectItem, projectMap) {
+		projectListModel_->addProjectItem(projectItem);
     }
 
 	updateProjectListWidget();
@@ -402,7 +402,7 @@ void CMainWindow::loadGroupList()
     groupListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 
 	QMap<QString, CGroupItem> groupMap;
-	CProfileManager::getInstance()->getGroupMap(groupMap);
+	CProjectManager::getInstance()->getGroupMap(groupMap);
 
     foreach (const CGroupItem& groupItem, groupMap) {
 		groupListModel_->addGroupItem(groupItem);
@@ -429,23 +429,23 @@ void CMainWindow::createActions()
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(on_aboutButton_clicked()));
 
 	// [Project action]
-    connect(actionProfileNew, SIGNAL(triggered()), this, SLOT(on_newProfileButton_clicked()));
+    connect(actionProjectNew, SIGNAL(triggered()), this, SLOT(on_newProjectButton_clicked()));
 
-	connect(actionProfileLoad, SIGNAL(triggered()), this, SLOT(on_loadProfileButton_clicked()));
+	connect(actionProjectLoad, SIGNAL(triggered()), this, SLOT(on_loadProjectButton_clicked()));
 
 	// default double click, enter action for project list item
-	connect(project_listView, SIGNAL(profileItemTriggered()), this, SLOT(on_loadProfileButton_clicked()));
+	connect(project_listView, SIGNAL(projectItemTriggered()), this, SLOT(on_loadProjectButton_clicked()));
 
-	connect(actionProfileRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProfileButton_clicked()));
+	connect(actionProjectRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProjectButton_clicked()));
 
-	connect(actionProfileModify, SIGNAL(triggered()), this, SLOT(on_editProfileButton_clicked()));
+	connect(actionProjectModify, SIGNAL(triggered()), this, SLOT(on_editProjectButton_clicked()));
 
-	connect(actionProfileDelete, SIGNAL(triggered()), this, SLOT(on_deleteProfileButton_clicked()));
+	connect(actionProjectDelete, SIGNAL(triggered()), this, SLOT(on_deleteProjectButton_clicked()));
 
-	connect(actionProfileExplore, SIGNAL(triggered()), this, SLOT(on_exploreProfileButton_clicked()));
-	connect(actionProfileConsole, SIGNAL(triggered()), this, SLOT(on_consoleProfileButton_clicked()));
+	connect(actionProjectExplore, SIGNAL(triggered()), this, SLOT(on_exploreProjectButton_clicked()));
+	connect(actionProjectConsole, SIGNAL(triggered()), this, SLOT(on_consoleProjectButton_clicked()));
 
-	connect(actionProfileGroup, SIGNAL(triggered()), this, SLOT(on_newGroupButton_clicked()));
+	connect(actionProjectGroup, SIGNAL(triggered()), this, SLOT(on_newGroupButton_clicked()));
 
 	// [Group action]
     connect(actionGroupNew, SIGNAL(triggered()), this, SLOT(on_newGroupButton_clicked()));
@@ -478,23 +478,23 @@ void CMainWindow::createActions()
 
 	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
 
-    connect(CProfileManager::getInstance(), SIGNAL(profileMapUpdated()), this, SLOT(loadProjectList()));
-	connect(CProfileManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
+    connect(CProjectManager::getInstance(), SIGNAL(projectMapUpdated()), this, SLOT(loadProjectList()));
+	connect(CProjectManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
 
     connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
-    connect(&profileUpdateThread_, SIGNAL(percentageCompleted(int)), this, SLOT(updateTagBuildProgress(int)));
+    connect(&projectUpdateThread_, SIGNAL(percentageCompleted(int)), this, SLOT(updateTagBuildProgress(int)));
 
 	// update progress bar for cancelled tag build
-	connect(&profileUpdateThread_, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
+	connect(&projectUpdateThread_, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
 	// error occurs during run command
-	connect(&profileUpdateThread_, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
+	connect(&projectUpdateThread_, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
 
-	connect(&profileLoadThread_, SIGNAL(profileLoadPercentageCompleted(int)), this, SLOT(updateProfileLoadProgress(int)));
+	connect(&projectLoadThread_, SIGNAL(projectLoadPercentageCompleted(int)), this, SLOT(updateProjectLoadProgress(int)));
 
 	connect(&groupLoadThread_, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)));
 
     // connecting shortcut action
-	connect(profilePatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_profilePatternLineEditShortcutPressed()));
+	connect(projectPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_projectPatternLineEditShortcutPressed()));
 	connect(groupPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_groupPatternLineEditShortcutPressed()));
 
     connect(fileSearchShortcut, SIGNAL(activated()), this, SLOT(on_filePatternLineEditShortcutPressed()));
@@ -503,15 +503,15 @@ void CMainWindow::createActions()
     connect(outputExploreShortcut, SIGNAL(activated()), this, SLOT(on_outputExplorePressed()));
 	connect(outputConsoleShortcut, SIGNAL(activated()), this, SLOT(on_outputConsolePressed()));
 
-	connect(profilePattern_lineEdit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(profileFilterRegExpChanged()));
+	connect(projectPattern_lineEdit, SIGNAL(textChanged(const QString &)),
+            this, SLOT(projectFilterRegExpChanged()));
 	connect(groupPattern_lineEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(groupFilterRegExpChanged()));
 
-    connect(actionProfileAndGroupCaseSensitive, SIGNAL(toggled(bool)),
-            this, SLOT(profileFilterRegExpChanged()));
+    connect(actionProjectAndGroupCaseSensitive, SIGNAL(toggled(bool)),
+            this, SLOT(projectFilterRegExpChanged()));
 
-    connect(actionProfileAndGroupCaseSensitive, SIGNAL(toggled(bool)),
+    connect(actionProjectAndGroupCaseSensitive, SIGNAL(toggled(bool)),
             this, SLOT(groupFilterRegExpChanged()));
 
     // for cancel update tag
@@ -578,44 +578,44 @@ void CMainWindow::createActions()
 	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
 }
 
-void CMainWindow::on_newProfileButton_clicked()
+void CMainWindow::on_newProjectButton_clicked()
 {
-    QDialog* dialog = new CProfileDlg();
+    QDialog* dialog = new CProjectDlg();
     dialog->exec();
 }
 
 // load the project into environment
-void CMainWindow::on_loadProfileButton_clicked()
+void CMainWindow::on_loadProjectButton_clicked()
 {
-    QStringList profileItemNameList = getSelectedProfileItemNameList();
-	int profileSelected = profileItemNameList.size();
+    QStringList projectItemNameList = getSelectedProjectItemNameList();
+	int projectSelected = projectItemNameList.size();
 
-	QString profileItemName;
-    CProfileItem profileItem;
+	QString projectItemName;
+    CProjectItem projectItem;
 
-	if (profileSelected != 0) {
-		if (profileSelected > 1) {
+	if (projectSelected != 0) {
+		if (projectSelected > 1) {
 			QMessageBox::information(this, "Load", "Only one project can be loaded each time", QMessageBox::Ok);
 		} else {
 
-			profileItemName = profileItemNameList.at(0);
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItemName = projectItemNameList.at(0);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
-			currentProfileItem_ = profileItem;
+			currentProjectItem_ = projectItem;
 
 			QDir currentDir(QDir::currentPath());
 
 			// only load project if source directory exists
-			if (currentDir.exists(profileItem.srcDir_)) {
-				statusBar()->showMessage("Loading project " + profileItem.name_ + "...");
+			if (currentDir.exists(projectItem.srcDir_)) {
+				statusBar()->showMessage("Loading project " + projectItem.name_ + "...");
 
                 filePattern_lineEdit->clear();
 
-				profileLoadThread_.setCurrentProfileItem(profileItem);
-				profileLoadThread_.setTaggerPtr(&tagger_);
-				profileLoadThread_.setOutputItemListPtr(&outputItemList_);
+				projectLoadThread_.setCurrentProjectItem(projectItem);
+				projectLoadThread_.setTaggerPtr(&tagger_);
+				projectLoadThread_.setOutputItemListPtr(&outputItemList_);
 
-				profileLoadThread_.start();
+				projectLoadThread_.start();
 
 			} else {
 				QMessageBox::warning(this, "Load", "Cannot load project. Source directory doesn't exists.", QMessageBox::Ok);
@@ -625,38 +625,38 @@ void CMainWindow::on_loadProfileButton_clicked()
 }
 
 // update tags for the project
-void CMainWindow::on_updateProfileButton_clicked()
+void CMainWindow::on_updateProjectButton_clicked()
 {
-	QStringList profileItemNameList = getSelectedProfileItemNameList();
-	int profileSelected = profileItemNameList.size();
+	QStringList projectItemNameList = getSelectedProjectItemNameList();
+	int projectSelected = projectItemNameList.size();
 
-    QString profileItemName;
-    CProfileItem profileItem;
+    QString projectItemName;
+    CProjectItem projectItem;
 	QDateTime currDateTime;
 
-    if (profileSelected != 0) {
-		if (profileSelected > 1) {
+    if (projectSelected != 0) {
+		if (projectSelected > 1) {
 			QMessageBox::information(this, "Update", "Only one project can be updated each time", QMessageBox::Ok);
 		} else {
-			profileItemName = profileItemNameList.at(0);
+			projectItemName = projectItemNameList.at(0);
 
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
 			QDir currentDir(QDir::currentPath());
 
 			// only update project if source directory exists
-			if (currentDir.exists(profileItem.srcDir_)) {
+			if (currentDir.exists(projectItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
-				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+				projectItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
 				// tag last update date time updated so need update in project manager
-				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
+				CProjectManager::getInstance()->updateProjectItem(projectItemName, projectItem);
 
-				statusBar()->showMessage("Updating tag for " + profileItem.name_ + "...");
+				statusBar()->showMessage("Updating tag for " + projectItem.name_ + "...");
 
-				profileUpdateThread_.setRebuildTag(false);
-				profileUpdateThread_.setCurrentProfileItem(profileItem);
-				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
+				projectUpdateThread_.setRebuildTag(false);
+				projectUpdateThread_.setCurrentProjectItem(projectItem);
+				projectUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
                 QMessageBox::warning(this, "Load", "Cannot update project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -664,38 +664,38 @@ void CMainWindow::on_updateProfileButton_clicked()
     }
 }
 
-void CMainWindow::on_rebuildTagProfileButton_clicked()
+void CMainWindow::on_rebuildTagProjectButton_clicked()
 {
-	QStringList profileItemNameList = getSelectedProfileItemNameList();
-	int profileSelected = profileItemNameList.size();
+	QStringList projectItemNameList = getSelectedProjectItemNameList();
+	int projectSelected = projectItemNameList.size();
 
-    QString profileItemName;
-    CProfileItem profileItem;
+    QString projectItemName;
+    CProjectItem projectItem;
 	QDateTime currDateTime;
 
-    if (profileSelected != 0) {
-		if (profileSelected > 1) {
+    if (projectSelected != 0) {
+		if (projectSelected > 1) {
 			QMessageBox::information(this, "Rebuild", "Only one project can be rebuilt each time", QMessageBox::Ok);
 		} else {
-			profileItemName = profileItemNameList.at(0);
+			projectItemName = projectItemNameList.at(0);
 
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
 			QDir currentDir(QDir::currentPath());
 
 			// only update project if source directory exists
-			if (currentDir.exists(profileItem.srcDir_)) {
+			if (currentDir.exists(projectItem.srcDir_)) {
 				currDateTime = QDateTime::currentDateTime();
-				profileItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+				projectItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
 				// tag last update date time updated so need update in project manager
-				CProfileManager::getInstance()->updateProfileItem(profileItemName, profileItem);
+				CProjectManager::getInstance()->updateProjectItem(projectItemName, projectItem);
 
-				statusBar()->showMessage("Rebuilding tag for " + profileItem.name_ + "...");
+				statusBar()->showMessage("Rebuilding tag for " + projectItem.name_ + "...");
 
-				profileUpdateThread_.setRebuildTag(true);
-				profileUpdateThread_.setCurrentProfileItem(profileItem);
-				profileUpdateThread_.start(QThread::HighestPriority); // priority for update thread
+				projectUpdateThread_.setRebuildTag(true);
+				projectUpdateThread_.setCurrentProjectItem(projectItem);
+				projectUpdateThread_.start(QThread::HighestPriority); // priority for update thread
 			} else {
                 QMessageBox::warning(this, "Load", "Cannot rebuilt project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -705,15 +705,15 @@ void CMainWindow::on_rebuildTagProfileButton_clicked()
 
 
 // get the project name of the selected list item
-QStringList CMainWindow::getSelectedProfileItemNameList()
+QStringList CMainWindow::getSelectedProjectItemNameList()
 {
     QModelIndexList indexSelectedList;
 	QModelIndex mappedIndex;
 	int rowSelected;
 	QStandardItem* itemSelected;
 
-    QString profileItemName;
-	QStringList profileItemNameList;
+    QString projectItemName;
+	QStringList projectItemNameList;
 
     // get selected items index list
     indexSelectedList = projectListSelectionModel_->selectedIndexes();
@@ -726,18 +726,18 @@ QStringList CMainWindow::getSelectedProfileItemNameList()
 		if (indexSelected.isValid()) {
 			itemSelected = projectListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
-				profileItemName = itemSelected->text();
+				projectItemName = itemSelected->text();
 			}
 		}
 
 		// as all items in the same row with differnt columns will also be returned in selectedIndexes
-		if (!profileItemNameList.contains(profileItemName)) {
+		if (!projectItemNameList.contains(projectItemName)) {
 			// not add project name to the list if already added
-			profileItemNameList += profileItemName;
+			projectItemNameList += projectItemName;
 		}
 	}
 
-    return profileItemNameList;
+    return projectItemNameList;
 }
 
 // get the group name of the selected list item
@@ -813,25 +813,25 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
 }
 
 // edit selected project
-void CMainWindow::on_editProfileButton_clicked()
+void CMainWindow::on_editProjectButton_clicked()
 {
-    CProfileItem profileItem;
+    CProjectItem projectItem;
 
-	QStringList profileItemNameList = getSelectedProfileItemNameList();
-	int profileSelected = profileItemNameList.size();
+	QStringList projectItemNameList = getSelectedProjectItemNameList();
+	int projectSelected = projectItemNameList.size();
 
-    QString profileItemName;
+    QString projectItemName;
 
-	if (profileSelected != 0) { // only do processing when a item is selected
-		if (profileSelected > 1) {
+	if (projectSelected != 0) { // only do processing when a item is selected
+		if (projectSelected > 1) {
 			QMessageBox::information(this, "Edit", "Only one project can be edited each time", QMessageBox::Ok);
 		} else {
 
-			profileItemName = profileItemNameList.at(0);
+			projectItemName = projectItemNameList.at(0);
 
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
-			QDialog* dialog = new CProfileDlg(profileItemName, profileItem);
+			QDialog* dialog = new CProjectDlg(projectItemName, projectItem);
 
 			dialog->exec();
 		}
@@ -839,40 +839,40 @@ void CMainWindow::on_editProfileButton_clicked()
 }
 
 // delete selected project
-void CMainWindow::on_deleteProfileButton_clicked()
+void CMainWindow::on_deleteProjectButton_clicked()
 {
-	QStringList profileItemNameList = getSelectedProfileItemNameList();
-	int profileSelected = profileItemNameList.size();
+	QStringList projectItemNameList = getSelectedProjectItemNameList();
+	int projectSelected = projectItemNameList.size();
 
     int ret;
 
-    if (profileSelected != 0) { // only do processing when a item is selected
-		if (profileSelected > 1) {
-			ret = QMessageBox::question(this, "Confirm multiple delete", "Delete " + QString::number(profileSelected) + " selected profiles?", QMessageBox::Yes, QMessageBox::No);
+    if (projectSelected != 0) { // only do processing when a item is selected
+		if (projectSelected > 1) {
+			ret = QMessageBox::question(this, "Confirm multiple delete", "Delete " + QString::number(projectSelected) + " selected projects?", QMessageBox::Yes, QMessageBox::No);
 			if (ret == QMessageBox::Yes) {
 
-				foreach (const QString& profileItemName, profileItemNameList) {
-					CProfileManager::getInstance()->removeProfileItem(profileItemName);
+				foreach (const QString& projectItemName, projectItemNameList) {
+					CProjectManager::getInstance()->removeProjectItem(projectItemName);
 				}
 			}
 		} else {
-			QString profileItemName = profileItemNameList.at(0);
+			QString projectItemName = projectItemNameList.at(0);
 			ret = QMessageBox::question(this, "Confirm delete", "Delete the selected project?", QMessageBox::Yes, QMessageBox::No);
 			if (ret == QMessageBox::Yes) {
-				CProfileManager::getInstance()->removeProfileItem(profileItemName);
+				CProjectManager::getInstance()->removeProjectItem(projectItemName);
 			}
 		}
     }
 }
 
-void CMainWindow::on_exploreProfileButton_clicked()
+void CMainWindow::on_exploreProjectButton_clicked()
 {
-	CProfileItem profileItem;
+	CProjectItem projectItem;
 
-	QStringList selectedItemList = getSelectedProfileItemNameList();
+	QStringList selectedItemList = getSelectedProjectItemNameList();
 	int itemSelected = selectedItemList.size();
 
-	QString profileItemName;
+	QString projectItemName;
 
 	QString executeDir;
 
@@ -880,10 +880,10 @@ void CMainWindow::on_exploreProfileButton_clicked()
 		if (itemSelected > 1) {
 			QMessageBox::information(this, "Explore", "Can only explore one path", QMessageBox::Ok);
 		} else {
-			profileItemName = selectedItemList.at(0);
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItemName = selectedItemList.at(0);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
-			executeDir = profileItem.srcDir_;
+			executeDir = projectItem.srcDir_;
 
 #ifdef Q_OS_WIN
 			QString excuteMethod = "explore";
@@ -895,14 +895,14 @@ void CMainWindow::on_exploreProfileButton_clicked()
 	}
 }
 
-void CMainWindow::on_consoleProfileButton_clicked()
+void CMainWindow::on_consoleProjectButton_clicked()
 {
-	CProfileItem profileItem;
+	CProjectItem projectItem;
 
-	QStringList selectedItemList = getSelectedProfileItemNameList();
+	QStringList selectedItemList = getSelectedProjectItemNameList();
 	int itemSelected = selectedItemList.size();
 
-	QString profileItemName;
+	QString projectItemName;
 
 	QString executeDir;
 
@@ -910,10 +910,10 @@ void CMainWindow::on_consoleProfileButton_clicked()
 		if (itemSelected > 1) {
 			QMessageBox::information(this, "Console", "Can only open console from one path", QMessageBox::Ok);
 		} else {
-			profileItemName = selectedItemList.at(0);
-			profileItem = CProfileManager::getInstance()->getProfileItem(profileItemName);
+			projectItemName = selectedItemList.at(0);
+			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
-			executeDir = profileItem.srcDir_;
+			executeDir = projectItem.srcDir_;
 
 #ifdef Q_OS_WIN
 			QString excuteMethod = "open";
@@ -947,7 +947,7 @@ void CMainWindow::on_loadGroupButton_clicked()
 		} else {
 
 			groupItemName = groupItemNameList.at(0);
-			groupItem = CProfileManager::getInstance()->getGroupItem(groupItemName);
+			groupItem = CProjectManager::getInstance()->getGroupItem(groupItemName);
 
 			currentGroupItem_ = groupItem;
 
@@ -995,7 +995,7 @@ void CMainWindow::on_editGroupButton_clicked()
 
 			groupItemName = groupItemNameList.at(0);
 
-			groupItem = CProfileManager::getInstance()->getGroupItem(groupItemName);
+			groupItem = CProjectManager::getInstance()->getGroupItem(groupItemName);
 
 			QDialog* dialog = new CGroupDlg(groupItemName, groupItem);
 
@@ -1018,14 +1018,14 @@ void CMainWindow::on_deleteGroupButton_clicked()
 			if (ret == QMessageBox::Yes) {
 
 				foreach (const QString& groupItemName, groupItemNameList) {
-					CProfileManager::getInstance()->removeGroupItem(groupItemName);
+					CProjectManager::getInstance()->removeGroupItem(groupItemName);
 				}
 			}
 		} else {
 			QString groupItemName = groupItemNameList.at(0);
 			ret = QMessageBox::question(this, "Confirm delete", "Delete the selected group?", QMessageBox::Yes, QMessageBox::No);
 			if (ret == QMessageBox::Yes) {
-				CProfileManager::getInstance()->removeGroupItem(groupItemName);
+				CProjectManager::getInstance()->removeGroupItem(groupItemName);
 			}
 		}
     }
@@ -1110,14 +1110,14 @@ void CMainWindow::on_actionToolbar_toggled()
     }
 }
 
-void CMainWindow::on_actionProfile_Panel_toggled()
+void CMainWindow::on_actionProject_Panel_toggled()
 {
-    if (actionProfile_Panel->isChecked()) {
+    if (actionProject_Panel->isChecked()) {
 		mainTabWidget->show();
-		confManager_->setAppSettingValue("ViewProfilePanel", true);
+		confManager_->setAppSettingValue("ViewProjectPanel", true);
     } else {
         mainTabWidget->hide();
-		confManager_->setAppSettingValue("ViewProfilePanel", true);
+		confManager_->setAppSettingValue("ViewProjectPanel", true);
     }
 }
 
@@ -1145,11 +1145,11 @@ void CMainWindow::on_actionSetting_triggered()
 	int dialogCode = dialog->exec();
 
 	if (dialogCode == QDialog::Accepted) {
-		QFont updatedProfileFont = static_cast<CConfigDlg*> (dialog)->getProfileDefaultFont();
+		QFont updatedProjectFont = static_cast<CConfigDlg*> (dialog)->getProjectDefaultFont();
 
-		project_listView->updateProfileFont(updatedProfileFont);
-		group_listView->updateGroupFont(updatedProfileFont);
-		file_listView->updateOutputFont(updatedProfileFont);
+		project_listView->updateProjectFont(updatedProjectFont);
+		group_listView->updateGroupFont(updatedProjectFont);
+		file_listView->updateOutputFont(updatedProjectFont);
 
 		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
 
@@ -1216,10 +1216,10 @@ void CMainWindow::saveWidgetPosition()
 
 	confManager_->setValue("Window", "splitter", splitterSizeListStr);
 
-	int profileTabIndex = mainTabWidget->indexOf(profileTab);
+	int projectTabIndex = mainTabWidget->indexOf(projectTab);
 	int fileTabIndex = infoTabWidget->indexOf(fileTab);
 
-	confManager_->setValue("Window", "profileTabIndex", QString::number(profileTabIndex));
+	confManager_->setValue("Window", "projectTabIndex", QString::number(projectTabIndex));
 	confManager_->setValue("Window", "fileTabIndex", QString::number(fileTabIndex));
 
     confManager_->updateConfig();
@@ -1249,7 +1249,7 @@ void CMainWindow::updateTagBuildProgress(int percentage)
     }
 }
 
-void CMainWindow::updateProfileLoadProgress(int percentage)
+void CMainWindow::updateProjectLoadProgress(int percentage)
 {
     if (percentage == 100) {
 		loadFileList();
@@ -1257,9 +1257,9 @@ void CMainWindow::updateProfileLoadProgress(int percentage)
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
 
-        statusBar()->showMessage("Project " + currentProfileItem_.name_ + " loaded.");
+        statusBar()->showMessage("Project " + currentProjectItem_.name_ + " loaded.");
     } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Project " + currentProfileItem_.name_ + ".");
+		statusBar()->showMessage("Failed to load Project " + currentProjectItem_.name_ + ".");
 	}
 }
 
@@ -1298,12 +1298,12 @@ void CMainWindow::on_errorDuringRun(const QString& cmdStr)
 											 "Please check log message for details.", QMessageBox::Ok);
 }
 
-void CMainWindow::on_profilePatternLineEditShortcutPressed()
+void CMainWindow::on_projectPatternLineEditShortcutPressed()
 {
-	const int profileTabIndex = mainTabWidget->indexOf(profileTab);
+	const int projectTabIndex = mainTabWidget->indexOf(projectTab);
 
-    mainTabWidget->setCurrentIndex(profileTabIndex);
-	profilePattern_lineEdit->setFocus();
+    mainTabWidget->setCurrentIndex(projectTabIndex);
+	projectPattern_lineEdit->setFocus();
 }
 
 void CMainWindow::on_groupPatternLineEditShortcutPressed()
@@ -1350,19 +1350,19 @@ void CMainWindow::on_infoTabWidgetToolBn_clicked()
 	}
 }
 
-void CMainWindow::profileFilterRegExpChanged()
+void CMainWindow::projectFilterRegExpChanged()
 {
 	Qt::CaseSensitivity caseSensitivity;
 
-    if (actionProfileAndGroupCaseSensitive->isChecked()) {
+    if (actionProjectAndGroupCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
+		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
+		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", false);
     }
 
-	QRegExp regExp(profilePattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
+	QRegExp regExp(projectPattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
 
     projectListProxyModel_->setFilterRegExp(regExp);
 }
@@ -1371,12 +1371,12 @@ void CMainWindow::groupFilterRegExpChanged()
 {
 	Qt::CaseSensitivity caseSensitivity;
 
-    if (actionProfileAndGroupCaseSensitive->isChecked()) {
+    if (actionProjectAndGroupCaseSensitive->isChecked()) {
 		caseSensitivity = Qt::CaseSensitive;
-		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", true);
+		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", true);
     } else {
         caseSensitivity = Qt::CaseInsensitive;
-		confManager_->setAppSettingValue("actionProfileAndGroupCaseSensitive", false);
+		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", false);
     }
 
 	QRegExp regExp(groupPattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
@@ -1493,7 +1493,7 @@ void CMainWindow::on_cancelTagUpdate()
 	ret = QMessageBox::question(this, "Tag update", "Cancel tag update?", QMessageBox::Yes, QMessageBox::No);
 	if (ret == QMessageBox::Yes) {
 		statusBar()->showMessage("Cancelling tag update...");
-		profileUpdateThread_.cancelUpdate();
+		projectUpdateThread_.cancelUpdate();
 	}
 }
 
@@ -1507,37 +1507,37 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 	// get current active tab
 	const int mainTabIndex = mainTabWidget->currentIndex();
-	const int profileTabIndex = mainTabWidget->indexOf(profileTab);
+	const int projectTabIndex = mainTabWidget->indexOf(projectTab);
 	const int groupTabIndex = mainTabWidget->indexOf(groupTab);
 
-	if (mainTabIndex == profileTabIndex) {
+	if (mainTabIndex == projectTabIndex) {
 		// in area of project_listView
 		if (project_listView->rect().contains(p)) {
-			QStringList profileItemNameList = getSelectedProfileItemNameList();
-			int profileSelected = profileItemNameList.size();
+			QStringList projectItemNameList = getSelectedProjectItemNameList();
+			int projectSelected = projectItemNameList.size();
 
-			if (profileSelected != 0) { // only show menu if have more than 1 selected project
+			if (projectSelected != 0) { // only show menu if have more than 1 selected project
 				// only show delete menu if more than one project selected
-				if (profileSelected > 1) {
+				if (projectSelected > 1) {
 					QMenu menu(this);
-					menu.addAction(actionProfileDelete);
-					menu.addAction(actionProfileGroup);
+					menu.addAction(actionProjectDelete);
+					menu.addAction(actionProjectGroup);
 
 					menu.exec(event->globalPos());
 				} else {
 					QMenu menu(this);
 
-					menu.addAction(actionProfileNew);
-					menu.addAction(actionProfileLoad);
-					menu.addAction(actionProfileRebuildTag);
-					menu.addAction(actionProfileModify);
-					menu.addAction(actionProfileDelete);
-					menu.addAction(actionProfileGroup);
+					menu.addAction(actionProjectNew);
+					menu.addAction(actionProjectLoad);
+					menu.addAction(actionProjectRebuildTag);
+					menu.addAction(actionProjectModify);
+					menu.addAction(actionProjectDelete);
+					menu.addAction(actionProjectGroup);
 
-					menu.addAction(actionProfileExplore);
+					menu.addAction(actionProjectExplore);
 
 #ifdef Q_OS_WIN
-					menu.addAction(actionProfileConsole);
+					menu.addAction(actionProjectConsole);
 	#endif
 					menu.exec(event->globalPos());
 				}
@@ -1789,10 +1789,10 @@ void CMainWindow::queryTag(const QString& tag)
 	QString modifiedLineSrc;
 	QString tagToQueryFiltered;
 
-	if (!currentProfileItem_.name_.isEmpty()) {
+	if (!currentProjectItem_.name_.isEmpty()) {
 
-		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProfileItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
-		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProfileItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
+		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
 
 		tagger_.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
 
@@ -2002,7 +2002,7 @@ void CMainWindow::keyPressEvent(QKeyEvent *event)
 				file_listView->setFocus();
 				break;
 		}
-	} else if (profilePattern_lineEdit->hasFocus()) {
+	} else if (projectPattern_lineEdit->hasFocus()) {
 		switch (event->key()) {
 			case Qt::Key_Up:
 				project_listView->setFocus();

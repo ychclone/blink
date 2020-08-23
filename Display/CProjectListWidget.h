@@ -16,18 +16,18 @@ public:
 
 	void wheelEvent(QWheelEvent *e);
 
-	void updateProfileFont(const QFont& profileFont);
+	void updateProjectFont(const QFont& projectFont);
 
 signals:
-	void profileItemTriggered();
+	void projectItemTriggered();
 
 private:
-	long profileFontSize_;
+	long projectFontSize_;
 
 	void updateProjectListWidget();
 
-	void profileZoomIn();
-	void profileZoomOut();
+	void projectZoomIn();
+	void projectZoomOut();
 };
 
 #endif // CPROFILE_LIST_WIDGET_H

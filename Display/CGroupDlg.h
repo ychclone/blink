@@ -3,7 +3,7 @@
 
 #include <QDialog> 
 #include "Model/CGroupItem.h"
-#include "Model/CProfileManager.h"
+#include "Model/CProjectManager.h"
 #include "ui_groupDialog.h"
 
 class CGroupDlg : public QDialog, private Ui::groupDialog
@@ -17,8 +17,8 @@ public:
     virtual ~CGroupDlg() {}
 
 private slots:
-	void on_addProfileToolBn_clicked();
-	void on_removeProfileToolBn_clicked();
+	void on_addProjectToolBn_clicked();
+	void on_removeProjectToolBn_clicked();
 
     void on_okButton_clicked();
     void on_cancelButton_clicked();

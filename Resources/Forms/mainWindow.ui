@@ -161,10 +161,10 @@ QSplitter::handle {
           <property name="movable">
            <bool>true</bool>
           </property>
-          <widget class="QWidget" name="profileTab">
+          <widget class="QWidget" name="projectTab">
            <attribute name="icon">
             <iconset resource="../app.qrc">
-             <normaloff>:/Images/profile.png</normaloff>:/Images/profile.png</iconset>
+             <normaloff>:/Images/project.png</normaloff>:/Images/project.png</iconset>
            </attribute>
            <attribute name="title">
             <string>Project</string>
@@ -226,7 +226,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
                <number>6</number>
               </property>
               <item row="0" column="0">
-               <widget class="QLineEdit" name="profilePattern_lineEdit">
+               <widget class="QLineEdit" name="projectPattern_lineEdit">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -743,21 +743,21 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
      <string>&amp;Options</string>
     </property>
     <addaction name="actionSetting"/>
-    <addaction name="actionProfileAndGroupCaseSensitive"/>
+    <addaction name="actionProjectAndGroupCaseSensitive"/>
     <addaction name="actionFileCaseSensitive"/>
     <addaction name="actionSymbolCaseSensitive"/>
     <addaction name="actionSymbolRegularExpression"/>
    </widget>
-   <widget class="QMenu" name="menuProfile">
+   <widget class="QMenu" name="menuProject">
     <property name="title">
      <string>&amp;Project</string>
     </property>
-    <addaction name="actionProfileNew"/>
-    <addaction name="actionProfileLoad"/>
-    <addaction name="actionProfileRebuildTag"/>
-    <addaction name="actionProfileModify"/>
-    <addaction name="actionProfileDelete"/>
-    <addaction name="actionProfileGroup"/>
+    <addaction name="actionProjectNew"/>
+    <addaction name="actionProjectLoad"/>
+    <addaction name="actionProjectRebuildTag"/>
+    <addaction name="actionProjectModify"/>
+    <addaction name="actionProjectDelete"/>
+    <addaction name="actionProjectGroup"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
@@ -766,7 +766,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionAlways_on_top"/>
     <addaction name="actionTransparent"/>
     <addaction name="actionToolbar"/>
-    <addaction name="actionProfile_Panel"/>
+    <addaction name="actionProject_Panel"/>
     <addaction name="actionFile_Panel"/>
    </widget>
    <widget class="QMenu" name="menuGroup">
@@ -785,7 +785,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     </property>
     <addaction name="actionFindReplaceDialog"/>
    </widget>
-   <addaction name="menuProfile"/>
+   <addaction name="menuProject"/>
    <addaction name="menuGroup"/>
    <addaction name="menuOptions"/>
    <addaction name="menuTool"/>
@@ -815,11 +815,11 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionProfileNew"/>
-   <addaction name="actionProfileLoad"/>
-   <addaction name="actionProfileRebuildTag"/>
-   <addaction name="actionProfileModify"/>
-   <addaction name="actionProfileDelete"/>
+   <addaction name="actionProjectNew"/>
+   <addaction name="actionProjectLoad"/>
+   <addaction name="actionProjectRebuildTag"/>
+   <addaction name="actionProjectModify"/>
+   <addaction name="actionProjectDelete"/>
   </widget>
   <action name="actionAbout">
    <property name="icon">
@@ -847,7 +847,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Setting</string>
    </property>
   </action>
-  <action name="actionProfileNew">
+  <action name="actionProjectNew">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-new.png</normaloff>:/Icons/22x22/gtk-new.png</iconset>
@@ -856,7 +856,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;New</string>
    </property>
   </action>
-  <action name="actionProfileLoad">
+  <action name="actionProjectLoad">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-redo-ltr.png</normaloff>:/Icons/22x22/gtk-redo-ltr.png</iconset>
@@ -865,7 +865,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Load</string>
    </property>
   </action>
-  <action name="actionProfileModify">
+  <action name="actionProjectModify">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-properties.png</normaloff>:/Icons/22x22/gtk-properties.png</iconset>
@@ -874,7 +874,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Modify</string>
    </property>
   </action>
-  <action name="actionProfileDelete">
+  <action name="actionProjectDelete">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-delete.png</normaloff>:/Icons/22x22/gtk-delete.png</iconset>
@@ -978,12 +978,12 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Toolbar</string>
    </property>
   </action>
-  <action name="actionProfile_Panel">
+  <action name="actionProject_Panel">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Profile Panel</string>
+    <string>Project Panel</string>
    </property>
   </action>
   <action name="actionFile_Panel">
@@ -1037,7 +1037,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <enum>Qt::ApplicationShortcut</enum>
    </property>
   </action>
-  <action name="actionProfileExplore">
+  <action name="actionProjectExplore">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/document-open-folder.png</normaloff>:/Icons/22x22/document-open-folder.png</iconset>
@@ -1046,7 +1046,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Explore</string>
    </property>
   </action>
-  <action name="actionProfileConsole">
+  <action name="actionProjectConsole">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/xconsole-2.png</normaloff>:/Icons/22x22/xconsole-2.png</iconset>
@@ -1075,12 +1075,12 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     </font>
    </property>
   </action>
-  <action name="actionProfileAndGroupCaseSensitive">
+  <action name="actionProjectAndGroupCaseSensitive">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Profile, Group Case Sensitive</string>
+    <string>Project, Group Case Sensitive</string>
    </property>
   </action>
   <action name="actionSymbolCaseSensitive">
@@ -1137,7 +1137,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Delete</string>
    </property>
   </action>
-  <action name="actionProfileGroup">
+  <action name="actionProjectGroup">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/insert-link-2.png</normaloff>:/Icons/22x22/insert-link-2.png</iconset>
@@ -1146,7 +1146,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Add to group</string>
    </property>
   </action>
-  <action name="actionProfileRebuildTag">
+  <action name="actionProjectRebuildTag">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-refresh.png</normaloff>:/Icons/22x22/gtk-refresh.png</iconset>
@@ -1193,7 +1193,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
  <tabstops>
   <tabstop>mainTabWidget</tabstop>
   <tabstop>project_listView</tabstop>
-  <tabstop>profilePattern_lineEdit</tabstop>
+  <tabstop>projectPattern_lineEdit</tabstop>
   <tabstop>infoTabWidget</tabstop>
   <tabstop>group_listView</tabstop>
   <tabstop>file_listView</tabstop>

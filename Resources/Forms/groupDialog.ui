@@ -61,17 +61,17 @@
           <item row="3" column="0">
            <widget class="QLabel" name="label_11">
             <property name="text">
-             <string>&amp;Profile list:</string>
+             <string>&amp;Project list:</string>
             </property>
             <property name="buddy">
-             <cstring>includedProfile_listWidget</cstring>
+             <cstring>includedProject_listWidget</cstring>
             </property>
            </widget>
           </item>
           <item row="3" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QListWidget" name="includedProfile_listWidget">
+             <widget class="QListWidget" name="includedProject_listWidget">
               <property name="selectionMode">
                <enum>QAbstractItemView::ExtendedSelection</enum>
               </property>
@@ -111,7 +111,7 @@
              </spacer>
             </item>
             <item row="1" column="3">
-             <widget class="QToolButton" name="removeProfile_toolButton">
+             <widget class="QToolButton" name="removeProject_toolButton">
               <property name="text">
                <string>-</string>
               </property>
@@ -163,7 +163,7 @@
              </spacer>
             </item>
             <item row="1" column="1">
-             <widget class="QToolButton" name="addProfile_toolButton">
+             <widget class="QToolButton" name="addProject_toolButton">
               <property name="text">
                <string>+</string>
               </property>
@@ -183,7 +183,7 @@
              </widget>
             </item>
             <item row="0" column="0" colspan="5">
-             <widget class="QListWidget" name="allProfile_listWidget">
+             <widget class="QListWidget" name="allProject_listWidget">
               <property name="selectionMode">
                <enum>QAbstractItemView::ExtendedSelection</enum>
               </property>
@@ -289,10 +289,10 @@
  <tabstops>
   <tabstop>allGroup_comboBox</tabstop>
   <tabstop>groupName_lineEdit</tabstop>
-  <tabstop>allProfile_listWidget</tabstop>
-  <tabstop>addProfile_toolButton</tabstop>
-  <tabstop>removeProfile_toolButton</tabstop>
-  <tabstop>includedProfile_listWidget</tabstop>
+  <tabstop>allProject_listWidget</tabstop>
+  <tabstop>addProject_toolButton</tabstop>
+  <tabstop>removeProject_toolButton</tabstop>
+  <tabstop>includedProject_listWidget</tabstop>
   <tabstop>labels_lineEdit</tabstop>
   <tabstop>okButton</tabstop>
   <tabstop>cancelButton</tabstop>

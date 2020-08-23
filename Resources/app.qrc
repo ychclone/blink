@@ -2,7 +2,7 @@
   <qresource prefix="/">
     <file>Images/group.png</file>
     <file>Images/file.png</file>
-    <file>Images/profile.png</file>
+    <file>Images/project.png</file>
     <file>Images/symbol.png</file>
     <file>Icons/22x22/document-open-folder.png</file>
     <file>Icons/22x22/edit-4.png</file>

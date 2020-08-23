@@ -5,7 +5,7 @@
 #include <QProcess>
 
 #include "Model/qTagger/qTagger.h"
-#include "Model/CProfileManager.h"
+#include "Model/CProjectManager.h"
 
 #include "Model/CGroupItem.h"
 #include "Model/CRunCommand.h"

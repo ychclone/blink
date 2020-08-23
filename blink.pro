@@ -9,7 +9,7 @@ RESOURCES   = Resources/app.qrc
 INCLUDEPATH += "Utils"
 
 FORMS       = Resources/Forms/mainWindow.ui \
-              Resources/Forms/profileDialog.ui \
+              Resources/Forms/projectDialog.ui \
               Resources/Forms/groupDialog.ui \ 
               Resources/Forms/aboutDialog.ui \
               Resources/Forms/configDialog.ui \
@@ -18,7 +18,7 @@ FORMS       = Resources/Forms/mainWindow.ui \
 SOURCES     += main.cpp \
                Utils/CUtils.cpp \
                Display/CMainWindow.cpp \
-               Display/CProfileDlg.cpp \
+               Display/CProjectDlg.cpp \
                Display/CGroupDlg.cpp \ 
                Display/CAboutDlg.cpp \
                Display/CProjectListWidget.cpp \
@@ -35,13 +35,13 @@ SOURCES     += main.cpp \
                Model/CProjectListModel.cpp \
                Model/CGroupListModel.cpp \ 
                Model/CFileListModel.cpp \
-               Model/CProfileManager.cpp \
-               Model/CProfileUpdateThread.cpp \
-               Model/CProfileLoadThread.cpp \
+               Model/CProjectManager.cpp \
+               Model/CProjectUpdateThread.cpp \
+               Model/CProjectLoadThread.cpp \
                Model/CGroupLoadThread.cpp \
                Model/CConfigManager.cpp \
                Model/CGroupItem.cpp \ 
-               Model/CProfileItem.cpp \
+               Model/CProjectItem.cpp \
                Model/COutputItem.cpp \
                Model/CRunCommand.cpp \ 
                Model/CFindReplaceModel.cpp \
@@ -51,7 +51,7 @@ SOURCES     += main.cpp \
 HEADERS     += Utils/commonType.h \
                Utils/CUtils.h \
                Display/CMainWindow.h \
-               Display/CProfileDlg.h \
+               Display/CProjectDlg.h \
                Display/CGroupDlg.h \ 
                Display/CAboutDlg.h \
                Display/CProjectListWidget.h \
@@ -68,12 +68,12 @@ HEADERS     += Utils/commonType.h \
                Model/CProjectListModel.h \ 
                Model/CGroupListModel.h \
                Model/CFileListModel.h \
-               Model/CProfileManager.h \
-               Model/CProfileUpdateThread.h \
-               Model/CProfileLoadThread.h \
+               Model/CProjectManager.h \
+               Model/CProjectUpdateThread.h \
+               Model/CProjectLoadThread.h \
                Model/CGroupLoadThread.h \
                Model/CConfigManager.h \
-               Model/CProfileItem.h \ 
+               Model/CProjectItem.h \ 
                Model/CGroupItem.h \
                Model/COutputItem.h \
                Model/CRunCommand.h \

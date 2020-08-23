@@ -1,38 +1,38 @@
 #ifndef CPROFILE_MANAGER_H
 #define CPROFILE_MANAGER_H
 
-#include "Model/CProfileItem.h"
+#include "Model/CProjectItem.h"
 #include "Model/CGroupItem.h"
 #include "Storage/IStorageHandler.h"
 #include "Storage/CXmlStorageHandler.h"
 
-class CProfileManager: public QObject
+class CProjectManager: public QObject
 {
     Q_OBJECT
     
 public:
-    virtual ~CProfileManager() {};
+    virtual ~CProjectManager() {};
 
-    static CProfileManager* getInstance();
+    static CProjectManager* getInstance();
     
-    void setProfileFile(const QString& profileFileName); 
+    void setProjectFile(const QString& projectFileName); 
     void setStorageHandler(const CXmlStorageHandler& handler);
     void attachStorage();
     void flushStorage();
     void detachStorage();
     
-	void getProfileMap(QMap<QString, CProfileItem>& profileMap);
+	void getProjectMap(QMap<QString, CProjectItem>& projectMap);
 	void getGroupMap(QMap<QString, CGroupItem>& groupMap);
     
-    void addItem(const CProfileItem& newItem);
+    void addItem(const CProjectItem& newItem);
 
-    CProfileItem getProfileItem(const QString& profileItemName) const;
+    CProjectItem getProjectItem(const QString& projectItemName) const;
 	CGroupItem getGroupItem(const QString& groupItemName) const; 
 
-    void updateProfileItem(const QString& profileItemName, const CProfileItem& newItem);
+    void updateProjectItem(const QString& projectItemName, const CProjectItem& newItem);
 	void updateGroupItem(const QString& groupItemName, const CGroupItem& newItem); 
 
-    void removeProfileItem(const QString& profileItemName);
+    void removeProjectItem(const QString& projectItemName);
 	void removeGroupItem(const QString& groupItemName); 
 
     void destroy();
@@ -40,21 +40,21 @@ public:
 	static const char* kGROUP_PROFILE_SEPERATOR; 
 
 protected:
-    CProfileManager();
+    CProjectManager();
 
 signals:
-    void profileMapUpdated();
+    void projectMapUpdated();
 	void groupMapUpdated(); 
     
 private:
     CXmlStorageHandler handler_;
 
-    QMap<QString, CProfileItem> profileMap_;
+    QMap<QString, CProjectItem> projectMap_;
 	QMap<QString, CGroupItem> groupMap_; 
 
-    QString profileFile_;
+    QString projectFile_;
 
-    static CProfileManager* manager_;
+    static CProjectManager* manager_;
 
 };
 

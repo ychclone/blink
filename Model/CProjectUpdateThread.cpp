@@ -1,23 +1,23 @@
-#include "CProfileUpdateThread.h"
+#include "CProjectUpdateThread.h"
 
-CProfileUpdateThread::CProfileUpdateThread(QObject *parent)
+CProjectUpdateThread::CProjectUpdateThread(QObject *parent)
 : QThread(parent), 
   bCancelUpdate_(false)
 {
 
 }
 
-void CProfileUpdateThread::setCurrentProfileItem(const CProfileItem& profileItem)
+void CProjectUpdateThread::setCurrentProjectItem(const CProjectItem& projectItem)
 {
-	profileItem_ = profileItem;
+	projectItem_ = projectItem;
 }
 
-void CProfileUpdateThread::setRebuildTag(bool bRebuildTag)
+void CProjectUpdateThread::setRebuildTag(bool bRebuildTag)
 {
 	bRebuildTag_ = bRebuildTag;
 }
 
-void CProfileUpdateThread::initStep(int totalStep)
+void CProjectUpdateThread::initStep(int totalStep)
 {
     stepCompleted_ = 0;
 	totalStep_ = totalStep;
@@ -25,7 +25,7 @@ void CProfileUpdateThread::initStep(int totalStep)
 	emit percentageCompleted(0); // emit 0 initially 
 }
 
-void CProfileUpdateThread::finishOneStep()
+void CProjectUpdateThread::finishOneStep()
 {
 	int endPercent;
 	stepCompleted_++;    
@@ -37,12 +37,12 @@ void CProfileUpdateThread::finishOneStep()
 	}
 }
 
-void CProfileUpdateThread::finishAllStep()
+void CProjectUpdateThread::finishAllStep()
 {
 	emit percentageCompleted(100);
 }
 
-bool CProfileUpdateThread::runCommand(const QString& program, const QString& workDir, const QString& redirectFile)
+bool CProjectUpdateThread::runCommand(const QString& program, const QString& workDir, const QString& redirectFile)
 {
 	QString errStr;
 	CRunCommand::ENUM_RunCommandErr cmdErr;
@@ -76,13 +76,13 @@ bool CProfileUpdateThread::runCommand(const QString& program, const QString& wor
 	return true;
 }
 
-void CProfileUpdateThread::cancelUpdate()
+void CProjectUpdateThread::cancelUpdate()
 {
 	bCancelUpdate_ = true;
 	cmd_.cancelCommand(true);
 }
 
-int CProfileUpdateThread::countTotalRunCmd()
+int CProjectUpdateThread::countTotalRunCmd()
 {
 	int i, totalCmd;
 	QString cmdKey, cmdStr;
@@ -103,7 +103,7 @@ int CProfileUpdateThread::countTotalRunCmd()
 	return totalCmd;
 }
 
-void CProfileUpdateThread::run()
+void CProjectUpdateThread::run()
 {
 	bool bRunResult;
 
@@ -123,7 +123,7 @@ void CProfileUpdateThread::run()
 	QString tmpDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TmpDir").toString());
 
 	// using absoluteFilePath so relative and absolute path also possible 
-	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + profileItem_.name_);
+	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + projectItem_.name_);
 	QString tagName = "tags";
 
 	QString fileListFilename = tagDir + "/" + CSourceFileList::kFILE_LIST;
@@ -140,15 +140,15 @@ void CProfileUpdateThread::run()
 
 	/* first step, recursively list the source and header files to currentListFile */
 	QStringList nameFilters;
-	QStringList srcMaskList = profileItem_.srcMask_.split(" ");
-	QStringList headerMaskList = profileItem_.headerMask_.split(" "); 
+	QStringList srcMaskList = projectItem_.srcMask_.split(" ");
+	QStringList headerMaskList = projectItem_.headerMask_.split(" "); 
 
 	nameFilters = srcMaskList + headerMaskList;
 
 	if (bRebuildTag_) {
 		T_OutputItemList resultFileList;
 
-		CSourceFileList::generateFileList(fileListFilename, profileItem_.srcDir_, nameFilters, resultFileList);
+		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList);
 
 		finishOneStep(); // for updating progress bar 
 		
@@ -204,7 +204,7 @@ void CProfileUpdateThread::run()
 		finishOneStep(); // for updating progress bar  
 
 		// new file list, for this update tag, not save the file list to file yet as need to update file id
-		CSourceFileList::generateFileList(fileListFilename, profileItem_.srcDir_, nameFilters, newFileList, false); 
+		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, newFileList, false); 
 
 		long newFileId = 0;
 
@@ -301,7 +301,7 @@ void CProfileUpdateThread::run()
 		} else {
 			cmdStr.replace("$tmpList", fileListFilename);
 			cmdStr.replace("$tagDir", tagDir); 
-			bRunResult = runCommand(cmdStr, profileItem_.srcDir_);
+			bRunResult = runCommand(cmdStr, projectItem_.srcDir_);
 			if (!bRunResult) { // also break if errors during run
 				break;
 			}
@@ -310,7 +310,7 @@ void CProfileUpdateThread::run()
 
     // for ctag
 	if (bRunResult) { // only continue if runCommand without problem
-		srcTagName = profileItem_.srcDir_ + "/" + tagName;
+		srcTagName = projectItem_.srcDir_ + "/" + tagName;
 		targetTagName = tagDir + "/" + tagName;
 		QFile::rename(srcTagName, targetTagName);
 		//QFile::remove(srcTagName);

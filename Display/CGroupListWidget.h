@@ -16,7 +16,7 @@ public:
 
 	void wheelEvent(QWheelEvent *e);
 
-	void updateGroupFont(const QFont& profileFont);
+	void updateGroupFont(const QFont& projectFont);
 signals:
 	void groupItemTriggered();
 

@@ -16,7 +16,7 @@ CGroupDlg::CGroupDlg(QWidget* parent)
 	// load group list
 	QMap<QString, CGroupItem> groupMap; 
 
-	CProfileManager::getInstance()->getGroupMap(groupMap);   
+	CProjectManager::getInstance()->getGroupMap(groupMap);   
 
 	foreach (const CGroupItem& groupItem, groupMap) { 
 		allGroup_comboBox->addItem(groupItem.name_, QVariant(Qt::DisplayRole));
@@ -25,14 +25,14 @@ CGroupDlg::CGroupDlg(QWidget* parent)
 	// default as empty for group combox box
 	allGroup_comboBox->setCurrentIndex(-1); 
 
-	// load all profile
+	// load all project
 	
-	QMap<QString, CProfileItem> profileMap;
+	QMap<QString, CProjectItem> projectMap;
 
-	CProfileManager::getInstance()->getProfileMap(profileMap);
+	CProjectManager::getInstance()->getProjectMap(projectMap);
 
-	foreach (const CProfileItem& profileItem, profileMap) { 
-		allProfile_listWidget->addItem(profileItem.name_);
+	foreach (const CProjectItem& projectItem, projectMap) { 
+		allProject_listWidget->addItem(projectItem.name_);
 	}
 
 	createActions(); 
@@ -58,7 +58,7 @@ CGroupDlg::CGroupDlg(const QString& groupName, const CGroupItem& groupItem, QWid
 
     groupName_lineEdit->setText(groupName);
 	
-	// load profile for current group
+	// load project for current group
 	loadGroupProjectListView(groupName);
 	
 	createActions();
@@ -66,8 +66,8 @@ CGroupDlg::CGroupDlg(const QString& groupName, const CGroupItem& groupItem, QWid
 
 void CGroupDlg::createActions()
 {
-    connect(addProfile_toolButton, SIGNAL(clicked()), this, SLOT(on_addProfileToolBn_clicked())); 
-	connect(removeProfile_toolButton, SIGNAL(clicked()), this, SLOT(on_removeProfileToolBn_clicked()));
+    connect(addProject_toolButton, SIGNAL(clicked()), this, SLOT(on_addProjectToolBn_clicked())); 
+	connect(removeProject_toolButton, SIGNAL(clicked()), this, SLOT(on_removeProjectToolBn_clicked()));
 
 	connect(allGroup_comboBox, SIGNAL(activated(const QString&)), this, SLOT(on_groupComboBox_activated(const QString&))); 
 }
@@ -78,46 +78,46 @@ void CGroupDlg::loadGroupProjectListView(const QString& groupName)
 	QStringList groupProjectList;
 
 	// remove previous item if any
-	includedProfile_listWidget->clear(); 
-	allProfile_listWidget->clear();
+	includedProject_listWidget->clear(); 
+	allProject_listWidget->clear();
 
-	// selected profile list
-	groupItem = CProfileManager::getInstance()->getGroupItem(groupName);
+	// selected project list
+	groupItem = CProjectManager::getInstance()->getGroupItem(groupName);
 
-	groupProjectList = groupItem.projectList_.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
-	includedProfile_listWidget->addItems(groupProjectList); 
+	groupProjectList = groupItem.projectList_.split(CProjectManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
+	includedProject_listWidget->addItems(groupProjectList); 
 
-	// not selected profile list
-	QMap<QString, CProfileItem> profileMap;
+	// not selected project list
+	QMap<QString, CProjectItem> projectMap;
 
-	CProfileManager::getInstance()->getProfileMap(profileMap);
+	CProjectManager::getInstance()->getProjectMap(projectMap);
 
-	foreach (const CProfileItem& profileItem, profileMap) { 
-		if (!groupProjectList.contains(profileItem.name_)) {
-			allProfile_listWidget->addItem(profileItem.name_);
+	foreach (const CProjectItem& projectItem, projectMap) { 
+		if (!groupProjectList.contains(projectItem.name_)) {
+			allProject_listWidget->addItem(projectItem.name_);
 		}
 	} 
 }
 
-void CGroupDlg::on_addProfileToolBn_clicked()
+void CGroupDlg::on_addProjectToolBn_clicked()
 {
-	QList<QListWidgetItem* > selecedItemList = allProfile_listWidget->selectedItems();
+	QList<QListWidgetItem* > selecedItemList = allProject_listWidget->selectedItems();
 
 	foreach (QListWidgetItem* listWidgetItem, selecedItemList) {
-		includedProfile_listWidget->addItem(listWidgetItem->text());  
+		includedProject_listWidget->addItem(listWidgetItem->text());  
 	}
 
 	qDeleteAll(selecedItemList); 
 }
 
-void CGroupDlg::on_removeProfileToolBn_clicked()
+void CGroupDlg::on_removeProjectToolBn_clicked()
 {
-	QList<QListWidgetItem *> selecedItemList = includedProfile_listWidget->selectedItems();
+	QList<QListWidgetItem *> selecedItemList = includedProject_listWidget->selectedItems();
 
 	QListWidgetItem* listWidgetItem;
 
 	foreach (listWidgetItem, selecedItemList) {
-		allProfile_listWidget->addItem(listWidgetItem->text());  
+		allProject_listWidget->addItem(listWidgetItem->text());  
 	}
 
 	qDeleteAll(selecedItemList);
@@ -156,7 +156,7 @@ void CGroupDlg::on_applyButton_clicked()
 
 	// get included item list
 	QList<QListWidgetItem* > includedItemList = 
-		includedProfile_listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
+		includedProject_listWidget->findItems(QString("*"), Qt::MatchWrap | Qt::MatchWildcard);
 	
 	QStringList updateGroupProjectList;
 
@@ -164,14 +164,14 @@ void CGroupDlg::on_applyButton_clicked()
 		updateGroupProjectList << listWidgetItem->text();
 	}
 
-	// update profile list in item
-	modifiedItem.projectList_ = updateGroupProjectList.join(CProfileManager::kGROUP_PROFILE_SEPERATOR);
+	// update project list in item
+	modifiedItem.projectList_ = updateGroupProjectList.join(CProjectManager::kGROUP_PROFILE_SEPERATOR);
 
     if (currentGroupName_ == "") { // new Group
-        CProfileManager::getInstance()->updateGroupItem(modifiedItem.name_, modifiedItem); 
+        CProjectManager::getInstance()->updateGroupItem(modifiedItem.name_, modifiedItem); 
 	} else {
-		// use currentGroupName_ for updateProfileItem as name may have be changed 
-		CProfileManager::getInstance()->updateGroupItem(currentGroupName_, modifiedItem);
+		// use currentGroupName_ for updateProjectItem as name may have be changed 
+		CProjectManager::getInstance()->updateGroupItem(currentGroupName_, modifiedItem);
 	}
 
 	setWindowModified(false);
@@ -181,7 +181,7 @@ void CGroupDlg::on_groupComboBox_activated(const QString& comboText)
 {
 	groupName_lineEdit->setText(comboText);
 
-	// load profile for current group
+	// load project for current group
 	loadGroupProjectListView(comboText);
 }
 

@@ -1,34 +1,34 @@
-#include "CProfileLoadThread.h"
+#include "CProjectLoadThread.h"
 
-CProfileLoadThread::CProfileLoadThread(QObject *parent)
+CProjectLoadThread::CProjectLoadThread(QObject *parent)
     : QThread(parent)
 {
 	taggerPtr_ = NULL;
 	outputItemListPtr_ = NULL;
 }
 
-void CProfileLoadThread::setTaggerPtr(QTagger* taggerPtr)
+void CProjectLoadThread::setTaggerPtr(QTagger* taggerPtr)
 {
 	taggerPtr_ = taggerPtr;
 }
 
-void CProfileLoadThread::setOutputItemListPtr(T_OutputItemList* outputItemListPtr)
+void CProjectLoadThread::setOutputItemListPtr(T_OutputItemList* outputItemListPtr)
 {
 	outputItemListPtr_ = outputItemListPtr;
 }
 
-void CProfileLoadThread::setCurrentProfileItem(const CProfileItem& profileItem)
+void CProjectLoadThread::setCurrentProjectItem(const CProjectItem& projectItem)
 {
-    profileItem_ = profileItem;
+    projectItem_ = projectItem;
 }
 
-CProfileItem CProfileLoadThread::getCurrentProfileItem()
+CProjectItem CProjectLoadThread::getCurrentProjectItem()
 {
-    return profileItem_;
+    return projectItem_;
 }
 
 
-bool CProfileLoadThread::runCommand(const QString& program, const QString& workDir, const QString& redirectFile)
+bool CProjectLoadThread::runCommand(const QString& program, const QString& workDir, const QString& redirectFile)
 {
 	QString errStr;
 	CRunCommand::ENUM_RunCommandErr cmdErr;
@@ -57,7 +57,7 @@ bool CProfileLoadThread::runCommand(const QString& program, const QString& workD
 	return true;
 }
 
-void CProfileLoadThread::run()
+void CProjectLoadThread::run()
 {
 	CConfigManager* confManager;
 	confManager	= CConfigManager::getInstance();
@@ -65,18 +65,18 @@ void CProfileLoadThread::run()
 	QDir currentDir(QDir::currentPath());
 
 	// using absolutePath so relative and absolute path also possible
-	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + profileItem_.name_);
+	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + projectItem_.name_);
 
 	// write output to qtag config file
 	QFile qTagConfigFile(QTagger::kQTAG_CONFIG_FILE);
 
 	qTagConfigFile.open(QIODevice::WriteOnly | QIODevice::Text);
 	QTextStream qTagConfigFileOut(&qTagConfigFile);
-	qTagConfigFileOut << "profileLoad=" << profileItem_.name_ << endl;
+	qTagConfigFileOut << "projectLoad=" << projectItem_.name_ << endl;
 
 	qTagConfigFile.close();
 
-	QString tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + profileItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+	QString tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + projectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
 	if (taggerPtr_ != NULL) {
 		taggerPtr_->loadTagList(tagDbFileName);
@@ -95,9 +95,9 @@ void CProfileLoadThread::run()
 	qDebug() << "outputFile = " << outputFile << endl;
 
 	if (bListFileOpenResult == 0) {
-		emit profileLoadPercentageCompleted(100);
+		emit projectLoadPercentageCompleted(100);
 	} else {
-		emit profileLoadPercentageCompleted(0);
+		emit projectLoadPercentageCompleted(0);
 	}
 }
 

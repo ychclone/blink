@@ -17,9 +17,9 @@ CConfigDlg::CConfigDlg(QWidget* parent)
 	createActions();
 }
 
-QFont CConfigDlg::getProfileDefaultFont()
+QFont CConfigDlg::getProjectDefaultFont()
 {
-	return profileDefaultFont_;
+	return projectDefaultFont_;
 }
 
 QFont CConfigDlg::getSymbolDefaultFont()
@@ -39,17 +39,17 @@ void CConfigDlg::loadSetting()
 
 	timeoutRunExtProgram_lineEdit->setText(confManager->getAppSettingValue("TimeoutRunExtProgram").toString());
 
-	// Profile font
-	QString profileFontStr = confManager->getAppSettingValue("ProfileFont").toString();
-	if (profileFontStr != "") { // load from setting
-		profileDefaultFont_.fromString(profileFontStr);
+	// Project font
+	QString projectFontStr = confManager->getAppSettingValue("ProjectFont").toString();
+	if (projectFontStr != "") { // load from setting
+		projectDefaultFont_.fromString(projectFontStr);
 	} else {
-		profileDefaultFont_ = QApplication::font(); // using application font as default font
+		projectDefaultFont_ = QApplication::font(); // using application font as default font
 	}
 
-	// update profile font in setting display
-	QString profileFontTextToDisplay = profileDefaultFont_.family() + ", " + QString::number(profileDefaultFont_.pointSize());
-	profileFont_lineEdit->setText(profileFontTextToDisplay);
+	// update project font in setting display
+	QString projectFontTextToDisplay = projectDefaultFont_.family() + ", " + QString::number(projectDefaultFont_.pointSize());
+	projectFont_lineEdit->setText(projectFontTextToDisplay);
 
 	// Symbol font
 	QString symbolFontStr = confManager->getAppSettingValue("SymbolFont").toString();
@@ -76,7 +76,7 @@ void CConfigDlg::saveSetting()
 
 	confManager->setAppSettingValue("TimeoutRunExtProgram", timeoutRunExtProgram_lineEdit->text());
 
-	confManager->setAppSettingValue("ProfileFont", profileDefaultFont_.toString());
+	confManager->setAppSettingValue("ProjectFont", projectDefaultFont_.toString());
 	confManager->setAppSettingValue("SymbolFont", symbolDefaultFont_.toString());
 }
 
@@ -92,7 +92,7 @@ void CConfigDlg::createActions()
 	QObject::connect(tagDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(tmpDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(timeoutRunExtProgram_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
-	QObject::connect(profileFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
+	QObject::connect(projectFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(symbolFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 }
 
@@ -145,18 +145,18 @@ void CConfigDlg::on_defaultEditor_toolBn_clicked()
 	}
 }
 
-void CConfigDlg::on_profileFont_toolBn_clicked()
+void CConfigDlg::on_projectFont_toolBn_clicked()
 {
 	bool bOkClicked;
 	QFont selectedFont = QFontDialog::getFont(
-						&bOkClicked, profileDefaultFont_, this);
+						&bOkClicked, projectDefaultFont_, this);
 
 	if (bOkClicked) {
-		profileDefaultFont_ = selectedFont;
+		projectDefaultFont_ = selectedFont;
 
-		// update profile font setting display
-		QString fontTextToDisplay = profileDefaultFont_.family() + ", " + QString::number(profileDefaultFont_.pointSize());
-		profileFont_lineEdit->setText(fontTextToDisplay);
+		// update project font setting display
+		QString fontTextToDisplay = projectDefaultFont_.family() + ", " + QString::number(projectDefaultFont_.pointSize());
+		projectFont_lineEdit->setText(fontTextToDisplay);
 	}
 }
 

@@ -31,13 +31,13 @@ https://github.com/ychclone/blink/releases
 # Usage
 
 1. Drop the folder (e.g. from file explorer, nautilus) into the window below
-profile tab.
+project tab.
 ![Drop folder](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_drop_folder.png)
-2. A new profile dialog will appears. Type the file extensions that you want to index.
-![New profile](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_new_profile.png) 
-3. Right click on the profile name
+2. A new project dialog will appears. Type the file extensions that you want to index.
+![New project](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_new_project.png) 
+3. Right click on the project name
 4. Click "Rebuild Symbol"
-5. Double click the profile name to make it the active project.
+5. Double click the project name to make it the active project.
 Or right click and select "Load"
 6. Start file filtering and code search on the file and symbol tab
 

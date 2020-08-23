@@ -19,9 +19,9 @@
 #include <QCompleter>
 #include <QStringListModel>
 
-#include "Model/CProfileManager.h"
-#include "Model/CProfileLoadThread.h"
-#include "Model/CProfileUpdateThread.h"
+#include "Model/CProjectManager.h"
+#include "Model/CProjectLoadThread.h"
+#include "Model/CProjectUpdateThread.h"
 
 #include "Model/CGroupLoadThread.h"
 
@@ -54,16 +54,16 @@ public slots:
 	void loadFileList();
 
 private slots:
-    void on_newProfileButton_clicked();
-    void on_loadProfileButton_clicked();
-    void on_updateProfileButton_clicked();
-    void on_rebuildTagProfileButton_clicked();
+    void on_newProjectButton_clicked();
+    void on_loadProjectButton_clicked();
+    void on_updateProjectButton_clicked();
+    void on_rebuildTagProjectButton_clicked();
 
-    void on_editProfileButton_clicked();
-    void on_deleteProfileButton_clicked();
+    void on_editProjectButton_clicked();
+    void on_deleteProjectButton_clicked();
 
-	void on_exploreProfileButton_clicked();
-	void on_consoleProfileButton_clicked();
+	void on_exploreProjectButton_clicked();
+	void on_consoleProjectButton_clicked();
 
 
     void on_newGroupButton_clicked();
@@ -79,7 +79,7 @@ private slots:
     void on_actionTransparent_toggled();
 	void on_actionToolbar_toggled();
 
-	void on_actionProfile_Panel_toggled();
+	void on_actionProject_Panel_toggled();
 	void on_actionFile_Panel_toggled();
 
     void on_actionExit_triggered();
@@ -99,12 +99,12 @@ private slots:
     void updateTagBuildProgress(int percentage);
 	void updateCancelledTagBuild();
 
-	void updateProfileLoadProgress(int percentage);
+	void updateProjectLoadProgress(int percentage);
 	void updateGroupLoadProgress(int percentage);
 
 	void on_errorDuringRun(const QString& cmdStr);
 
-	void on_profilePatternLineEditShortcutPressed();
+	void on_projectPatternLineEditShortcutPressed();
 	void on_groupPatternLineEditShortcutPressed();
 
 	void on_filePatternLineEditShortcutPressed();
@@ -112,7 +112,7 @@ private slots:
 
 	void on_infoTabWidgetToolBn_clicked();
 
-	void profileFilterRegExpChanged();
+	void projectFilterRegExpChanged();
 	void groupFilterRegExpChanged();
 
 	void fileFilterRegExpChanged();
@@ -141,7 +141,7 @@ private:
 	void setSymbolFont(QFont symbolFont);
     void createActions();
 
-    QStringList getSelectedProfileItemNameList();
+    QStringList getSelectedProjectItemNameList();
 	QStringList getSelectedGroupItemNameList();
 	QStringList getSelectedOutputItemNameList();
 
@@ -163,8 +163,8 @@ private:
 
 	CFindReplaceModel findReplaceModel_;
 
-    CProfileLoadThread profileLoadThread_;
-    CProfileUpdateThread profileUpdateThread_;
+    CProjectLoadThread projectLoadThread_;
+    CProjectUpdateThread projectUpdateThread_;
 
 	CGroupLoadThread groupLoadThread_;
 
@@ -176,7 +176,7 @@ private:
 
     QTimeLine timeLine_;
 
-    QShortcut* profilePatternLineEditShortcut;
+    QShortcut* projectPatternLineEditShortcut;
 	QShortcut* groupPatternLineEditShortcut;
 
 	QShortcut* fileSearchShortcut;
@@ -186,8 +186,8 @@ private:
 	QShortcut* outputConsoleShortcut;
 	QShortcut* outputPropertiesShortcut;
 
-	QShortcut* profileLoadShortcut;
-	QShortcut* profileUpdateShortcut;
+	QShortcut* projectLoadShortcut;
+	QShortcut* projectUpdateShortcut;
 
 	QShortcut* symbolSearchFrameShortcut;
 	QShortcut* nextSymbolSearchShortcut;
@@ -204,7 +204,7 @@ private:
 	QSize priorMainTabWidgetSize_;
 	int infoTabWidgetWidth;
 
-	CProfileItem currentProfileItem_;
+	CProjectItem currentProjectItem_;
 	CGroupItem currentGroupItem_;
 
 	CConfigManager* confManager_;

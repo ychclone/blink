@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	
     // handling of tag to be query
 	if (qFlag) {
-		// read currently load profile
+		// read currently load project
 		QFile qTagConfigFile(QCoreApplication::applicationDirPath() + "/" + configFileName);
 
 		if (!qTagConfigFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -133,12 +133,12 @@ int main(int argc, char *argv[])
 		QTextStream qTagConfigFileIn(&qTagConfigFile);
 
 		QString configStr;
-		QString profileLoadStr = "profileLoad=";
+		QString projectLoadStr = "projectLoad=";
 
 		while (!qTagConfigFileIn.atEnd()) {  
 			configStr = qTagConfigFileIn.readLine();
-			if (configStr.startsWith(profileLoadStr)) {
-				configStr.remove(0, profileLoadStr.length());
+			if (configStr.startsWith(projectLoadStr)) {
+				configStr.remove(0, projectLoadStr.length());
 				
 				tagDbFileName = QString(QCoreApplication::applicationDirPath() + "/" + QTagger::kQTAG_TAGS_DIR) + "/" + configStr + "/" + tagDbFileName;
 				inputFileName = QString(QCoreApplication::applicationDirPath() + "/" + QTagger::kQTAG_TAGS_DIR) + "/" + configStr + "/" + inputFileName; 

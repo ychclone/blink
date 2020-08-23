@@ -6,7 +6,7 @@
 #include <iostream>
 #include "CXmlStorageHandler.h"
 
-BYTE CXmlStorageHandler::loadFromFile(const QString& filename, QMap<QString, CProfileItem>& profileMap, QMap<QString, CGroupItem>& groupMap)
+BYTE CXmlStorageHandler::loadFromFile(const QString& filename, QMap<QString, CProjectItem>& projectMap, QMap<QString, CGroupItem>& groupMap)
 {
     QFile file(filename);
 
@@ -14,7 +14,7 @@ BYTE CXmlStorageHandler::loadFromFile(const QString& filename, QMap<QString, CPr
         return LoadFileError;
     }
 
-    QDomDocument doc("ProfileML");
+    QDomDocument doc("ProjectML");
 
 	QString errMsg;
 	int errLine, errCol;
@@ -36,18 +36,18 @@ BYTE CXmlStorageHandler::loadFromFile(const QString& filename, QMap<QString, CPr
 	while (!docNode.isNull()) { 
 		QDomElement rootItem = docNode.toElement();
 
-		if (rootItem.tagName() == "profile") {
-			profileMap.clear();
+		if (rootItem.tagName() == "project") {
+			projectMap.clear();
 			QDomNode node = rootItem.firstChild();
 
 			while (!node.isNull()) {
 			   QDomElement element = node.toElement();
 			   if (!element.isNull()) {
-				  if (element.tagName() == "profileItem") {
-					  CProfileItem item;
+				  if (element.tagName() == "projectItem") {
+					  CProjectItem item;
 
-					  fillProfileItem(item, element);
-					  profileMap[element.attribute("name", "")] = item;
+					  fillProjectItem(item, element);
+					  projectMap[element.attribute("name", "")] = item;
 				  }
 				  node = node.nextSibling();
 			   }
@@ -75,17 +75,17 @@ BYTE CXmlStorageHandler::loadFromFile(const QString& filename, QMap<QString, CPr
     return NoError;
 }
 
-QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CProfileItem &profileItem)
+QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CProjectItem &projectItem)
 {
-    QDomElement element = document.createElement("profileItem");
+    QDomElement element = document.createElement("projectItem");
 
-    element.setAttribute("name", profileItem.name_);
-    element.setAttribute("srcDir", profileItem.srcDir_);
-    element.setAttribute("srcMask", profileItem.srcMask_);
-    element.setAttribute("headerMask", profileItem.headerMask_);
-	element.setAttribute("tagUpdateDateTime", profileItem.tagUpdateDateTime_); 
-	element.setAttribute("profileCreateDateTime", profileItem.profileCreateDateTime_); 
-    element.setAttribute("labels", profileItem.labels_);  
+    element.setAttribute("name", projectItem.name_);
+    element.setAttribute("srcDir", projectItem.srcDir_);
+    element.setAttribute("srcMask", projectItem.srcMask_);
+    element.setAttribute("headerMask", projectItem.headerMask_);
+	element.setAttribute("tagUpdateDateTime", projectItem.tagUpdateDateTime_); 
+	element.setAttribute("projectCreateDateTime", projectItem.projectCreateDateTime_); 
+    element.setAttribute("labels", projectItem.labels_);  
 
     return element;
 }
@@ -103,10 +103,10 @@ QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CGro
     return element;
 } 
 
-void CXmlStorageHandler::fillProfileItem(CProfileItem& profileItemToBeFill, const QDomElement& element)
+void CXmlStorageHandler::fillProjectItem(CProjectItem& projectItemToBeFill, const QDomElement& element)
 {
 	QString name, srcDir, srcMask, headerMask;
-	QString tagUpdateDateTime, profileCreateDateTime;
+	QString tagUpdateDateTime, projectCreateDateTime;
 
     QString labels;
     
@@ -117,12 +117,12 @@ void CXmlStorageHandler::fillProfileItem(CProfileItem& profileItemToBeFill, cons
     labels = element.attribute("labels", "");
 
 	tagUpdateDateTime = element.attribute("tagUpdateDateTime", ""); 
-	profileCreateDateTime = element.attribute("profileCreateDateTime", ""); 
+	projectCreateDateTime = element.attribute("projectCreateDateTime", ""); 
     
-	CProfileItem profileItem(name, srcDir, srcMask, headerMask, 
-		tagUpdateDateTime, profileCreateDateTime, labels);
+	CProjectItem projectItem(name, srcDir, srcMask, headerMask, 
+		tagUpdateDateTime, projectCreateDateTime, labels);
 
-	profileItemToBeFill = profileItem;
+	projectItemToBeFill = projectItem;
 }
 
 void CXmlStorageHandler::fillGroupItem(CGroupItem& groupItemToBeFill, const QDomElement& element)
@@ -146,22 +146,22 @@ void CXmlStorageHandler::fillGroupItem(CGroupItem& groupItemToBeFill, const QDom
 }
 
 
-BYTE CXmlStorageHandler::saveToFile(const QString& filename, const QMap<QString, CProfileItem>& profileMap, const QMap<QString, CGroupItem>& groupMap)
+BYTE CXmlStorageHandler::saveToFile(const QString& filename, const QMap<QString, CProjectItem>& projectMap, const QMap<QString, CGroupItem>& groupMap)
 {
-    QDomDocument doc("ProfileML");
+    QDomDocument doc("ProjectML");
 
 	// record
 	QDomElement recordRoot = doc.createElement("record"); 
 	doc.appendChild(recordRoot); 
 
-	// profile
-    QDomElement profileRoot = doc.createElement("profile");
-    recordRoot.appendChild(profileRoot);
+	// project
+    QDomElement projectRoot = doc.createElement("project");
+    recordRoot.appendChild(projectRoot);
 
-    CProfileItem profileItem;
-    foreach (profileItem, profileMap) {
-        QDomElement node = createXMLNode(doc, profileItem);
-        profileRoot.appendChild(node);
+    CProjectItem projectItem;
+    foreach (projectItem, projectMap) {
+        QDomElement node = createXMLNode(doc, projectItem);
+        projectRoot.appendChild(node);
     }
 
 	// group
@@ -175,7 +175,7 @@ BYTE CXmlStorageHandler::saveToFile(const QString& filename, const QMap<QString,
     }
 
 #ifdef DEBUG_XML
-    QDomElement element = doc.createElement("profileItem");
+    QDomElement element = doc.createElement("projectItem");
     element.setAttribute("name", "a1");
     element.setAttribute("srcDir", "a2"); 
     element.setAttribute("srcMask", "a3"); 

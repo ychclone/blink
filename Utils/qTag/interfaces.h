@@ -7,5 +7,5 @@ class DbmInterface
 		virtual QStringList lookup(int id, const QString &key) = 0;
 };
 
-Q_DECLARE_INTERFACE(DbmInterface, "profileloader.DbmInterface/1.0")
+Q_DECLARE_INTERFACE(DbmInterface, "projectloader.DbmInterface/1.0")
 

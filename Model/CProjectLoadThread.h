@@ -6,32 +6,32 @@
 
 #include "Model/qTagger/qTagger.h"
 
-#include "Model/CProfileItem.h"
+#include "Model/CProjectItem.h"
 #include "Model/CRunCommand.h"
 #include "Model/CConfigManager.h"  
 
-class CProfileLoadThread: public QThread
+class CProjectLoadThread: public QThread
 {
 	Q_OBJECT
 
 public:
-    CProfileLoadThread(QObject *parent = 0);
+    CProjectLoadThread(QObject *parent = 0);
     
-    void setCurrentProfileItem(const CProfileItem& profileItem);
+    void setCurrentProjectItem(const CProjectItem& projectItem);
 
 	void setOutputItemListPtr(T_OutputItemList* outputItemListPtr);
 	void setTaggerPtr(QTagger* taggerPtrPtr);
 
-	CProfileItem getCurrentProfileItem(); 
+	CProjectItem getCurrentProjectItem(); 
     
     void run();
 
 signals:
-	void profileLoadPercentageCompleted(int percentage); 
+	void projectLoadPercentageCompleted(int percentage); 
 
 private:
     bool runCommand(const QString& program, const QString& workDir, const QString& redirectFile = "");
-    CProfileItem profileItem_;
+    CProjectItem projectItem_;
 
 	CRunCommand cmd_;
 	QTagger* taggerPtr_;

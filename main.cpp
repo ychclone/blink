@@ -18,9 +18,9 @@ int main(int argc, char *argv[])
 
     CXmlStorageHandler xmlStorageHandler;
 
-    CProfileManager::getInstance()->setProfileFile("record.xml");
-    CProfileManager::getInstance()->setStorageHandler(xmlStorageHandler);
-    CProfileManager::getInstance()->attachStorage();
+    CProjectManager::getInstance()->setProjectFile("record.xml");
+    CProjectManager::getInstance()->setStorageHandler(xmlStorageHandler);
+    CProjectManager::getInstance()->attachStorage();
 
     // load profile list after storage ready
 	window->loadProjectList();

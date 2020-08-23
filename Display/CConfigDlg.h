@@ -13,7 +13,7 @@ public:
 
 	virtual ~CConfigDlg() {};
 
-	QFont getProfileDefaultFont();
+	QFont getProjectDefaultFont();
 	QFont getSymbolDefaultFont();
 
 private slots:
@@ -23,7 +23,7 @@ private slots:
 	void on_applyButton_clicked();
 
 	void on_defaultEditor_toolBn_clicked();
-	void on_profileFont_toolBn_clicked();
+	void on_projectFont_toolBn_clicked();
 
 	void on_symbolFont_toolBn_clicked();
 
@@ -38,7 +38,7 @@ private:
 	void loadSetting();
 	void saveSetting();
 
-	QFont profileDefaultFont_;
+	QFont projectDefaultFont_;
 	QFont symbolDefaultFont_;
 
 

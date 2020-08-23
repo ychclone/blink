@@ -8,19 +8,19 @@
 #include "Utils/CUtils.h"
 #include "Model/qTagger/qTagger.h"
 
-#include "Model/CProfileItem.h"
+#include "Model/CProjectItem.h"
 #include "Model/CRunCommand.h"
 #include "Model/CConfigManager.h"   
 #include "Model/qTagger/CSourceFileList.h" 
 
-class CProfileUpdateThread: public QThread
+class CProjectUpdateThread: public QThread
 {
     Q_OBJECT
 
 public:
-    CProfileUpdateThread(QObject *parent = 0);
+    CProjectUpdateThread(QObject *parent = 0);
     
-    void setCurrentProfileItem(const CProfileItem& profileItem);
+    void setCurrentProjectItem(const CProjectItem& projectItem);
     void setRebuildTag(bool bRebuildTag);
 
 	void run();
@@ -41,7 +41,7 @@ private:
 
 	int countTotalRunCmd();
 	
-    CProfileItem profileItem_;
+    CProjectItem projectItem_;
 
 	CRunCommand cmd_;
     

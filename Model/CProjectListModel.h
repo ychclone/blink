@@ -2,7 +2,7 @@
 #define CPROFILE_LIST_MODEL_H
 
 #include <QStandardItemModel>
-#include "Model/CProfileItem.h"
+#include "Model/CProjectItem.h"
 
 class CProjectListModel: public QStandardItemModel
 {
@@ -11,7 +11,7 @@ class CProjectListModel: public QStandardItemModel
 public:
     CProjectListModel(QObject *parent = 0);
 
-	void addProfileItem(const CProfileItem& profileItem);
+	void addProjectItem(const CProjectItem& projectItem);
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent);

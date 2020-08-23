@@ -88,13 +88,13 @@ void CGroupLoadThread::run()
 	QString tagRootDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString()); 
 	QStringList groupProjectList; 
 
-	groupProjectList = groupItem_.projectList_.split(CProfileManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
+	groupProjectList = groupItem_.projectList_.split(CProjectManager::kGROUP_PROFILE_SEPERATOR, QString::SkipEmptyParts);
 
-	foreach (const QString& profileName, groupProjectList) { 
+	foreach (const QString& projectName, groupProjectList) { 
 		QString outputFile;  
 		int bListFileOpenResult; 
 
-		outputFile = tagRootDir + "/" + profileName + "/" + QTagger::kQTAG_DEFAULT_INPUTLIST_FILE;
+		outputFile = tagRootDir + "/" + projectName + "/" + QTagger::kQTAG_DEFAULT_INPUTLIST_FILE;
 
 		if (outputItemListPtr_ != NULL) {
 			bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *outputItemListPtr_);

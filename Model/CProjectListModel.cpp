@@ -5,7 +5,7 @@
 #include <QDateTime>
 
 #include "CProjectListModel.h"
-#include "Display/CProfileDlg.h"
+#include "Display/CProjectDlg.h"
 
 CProjectListModel::CProjectListModel(QObject *parent)
 	: QStandardItemModel(0, 4, parent)
@@ -15,33 +15,33 @@ CProjectListModel::CProjectListModel(QObject *parent)
     // view when list is empty, view with content in CMainWindow::loadProjectList()
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
     setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    setHeaderData(2, Qt::Horizontal, QObject::tr("Profile Create Datetime"));
+    setHeaderData(2, Qt::Horizontal, QObject::tr("Project Create Datetime"));
     setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
 }
 
-void CProjectListModel::addProfileItem(const CProfileItem& profileItem)
+void CProjectListModel::addProjectItem(const CProjectItem& projectItem)
 {
-	QDateTime tagUpdateDateTime, profileCreateDatetime;
+	QDateTime tagUpdateDateTime, projectCreateDatetime;
 
     insertRow(0);
 
-	setData(index(0, 0), profileItem.name_);
+	setData(index(0, 0), projectItem.name_);
 
-	if (profileItem.tagUpdateDateTime_ == "") {
+	if (projectItem.tagUpdateDateTime_ == "") {
 		setData(index(0, 1), "");
 	} else {
-		tagUpdateDateTime = QDateTime::fromString(profileItem.tagUpdateDateTime_, "dd/MM/yyyy HH:mm:ss");
+		tagUpdateDateTime = QDateTime::fromString(projectItem.tagUpdateDateTime_, "dd/MM/yyyy HH:mm:ss");
 		setData(index(0, 1), tagUpdateDateTime);
 	}
 
-	if (profileItem.profileCreateDateTime_ == "") {
+	if (projectItem.projectCreateDateTime_ == "") {
 		setData(index(0, 2), "");
 	} else {
-		profileCreateDatetime = QDateTime::fromString(profileItem.profileCreateDateTime_, "dd/MM/yyyy HH:mm:ss");
-		setData(index(0, 2), profileCreateDatetime);
+		projectCreateDatetime = QDateTime::fromString(projectItem.projectCreateDateTime_, "dd/MM/yyyy HH:mm:ss");
+		setData(index(0, 2), projectCreateDatetime);
 	}
 
-    setData(index(0, 3), profileItem.labels_);
+    setData(index(0, 3), projectItem.labels_);
 
 }
 
@@ -53,7 +53,7 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
     QFileInfo info;
     QString fName;
 
-    CProfileItem droppedItem;
+    CProjectItem droppedItem;
 
     urlList = data->urls(); // retrieve list of urls
 
@@ -73,11 +73,11 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
             droppedItem.headerMask_ = "*.hpp *.h";
             droppedItem.labels_ = "";
 
-            QDialog* dialog = new CProfileDlg(droppedItem.name_, droppedItem, parent_);
+            QDialog* dialog = new CProjectDlg(droppedItem.name_, droppedItem, parent_);
             dialog->exec();
 
         } else {
-            QMessageBox::information(parent_, "Add profile", "Only folder is supported!", QMessageBox::Ok);
+            QMessageBox::information(parent_, "Add project", "Only folder is supported!", QMessageBox::Ok);
         }
     }
     return true;

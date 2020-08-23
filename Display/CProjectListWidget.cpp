@@ -5,7 +5,7 @@ CProjectListWidget::CProjectListWidget(QWidget *parent)
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font(); 
 
-	profileFontSize_ = currentFont.pointSize();
+	projectFontSize_ = currentFont.pointSize();
 }
 
 void CProjectListWidget::updateProjectListWidget()
@@ -18,50 +18,50 @@ void CProjectListWidget::updateProjectListWidget()
 
 void CProjectListWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	emit profileItemTriggered(); 
+	emit projectItemTriggered(); 
     QTreeView::mouseDoubleClickEvent(event);
 }
 
 void CProjectListWidget::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Return) {
-		emit profileItemTriggered(); 
+		emit projectItemTriggered(); 
 	} else if ((event->key() == Qt::Key_Equal) && (event->modifiers() == Qt::ControlModifier)) { 
-		profileZoomIn();
+		projectZoomIn();
 	} else if ((event->key() == Qt::Key_Minus) && (event->modifiers() == Qt::ControlModifier)) { 
-		profileZoomOut();
+		projectZoomOut();
 	} 
 	
 	QTreeView::keyPressEvent(event);
 }
 
-void CProjectListWidget::updateProfileFont(const QFont& profileFont) 
+void CProjectListWidget::updateProjectFont(const QFont& projectFont) 
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font();
 
-	if (currentFont != profileFont) { 
-		static_cast <QWidget*> (this)->setFont(profileFont);
-		profileFontSize_ = profileFont.pointSize(); 
+	if (currentFont != projectFont) { 
+		static_cast <QWidget*> (this)->setFont(projectFont);
+		projectFontSize_ = projectFont.pointSize(); 
 		updateProjectListWidget();
 	}
 }
 
-void CProjectListWidget::profileZoomIn()
+void CProjectListWidget::projectZoomIn()
 {
-	profileFontSize_++;
+	projectFontSize_++;
 	QFont fnt = static_cast <QWidget*> (this)->font();;
-	fnt.setPointSize(profileFontSize_); 
+	fnt.setPointSize(projectFontSize_); 
 	static_cast <QWidget*> (this)->setFont(fnt);
 
 	updateProjectListWidget();
 }
 
-void CProjectListWidget::profileZoomOut()
+void CProjectListWidget::projectZoomOut()
 {
-	if (profileFontSize_ > 1) {
-		profileFontSize_--;
+	if (projectFontSize_ > 1) {
+		projectFontSize_--;
 		QFont fnt = static_cast <QWidget*> (this)->font();
-		fnt.setPointSize(profileFontSize_); 
+		fnt.setPointSize(projectFontSize_); 
 		static_cast <QWidget*> (this)->setFont(fnt);
 
 		updateProjectListWidget(); 
@@ -73,9 +73,9 @@ void CProjectListWidget::wheelEvent(QWheelEvent *e)
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();
         if (e->delta() > 0) {
-		   profileZoomIn();
+		   projectZoomIn();
 		} else {
-		   profileZoomOut();
+		   projectZoomOut();
 		}
 	}
 	QTreeView::wheelEvent(e); 
