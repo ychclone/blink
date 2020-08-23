@@ -5,7 +5,13 @@
 #include <QMessageBox>
 
 #include <QDebug>
+#include <QProcess>
+
+#include <QMenu>
+
 #include "CFindReplaceDlg.h"
+
+#include "Model/CConfigManager.h"
 
 CFindReplaceDlg::CFindReplaceDlg(QWidget* parent, CFindReplaceModel* findReplaceModel)
 : QDialog(parent)
@@ -36,6 +42,8 @@ CFindReplaceDlg::CFindReplaceDlg(QWidget* parent, CFindReplaceModel* findReplace
 void CFindReplaceDlg::createActions()
 {
 	connect(findReplaceModel_->getFileListModel(), SIGNAL(itemChanged(QStandardItem *)), this, SLOT(on_fileList_itemChanged(QStandardItem *)));
+
+	connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_fileEditPressed()));
 }
 
 void CFindReplaceDlg::setFindLineEdit(QString findStr)
@@ -113,6 +121,57 @@ void CFindReplaceDlg::on_fileList_itemChanged(QStandardItem *item)
 {
 	showFileSelectedInStatusBar();
 }
+
+void CFindReplaceDlg::on_fileEditPressed()
+{
+	QString executeDir;
+	QString editFilename;
+
+	QString selectedFileName = getSelectedFile();
+
+	QFileInfo fileInfo(selectedFileName);
+	executeDir = fileInfo.absoluteDir().absolutePath();
+
+	QString consoleCommnad = CConfigManager::getInstance()->getAppSettingValue("DefaultEditor").toString();
+
+#ifdef Q_OS_WIN
+	editFilename = "\"" + selectedFileName + "\"";
+#else
+	editFilename = selectedFileName;
+#endif
+
+#ifdef Q_OS_WIN
+	QString excuteMethod = "open";
+
+	ShellExecute(NULL, reinterpret_cast<const wchar_t*>(excuteMethod.utf16()), reinterpret_cast<const wchar_t*>(consoleCommnad.utf16()), reinterpret_cast<const wchar_t*> (editFilename.utf16()), reinterpret_cast<const wchar_t*>(executeDir.utf16()), SW_NORMAL);
+#else
+	QProcess::startDetached(consoleCommnad, QStringList(editFilename));
+#endif
+}
+
+QString CFindReplaceDlg::getSelectedFile()
+{
+	QModelIndex index = fileListView->currentIndex();
+	QString fileName = index.data(Qt::DisplayRole).toString();
+
+    return fileName;
+}
+
+void CFindReplaceDlg::contextMenuEvent(QContextMenuEvent* event)
+{
+	QPoint p;
+
+	p = fileListView->mapFromGlobal(event->globalPos());
+
+	if (fileListView->rect().contains(p)) {
+		QMenu menu(this);
+
+		menu.addAction(actionFileEdit);
+
+		menu.exec(event->globalPos());
+	}
+}
+
 
 
 

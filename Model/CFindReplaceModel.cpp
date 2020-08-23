@@ -79,3 +79,5 @@ QStandardItemModel* CFindReplaceModel::getFileListModel() {
 }
 
 
+
+

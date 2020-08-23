@@ -461,15 +461,15 @@ void CMainWindow::createActions()
 	connect(actionGroupDelete, SIGNAL(triggered()), this, SLOT(on_deleteGroupButton_clicked()));
 
     // [File action]
-    connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_outputEditPressed()));
+    connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_fileEditPressed()));
 
     // default double click, enter action for output list item
-	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_outputEditPressed()));
+	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_fileEditPressed()));
 
-	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_outputCopyPressed()));
-	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_outputExplorePressed()));
-	connect(actionFileConsole, SIGNAL(triggered()), this, SLOT(on_outputConsolePressed()));
-    connect(actionFileProperties, SIGNAL(triggered()), this, SLOT(on_outputPropertiesPressed()));
+	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_fileCopyPressed()));
+	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_fileExplorePressed()));
+	connect(actionFileConsole, SIGNAL(triggered()), this, SLOT(on_fileConsolePressed()));
+    connect(actionFileProperties, SIGNAL(triggered()), this, SLOT(on_filePropertiesPressed()));
 
 	connect(actionSearch, SIGNAL(triggered()), this, SLOT(on_searchButton_clicked()));
 
@@ -500,8 +500,8 @@ void CMainWindow::createActions()
     connect(fileSearchShortcut, SIGNAL(activated()), this, SLOT(on_filePatternLineEditShortcutPressed()));
 	connect(tagSearchShortcut, SIGNAL(activated()), this, SLOT(on_searchLineEditShortcutPressed()));
 
-    connect(outputExploreShortcut, SIGNAL(activated()), this, SLOT(on_outputExplorePressed()));
-	connect(outputConsoleShortcut, SIGNAL(activated()), this, SLOT(on_outputConsolePressed()));
+    connect(outputExploreShortcut, SIGNAL(activated()), this, SLOT(on_fileExplorePressed()));
+	connect(outputConsoleShortcut, SIGNAL(activated()), this, SLOT(on_fileConsolePressed()));
 
 	connect(projectPattern_lineEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(projectFilterRegExpChanged()));
@@ -1628,7 +1628,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 }
 
-void CMainWindow::on_outputEditPressed()
+void CMainWindow::on_fileEditPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
@@ -1662,7 +1662,7 @@ void CMainWindow::on_outputEditPressed()
 	}
 }
 
-void CMainWindow::on_outputCopyPressed()
+void CMainWindow::on_fileCopyPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	QString clipBoardStr = "";
@@ -1678,7 +1678,7 @@ void CMainWindow::on_outputCopyPressed()
 	}
 }
 
-void CMainWindow::on_outputExplorePressed()
+void CMainWindow::on_fileExplorePressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
@@ -1702,7 +1702,7 @@ void CMainWindow::on_outputExplorePressed()
 	}
 }
 
-void CMainWindow::on_outputConsolePressed()
+void CMainWindow::on_fileConsolePressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
@@ -1729,7 +1729,7 @@ void CMainWindow::on_outputConsolePressed()
 	}
 }
 
-void CMainWindow::on_outputPropertiesPressed()
+void CMainWindow::on_filePropertiesPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();

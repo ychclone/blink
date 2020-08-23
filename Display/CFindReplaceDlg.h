@@ -4,6 +4,8 @@
 #include <QDialog>
 #include <QStatusBar>
 
+#include <QContextMenuEvent>
+
 #include "ui_findReplaceDialog.h"
 
 #include "Model/CFindReplaceModel.h"
@@ -15,10 +17,12 @@ class CFindReplaceDlg : public QDialog, private Ui::findReplaceDialog
 
 public:
     CFindReplaceDlg(QWidget* parent, CFindReplaceModel* findReplaceModel);
+	virtual ~CFindReplaceDlg() {};
+
 	void setFindLineEdit(QString findStr);
 
-
-	virtual ~CFindReplaceDlg() {};
+	QString getSelectedFile();
+	void contextMenuEvent(QContextMenuEvent* event);
 
 private slots:
 	void on_replaceButton_clicked();
@@ -28,6 +32,7 @@ private slots:
 	void on_clearAllButton_clicked();
 
 	void on_fileList_itemChanged(QStandardItem *item);
+	void on_fileEditPressed();
 
 
 private:

@@ -176,7 +176,11 @@
     </layout>
    </item>
    <item row="4" column="0">
-    <widget class="QListView" name="fileListView"/>
+    <widget class="QListView" name="fileListView">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::SingleSelection</enum>
+     </property>
+    </widget>
    </item>
    <item row="7" column="0">
     <widget class="QProgressBar" name="progressBar">
@@ -196,7 +200,18 @@
     </widget>
    </item>
   </layout>
+  <action name="actionFileEdit">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../app.qrc"/>
+ </resources>
  <connections/>
 </ui>

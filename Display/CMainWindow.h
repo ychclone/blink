@@ -86,11 +86,11 @@ private slots:
 	void on_actionSetting_triggered();
 	void on_actionFindReplaceDialog_triggered();
 
-	void on_outputEditPressed();
-	void on_outputCopyPressed();
-	void on_outputExplorePressed();
-	void on_outputConsolePressed();
-	void on_outputPropertiesPressed();
+	void on_fileEditPressed();
+	void on_fileCopyPressed();
+	void on_fileExplorePressed();
+	void on_fileConsolePressed();
+	void on_filePropertiesPressed();
 
 	void on_searchButton_clicked();
 
