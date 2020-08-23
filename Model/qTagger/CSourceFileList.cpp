@@ -132,7 +132,7 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 		listFileStream.setDevice(&currentListFile);
 	}
 
-	QDirIterator iter(srcDir, QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
+	QDirIterator iter(srcDir, nameFilters, QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories|QDirIterator::FollowSymlinks);
 	COutputItem outputItem;
 	QString lastModifiedDateTime;
 	QString fileSizeStr;
@@ -144,51 +144,54 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 	QString currentPath;
 	QString currentFileName;
 
+	QStringList fileList;
+
 	while (iter.hasNext()) {
-		if (QDir::match(nameFilters, iter.fileName())) {
-			outputItem.fileName_ = iter.filePath();
+		fileList << iter.next();
+	}
 
-			QFileInfo fileInfo(outputItem.fileName_);
-			fileInfo.setCaching(false);
+	for (const QString& filePath : fileList) {
+		QFileInfo fileInfo = QFileInfo(filePath);
+		outputItem.fileName_ = filePath;
 
-            outputItem.fileId_ = fileId;
+		fileInfo.setCaching(false);
 
-			lastModifiedDateTime = fileInfo.lastModified().toString("dd/MM/yyyy hh:mm:ss");
-			outputItem.fileLastModified_ = lastModifiedDateTime; // update outputItem last modified datetime
+		outputItem.fileId_ = fileId;
 
-			outputItem.fileSize_ = fileInfo.size(); // update outputItem file size
+		lastModifiedDateTime = fileInfo.lastModified().toString("dd/MM/yyyy hh:mm:ss");
+		outputItem.fileLastModified_ = lastModifiedDateTime; // update outputItem last modified datetime
 
-			if (bSaveToFile) {
-				// file id
-				listFileStream << QString::number(outputItem.fileId_);
-				listFileStream << "\t";
+		outputItem.fileSize_ = fileInfo.size(); // update outputItem file size
 
-				// filename; write filename only if same path as previous one
-				if (fileInfo.path() == lastFilePath) {
-					listFileStream << fileInfo.fileName();
-				} else {
-					listFileStream << outputItem.fileName_;
-					lastFilePath = fileInfo.path(); // update last path
-				}
-				listFileStream << "\t";
+		if (bSaveToFile) {
+			// file id
+			listFileStream << QString::number(outputItem.fileId_);
+			listFileStream << "\t";
 
-				// last modified datetime
-				listFileStream << lastModifiedDateTime;
-				listFileStream << "\t";
-
-				// file size
-				listFileStream << QString::number(outputItem.fileSize_);
-				listFileStream << "\n";
-
-				listFileStream.flush();
+			// filename; write filename only if same path as previous one
+			if (fileInfo.path() == lastFilePath) {
+				listFileStream << fileInfo.fileName();
+			} else {
+				listFileStream << outputItem.fileName_;
+				lastFilePath = fileInfo.path(); // update last path
 			}
+			listFileStream << "\t";
 
-			// append to result file list
-			resultFileList << outputItem;
+			// last modified datetime
+			listFileStream << lastModifiedDateTime;
+			listFileStream << "\t";
 
-			fileId++;
+			// file size
+			listFileStream << QString::number(outputItem.fileSize_);
+			listFileStream << "\n";
+
+			listFileStream.flush();
 		}
-		iter.next();
+
+		// append to result file list
+		resultFileList << outputItem;
+
+		fileId++;
 	}
 
 	if (bSaveToFile) {
