@@ -9,6 +9,10 @@
 
 #include <QMenu>
 
+#ifdef Q_OS_WIN
+	#include <qt_windows.h>
+#endif
+
 #include "CFindReplaceDlg.h"
 
 #include "Model/CConfigManager.h"
