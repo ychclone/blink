@@ -1,8 +1,9 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
-Instant code search, source files locator.
-Index management for multiple projects.
+Instant code search, source files locator.  
+Index management for multiple projects.  
+Replace in files for searched symbol.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/afn8q3ai3e7wphrf?svg=true)](https://ci.appveyor.com/project/ychclone/blink)
 
