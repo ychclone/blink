@@ -135,11 +135,6 @@ QSplitter::handle {
             <verstretch>1</verstretch>
            </sizepolicy>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>18</pointsize>
-           </font>
-          </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
@@ -187,14 +182,6 @@ QSplitter::handle {
             </property>
             <item>
              <widget class="CProjectListWidget" name="project_listView">
-              <property name="font">
-               <font>
-                <family>Ubuntu</family>
-                <pointsize>16</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
-              </property>
               <property name="focusPolicy">
                <enum>Qt::WheelFocus</enum>
               </property>
@@ -245,11 +232,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
                   <height>0</height>
                  </size>
                 </property>
-                <property name="font">
-                 <font>
-                  <pointsize>18</pointsize>
-                 </font>
-                </property>
                </widget>
               </item>
              </layout>
@@ -287,12 +269,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <family>PMingLiU</family>
-                <pointsize>10</pointsize>
-               </font>
               </property>
               <property name="styleSheet">
                <string notr="true">QTreeView::item {color: #0066FF;
@@ -347,11 +323,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
             <height>16777215</height>
            </size>
           </property>
-          <property name="font">
-           <font>
-            <pointsize>18</pointsize>
-           </font>
-          </property>
           <property name="toolTip">
            <string/>
           </property>
@@ -404,14 +375,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
-              </property>
-              <property name="font">
-               <font>
-                <family>Ubuntu</family>
-                <pointsize>16</pointsize>
-                <weight>50</weight>
-                <bold>false</bold>
-               </font>
               </property>
               <property name="focusPolicy">
                <enum>Qt::WheelFocus</enum>
@@ -496,11 +459,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
                      <verstretch>0</verstretch>
                     </sizepolicy>
                    </property>
-                   <property name="font">
-                    <font>
-                     <pointsize>18</pointsize>
-                    </font>
-                   </property>
                   </widget>
                  </item>
                 </layout>
@@ -536,11 +494,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
             </property>
             <item>
              <widget class="QPlainTextEdit" name="symbol_textBrowser">
-              <property name="font">
-               <font>
-                <pointsize>18</pointsize>
-               </font>
-              </property>
              </widget>
             </item>
             <item>
@@ -640,11 +593,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
                    <height>0</height>
                   </size>
                  </property>
-                 <property name="font">
-                  <font>
-                   <pointsize>18</pointsize>
-                  </font>
-                 </property>
                 </widget>
                </item>
               </layout>
@@ -703,11 +651,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
                   <width>0</width>
                   <height>0</height>
                  </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>18</pointsize>
-                 </font>
                 </property>
                </widget>
               </item>
@@ -1067,12 +1010,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="text">
     <string>&amp;Edit</string>
-   </property>
-   <property name="font">
-    <font>
-     <weight>75</weight>
-     <bold>true</bold>
-    </font>
    </property>
   </action>
   <action name="actionProjectAndGroupCaseSensitive">

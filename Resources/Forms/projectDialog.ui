@@ -45,11 +45,6 @@
      </property>
      <item>
       <widget class="QGroupBox" name="groupBox">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
        <property name="title">
         <string>Project</string>
        </property>
@@ -76,11 +71,6 @@
           </property>
           <item row="0" column="0">
            <widget class="QLabel" name="label_10">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Project &amp;name:</string>
             </property>
@@ -91,20 +81,10 @@
           </item>
           <item row="0" column="1">
            <widget class="QLineEdit" name="projectName_lineEdit">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_11">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>Source &amp;directory:</string>
             </property>
@@ -115,11 +95,6 @@
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="label_12">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>&amp;Header file mask:</string>
             </property>
@@ -130,20 +105,10 @@
           </item>
           <item row="3" column="1">
            <widget class="QLineEdit" name="headerfileMask_lineEdit">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
            </widget>
           </item>
           <item row="4" column="0">
            <widget class="QLabel" name="label_9">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>&amp;Source file mask:</string>
             </property>
@@ -154,22 +119,12 @@
           </item>
           <item row="4" column="1">
            <widget class="QLineEdit" name="srcFileMask_lineEdit">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
            </widget>
           </item>
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
              <widget class="QLineEdit" name="srcDir_lineEdit">
-              <property name="font">
-               <font>
-                <pointsize>18</pointsize>
-               </font>
-              </property>
              </widget>
             </item>
             <item>
@@ -186,20 +141,10 @@
           </item>
           <item row="5" column="1">
            <widget class="QLineEdit" name="labels_lineEdit">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
            </widget>
           </item>
           <item row="5" column="0">
            <widget class="QLabel" name="label">
-            <property name="font">
-             <font>
-              <pointsize>18</pointsize>
-             </font>
-            </property>
             <property name="text">
              <string>&amp;Labels:</string>
             </property>
@@ -247,11 +192,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="okButton">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
        <property name="text">
         <string>OK</string>
        </property>
@@ -266,11 +206,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="cancelButton">
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
-       </property>
        <property name="text">
         <string>Cancel</string>
        </property>
@@ -287,11 +222,6 @@
       <widget class="QPushButton" name="applyButton">
        <property name="enabled">
         <bool>false</bool>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>18</pointsize>
-        </font>
        </property>
        <property name="text">
         <string>Apply</string>
