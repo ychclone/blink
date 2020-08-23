@@ -1161,7 +1161,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
      <normaloff>:/Icons/22x22/zoom-3.png</normaloff>:/Icons/22x22/zoom-3.png</iconset>
    </property>
    <property name="text">
-    <string>Find &amp;Replace</string>
+    <string>&amp;Replace in files</string>
    </property>
   </action>
   <action name="actionSymbolRegularExpression">
