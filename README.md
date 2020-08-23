@@ -15,6 +15,7 @@ Index management for multiple projects.
 * Queries support autocomplete
 * Switch multiple projects easily with individual index
 * Support drag and drop for filename
+* Replaces in files for searched symbol
 * Cross platform and requires no installation
 
 # Download, Install
@@ -28,6 +29,9 @@ https://github.com/ychclone/blink/releases
 # Code search
 ![Code search](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png)
 
+# Replace in files
+![Replace in files](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_replaceinfiles.png)
+
 # Usage
 
 1. Drop the folder (e.g. from file explorer, nautilus) into the window below
@@ -40,6 +44,8 @@ project tab.
 5. Double click the project name to make it the active project.
 Or right click and select "Load"
 6. Start file filtering and code search on the file and symbol tab
+7. After symbol search in symbol tab or select files in file tab, 
+it can show replace in files tool in menu->tool
 
 # Advanced Usage
 
