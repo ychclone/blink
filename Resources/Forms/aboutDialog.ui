@@ -148,7 +148,6 @@
  </widget>
  <resources>
   <include location="../app.qrc"/>
-  <include location="blink_test/Resources/app.qrc"/>
  </resources>
  <connections/>
 </ui>
