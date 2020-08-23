@@ -1,6 +1,6 @@
-#include "COutputItem.h"
+#include "CFileItem.h"
 
-COutputItem::COutputItem()
+CFileItem::CFileItem()
 {
     fileId_ = 0;
 	fileName_ = "";
@@ -8,7 +8,7 @@ COutputItem::COutputItem()
 	fileSize_ = 0;
 }
 
-COutputItem::COutputItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize)
+CFileItem::CFileItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize)
 {
 	fileId_ = fileId;
 

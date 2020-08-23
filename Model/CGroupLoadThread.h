@@ -20,7 +20,7 @@ public:
     
     void setCurrentGroupItem(const CGroupItem& groupItem);
 
-	void setOutputItemListPtr(T_OutputItemList* outputItemListPtr);
+	void setFileItemListPtr(T_FileItemList* fileItemListPtr);
 	void setTaggerPtr(QTagger* taggerPtrPtr);
 
 	CGroupItem getCurrentGroupItem(); 
@@ -37,7 +37,7 @@ private:
 	CRunCommand cmd_;
 	QTagger* taggerPtr_;
 
-	T_OutputItemList* outputItemListPtr_;
+	T_FileItemList* fileItemListPtr_;
     
 };
 

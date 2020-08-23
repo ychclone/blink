@@ -4,7 +4,7 @@ CGroupLoadThread::CGroupLoadThread(QObject *parent)
     : QThread(parent)
 {
 	taggerPtr_ = NULL;
-	outputItemListPtr_ = NULL;
+	fileItemListPtr_ = NULL;
 }
 
 void CGroupLoadThread::setTaggerPtr(QTagger* taggerPtr)
@@ -12,9 +12,9 @@ void CGroupLoadThread::setTaggerPtr(QTagger* taggerPtr)
 	taggerPtr_ = taggerPtr;
 }
 
-void CGroupLoadThread::setOutputItemListPtr(T_OutputItemList* outputItemListPtr)
+void CGroupLoadThread::setFileItemListPtr(T_FileItemList* fileItemListPtr)
 {
-	outputItemListPtr_ = outputItemListPtr;
+	fileItemListPtr_ = fileItemListPtr;
 }
 
 void CGroupLoadThread::setCurrentGroupItem(const CGroupItem& groupItem)
@@ -81,8 +81,8 @@ void CGroupLoadThread::run()
 	}
 */	
 
-	if (outputItemListPtr_ != NULL) {
-		outputItemListPtr_->clear();
+	if (fileItemListPtr_ != NULL) {
+		fileItemListPtr_->clear();
 	}
 
 	QString tagRootDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString()); 
@@ -96,8 +96,8 @@ void CGroupLoadThread::run()
 
 		outputFile = tagRootDir + "/" + projectName + "/" + QTagger::kQTAG_DEFAULT_INPUTLIST_FILE;
 
-		if (outputItemListPtr_ != NULL) {
-			bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *outputItemListPtr_);
+		if (fileItemListPtr_ != NULL) {
+			bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *fileItemListPtr_);
 		}
 	} 
 

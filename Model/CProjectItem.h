@@ -1,5 +1,5 @@
-#ifndef CPROFILE_ITEM_H
-#define CPROFILE_ITEM_H
+#ifndef CPROJECT_ITEM_H
+#define CPROJECT_ITEM_H
 
 #include <QtXml>
 #include <QTextStream>
@@ -27,7 +27,7 @@ public:
     virtual ~CProjectItem() {};
 };
 
-#endif // CPROFILE_ITEM_H
+#endif // CPROJECT_ITEM_H
 
 
 

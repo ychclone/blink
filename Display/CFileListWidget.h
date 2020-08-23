@@ -1,5 +1,5 @@
-#ifndef COUTPUT_LIST_WIDGET_H
-#define COUTPUT_LIST_WIDGET_H
+#ifndef CFILE_LIST_WIDGET_H
+#define CFILE_LIST_WIDGET_H
 
 #include <QTreeView>
 #include <QMouseEvent> 
@@ -32,7 +32,7 @@ public:
 	QPoint dragStartPosition_;
 
 signals:
-	void outputItemTriggered();
+	void fileItemTriggered();
 
 private:
 	void updateFileListWidget();
@@ -47,4 +47,4 @@ private:
     
 };
 
-#endif // COUTPUT_LIST_WIDGET_H
+#endif // CFILE_LIST_WIDGET_H

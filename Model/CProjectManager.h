@@ -1,5 +1,5 @@
-#ifndef CPROFILE_MANAGER_H
-#define CPROFILE_MANAGER_H
+#ifndef CPROJECT_MANAGER_H
+#define CPROJECT_MANAGER_H
 
 #include "Model/CProjectItem.h"
 #include "Model/CGroupItem.h"
@@ -58,6 +58,6 @@ private:
 
 };
 
-#endif // CPROFILE_MANAGER_H
+#endif // CPROJECT_MANAGER_H
 
 

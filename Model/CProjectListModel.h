@@ -1,5 +1,5 @@
-#ifndef CPROFILE_LIST_MODEL_H
-#define CPROFILE_LIST_MODEL_H
+#ifndef CPROJECT_LIST_MODEL_H
+#define CPROJECT_LIST_MODEL_H
 
 #include <QStandardItemModel>
 #include "Model/CProjectItem.h"
@@ -22,4 +22,4 @@ public:
 	QWidget* parent_;
 };
 
-#endif // CPROFILE_LIST_MODEL_H
+#endif // CPROJECT_LIST_MODEL_H

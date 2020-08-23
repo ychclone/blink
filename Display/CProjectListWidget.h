@@ -1,5 +1,5 @@
-#ifndef CPROFILE_LIST_WIDGET_H
-#define CPROFILE_LIST_WIDGET_H
+#ifndef CPROJECT_LIST_WIDGET_H
+#define CPROJECT_LIST_WIDGET_H
 
 #include <QTreeView>
 #include <QWheelEvent>
@@ -30,4 +30,4 @@ private:
 	void projectZoomOut();
 };
 
-#endif // CPROFILE_LIST_WIDGET_H
+#endif // CPROJECT_LIST_WIDGET_H

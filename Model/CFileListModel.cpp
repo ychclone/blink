@@ -38,21 +38,21 @@ QItemSelectionModel* CFileListModel::getSelectionModel()
 	return fileListSelectionModel_;
 }
 
-void CFileListModel::addItem(const COutputItem& outputItem)
+void CFileListModel::addItem(const CFileItem& fileItem)
 {
 	quint64 fileSize;
 	QDateTime lastModifiedDateTime;
 
 	insertRow(0);
 
-	setData(index(0, 0), outputItem.fileName_);
+	setData(index(0, 0), fileItem.fileName_);
 
 	setData(index(0, 0), QIcon(":/Icons/text-x-preview.ico"), Qt::DecorationRole);
 
-	lastModifiedDateTime = QDateTime::fromString(outputItem.fileLastModified_, "dd/MM/yyyy HH:mm:ss");
+	lastModifiedDateTime = QDateTime::fromString(fileItem.fileLastModified_, "dd/MM/yyyy HH:mm:ss");
 	setData(index(0, 1), lastModifiedDateTime);
 
-	fileSize = outputItem.fileSize_;
+	fileSize = fileItem.fileSize_;
 
 	setData(index(0, 2), fileSize);
 }

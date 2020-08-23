@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 		QElapsedTimer timer;
 		timer.start();
 		
-		T_OutputItemList fileList;
+		T_FileItemList fileList;
 
 		CSourceFileList::loadFileList(inputFileName, fileList);
 

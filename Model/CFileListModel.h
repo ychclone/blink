@@ -1,5 +1,5 @@
-#ifndef COUTPUT_LIST_MODEL_H
-#define COUTPUT_LIST_MODEL_H
+#ifndef CFILE_LIST_MODEL_H
+#define CFILE_LIST_MODEL_H
 
 #include <QUrl>
 #include <QFileInfo>
@@ -13,7 +13,7 @@
 #include <QItemSelectionModel>
 #include <QSortFilterProxyModel>
 
-#include "Model/COutputItem.h"
+#include "Model/CFileItem.h"
 
 class CFileListModel: public QStandardItemModel
 {
@@ -26,7 +26,7 @@ public:
 	QSortFilterProxyModel* getProxyModel();
 	QItemSelectionModel* getSelectionModel();
 
-	void addItem(const COutputItem& outputItem);
+	void addItem(const CFileItem& fileItem);
 
 	QVariant data(const QModelIndex& index, int role) const;
 
@@ -38,4 +38,4 @@ private:
 
 };
 
-#endif // COUTPUT_LIST_MODEL_H
+#endif // CFILE_LIST_MODEL_H

@@ -1,5 +1,5 @@
-#ifndef CPROFILE_LOAD_THREAD_H
-#define CPROFILE_LOAD_THREAD_H
+#ifndef CPROJECT_LOAD_THREAD_H
+#define CPROJECT_LOAD_THREAD_H
 
 #include <QThread>
 #include <QProcess>
@@ -19,7 +19,7 @@ public:
     
     void setCurrentProjectItem(const CProjectItem& projectItem);
 
-	void setOutputItemListPtr(T_OutputItemList* outputItemListPtr);
+	void setFileItemListPtr(T_FileItemList* fileItemListPtr);
 	void setTaggerPtr(QTagger* taggerPtrPtr);
 
 	CProjectItem getCurrentProjectItem(); 
@@ -36,8 +36,8 @@ private:
 	CRunCommand cmd_;
 	QTagger* taggerPtr_;
 
-	T_OutputItemList* outputItemListPtr_;
+	T_FileItemList* fileItemListPtr_;
     
 };
 
-#endif // CPROFILE_LOAD_THREAD_H
+#endif // CPROJECT_LOAD_THREAD_H

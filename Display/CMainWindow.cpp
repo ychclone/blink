@@ -414,12 +414,12 @@ void CMainWindow::loadGroupList()
 
 void CMainWindow::loadFileList()
 {
-	COutputItem outputItem;
+	CFileItem fileItem;
 
 	fileListModel_->clearAndResetModel();
 
-	foreach (const COutputItem& outputItem, outputItemList_) {
-		fileListModel_->addItem(outputItem);
+	foreach (const CFileItem& fileItem, fileItemList_) {
+		fileListModel_->addItem(fileItem);
 	}
 	updateFileListWidget();
 }
@@ -464,7 +464,7 @@ void CMainWindow::createActions()
     connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_outputEditPressed()));
 
     // default double click, enter action for output list item
-	connect(file_listView, SIGNAL(outputItemTriggered()), this, SLOT(on_outputEditPressed()));
+	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_outputEditPressed()));
 
 	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_outputCopyPressed()));
 	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_outputExplorePressed()));
@@ -613,7 +613,7 @@ void CMainWindow::on_loadProjectButton_clicked()
 
 				projectLoadThread_.setCurrentProjectItem(projectItem);
 				projectLoadThread_.setTaggerPtr(&tagger_);
-				projectLoadThread_.setOutputItemListPtr(&outputItemList_);
+				projectLoadThread_.setFileItemListPtr(&fileItemList_);
 
 				projectLoadThread_.start();
 
@@ -777,15 +777,15 @@ QStringList CMainWindow::getSelectedGroupItemNameList()
 }
 
 // get the project name of the selected list item
-QStringList CMainWindow::getSelectedOutputItemNameList()
+QStringList CMainWindow::getSelectedFileItemNameList()
 {
     QModelIndexList indexSelectedList;
 	QModelIndex mappedIndex;
 	int rowSelected;
 	QStandardItem* itemSelected;
 
-    QString outputItemName;
-	QStringList outputItemNameList;
+    QString fileItemName;
+	QStringList fileItemNameList;
 
     // get selected items index list
     indexSelectedList = fileListModel_->getSelectionModel()->selectedIndexes();
@@ -798,18 +798,18 @@ QStringList CMainWindow::getSelectedOutputItemNameList()
 		if (indexSelected.isValid()) {
 			itemSelected = fileListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
-				outputItemName = itemSelected->text();
+				fileItemName = itemSelected->text();
 			}
 		}
 
 		// as all items in the same row with differnt columns will also be returned in selectedIndexes
-		if (!outputItemNameList.contains(outputItemName)) {
+		if (!fileItemNameList.contains(fileItemName)) {
 			// not add project name to the list if already added
-			outputItemNameList += outputItemName;
+			fileItemNameList += fileItemName;
 		}
 	}
 
-    return outputItemNameList;
+    return fileItemNameList;
 }
 
 // edit selected project
@@ -961,7 +961,7 @@ void CMainWindow::on_loadGroupButton_clicked()
 
 				groupLoadThread_.setCurrentGroupItem(groupItem);
 				groupLoadThread_.setTaggerPtr(&tagger_);
-				groupLoadThread_.setOutputItemListPtr(&outputItemList_);
+				groupLoadThread_.setFileItemListPtr(&fileItemList_);
 
 				groupLoadThread_.start();
 
@@ -1179,8 +1179,8 @@ void CMainWindow::on_actionFindReplaceDialog_triggered()
 				}
 			}
 		} else { // default to all files if no selection
-			for (i = 0; i < outputItemList_.size(); i++) {
-				fileList.append(outputItemList_[i].fileName_);
+			for (i = 0; i < fileItemList_.size(); i++) {
+				fileList.append(fileItemList_[i].fileName_);
 			}
 		}
 
@@ -1581,11 +1581,11 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 	p = file_listView->mapFromGlobal(event->globalPos());
 	if ((file_listView->rect().contains(p)) && (infoTabIndex == fileTabIndex)) {
 
-		QStringList outputItemNameList = getSelectedOutputItemNameList();
-		int outputItemSelected = outputItemNameList.size();
+		QStringList fileItemNameList = getSelectedFileItemNameList();
+		int fileItemSelected = fileItemNameList.size();
 
-		if (outputItemSelected != 0) { // only show menu if have more than 1 selected project
-			if (outputItemSelected > 1) {
+		if (fileItemSelected != 0) { // only show menu if have more than 1 selected project
+			if (fileItemSelected > 1) {
 				QMenu menu(this);
 
 				menu.addAction(actionFileCopy);
@@ -1623,7 +1623,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 void CMainWindow::on_outputEditPressed()
 {
-	QStringList selectedItemList = getSelectedOutputItemNameList();
+	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
 
 	QString executeDir;
@@ -1657,7 +1657,7 @@ void CMainWindow::on_outputEditPressed()
 
 void CMainWindow::on_outputCopyPressed()
 {
-	QStringList selectedItemList = getSelectedOutputItemNameList();
+	QStringList selectedItemList = getSelectedFileItemNameList();
 	QString clipBoardStr = "";
 
 	if (selectedItemList.size() > 0) {
@@ -1673,7 +1673,7 @@ void CMainWindow::on_outputCopyPressed()
 
 void CMainWindow::on_outputExplorePressed()
 {
-	QStringList selectedItemList = getSelectedOutputItemNameList();
+	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
 
 	QString executeDir;
@@ -1697,7 +1697,7 @@ void CMainWindow::on_outputExplorePressed()
 
 void CMainWindow::on_outputConsolePressed()
 {
-	QStringList selectedItemList = getSelectedOutputItemNameList();
+	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
 
 	QString executeDir;
@@ -1724,7 +1724,7 @@ void CMainWindow::on_outputConsolePressed()
 
 void CMainWindow::on_outputPropertiesPressed()
 {
-	QStringList selectedItemList = getSelectedOutputItemNameList();
+	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
 
 	QString executeDir;

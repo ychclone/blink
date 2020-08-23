@@ -4,14 +4,14 @@
 #include <QTextStream>
 #include <QString>
 
-class COutputItem
+class CFileItem
 {
 public:
 
-    COutputItem();
-	COutputItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize);
+    CFileItem();
+	CFileItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize);
 
-    virtual ~COutputItem() {};
+    virtual ~CFileItem() {};
 
 	long fileId_;
 	QString fileName_;

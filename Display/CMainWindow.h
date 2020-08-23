@@ -143,7 +143,7 @@ private:
 
     QStringList getSelectedProjectItemNameList();
 	QStringList getSelectedGroupItemNameList();
-	QStringList getSelectedOutputItemNameList();
+	QStringList getSelectedFileItemNameList();
 
     void setAlwaysOnTop(bool enable);
     void setTransparency(bool enable);
@@ -211,7 +211,7 @@ private:
 
 	QTagger tagger_;
 
-	T_OutputItemList outputItemList_;
+	T_FileItemList fileItemList_;
 
 	QCompleter completer_;
 	QStringListModel stringListModel_;

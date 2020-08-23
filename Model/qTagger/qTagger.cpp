@@ -26,15 +26,20 @@ QTagger::~QTagger()
 
 }
 
-int QTagger::createTag(const T_OutputItemList& inputFileList)
+int QTagger::initKeywordFileTokenMap()
+{
+	loadKeywordFile();
+	tokenMap_.clear();
+}
+
+int QTagger::createTag(const T_FileItemList& inputFileList)
 {
 	long i;
 	unsigned long fileId;
 
 	QString currentFilePath;
 
-	loadKeywordFile();
-	tokenMap_.clear();
+	initKeywordFileTokenMap();
 
 	for (i = 0; i < inputFileList.size(); i++) {
 		currentFilePath = inputFileList.at(i).fileName_; // index start from 0
@@ -47,7 +52,7 @@ int QTagger::createTag(const T_OutputItemList& inputFileList)
 	return 0;
 }
 
-int QTagger::updateTag(const QMap<long, COutputItem>& inputFileList, const QString& tagDbFileName, const QMap<long, long>& fileIdCreatedMap, const QMap<long, long>& fileIdModifiedMap, const QMap<long, long>& fileIdDeletedMap)
+int QTagger::updateTag(const QMap<long, CFileItem>& inputFileList, const QString& tagDbFileName, const QMap<long, long>& fileIdCreatedMap, const QMap<long, long>& fileIdModifiedMap, const QMap<long, long>& fileIdDeletedMap)
 {
 	loadKeywordFile();
 	tokenMap_.clear();
@@ -568,7 +573,7 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 
 		tagToQueryFiltered = tagToQueryStr;
 
-		T_OutputItemList inputFileItemList;
+		T_FileItemList inputFileItemList;
 
 		// load input file
         CSourceFileList::loadFileList(inputFileName, inputFileItemList);
@@ -810,7 +815,6 @@ int QTagger::getManualIndentLevel(QString& line)
 	return indentLevel;
 }
 
-
 /***
  * Parse source file and update token map
  */
@@ -904,6 +908,12 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 	sourcefile.close();
 
 	return true;
+}
+
+// overload function to remove need of tokenMap_ when called by CProjectUpdateThread
+bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName)
+{
+	parseSourceFile(fileId, fileName, tokenMap_);
 }
 
 void QTagger::extractWordTokens(const QString& str, QStringList& tokenList)

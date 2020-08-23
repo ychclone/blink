@@ -24,8 +24,10 @@ public:
 	QTagger();
 	virtual ~QTagger();
 
-	int createTag(const T_OutputItemList& inputFileList);
-	int updateTag(const QMap<long, COutputItem>& inputFileList, const QString& tagDbFileName,
+	int initKeywordFileTokenMap();
+
+	int createTag(const T_FileItemList& inputFileList);
+	int updateTag(const QMap<long, CFileItem>& inputFileList, const QString& tagDbFileName,
 		const QMap<long, long>& fileIdCreatedMap, const QMap<long, long>& fileIdModifiedMap, const QMap<long, long>& fileIdDeletedMap);
 
 	int writeTagDb(const QString& tagDbFileName);
@@ -42,6 +44,9 @@ public:
 
 	int getManualIndentLevel(QString& line);
 
+	bool parseSourceFile(unsigned long fileId, const QString& fileName, T_TokenMapType& tokenMap);
+	bool parseSourceFile(unsigned long fileId, const QString& fileName);
+
 	static const char* kQTAG_CONFIG_FILE;
 	static const char* kDB_FIELD_LINE_SEPERATOR;
 	static const char* kDB_FIELD_FILE_SEPERATOR;
@@ -57,7 +62,6 @@ public:
 	static const char* kQTAG_DEFAULT_INPUTLIST_FILE;
 
 private:
-	bool parseSourceFile(unsigned long fileId, const QString& fileName, T_TokenMapType& tokenMap);
 
 	void extractWordTokens(const QString& str, QStringList& tokenList);
 	void extractLastToken(const QString& str, QString& lastToken);

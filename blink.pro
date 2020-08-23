@@ -42,7 +42,7 @@ SOURCES     += main.cpp \
                Model/CConfigManager.cpp \
                Model/CGroupItem.cpp \ 
                Model/CProjectItem.cpp \
-               Model/COutputItem.cpp \
+               Model/CFileItem.cpp \
                Model/CRunCommand.cpp \ 
                Model/CFindReplaceModel.cpp \
                Storage/CXmlStorageHandler.cpp \
@@ -75,7 +75,7 @@ HEADERS     += Utils/commonType.h \
                Model/CConfigManager.h \
                Model/CProjectItem.h \ 
                Model/CGroupItem.h \
-               Model/COutputItem.h \
+               Model/CFileItem.h \
                Model/CRunCommand.h \
                Model/CFindReplaceModel.h \
                Storage/CXmlStorageHandler.h \

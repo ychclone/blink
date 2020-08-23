@@ -29,14 +29,14 @@ void CFileListWidget::mousePressEvent(QMouseEvent *event)
 
 void CFileListWidget::mouseDoubleClickEvent(QMouseEvent* event)
 {
-	emit outputItemTriggered(); 
+	emit fileItemTriggered(); 
     QTreeView::mouseDoubleClickEvent(event);
 }
 
 void CFileListWidget::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Return) {
-		emit outputItemTriggered(); 
+		emit fileItemTriggered(); 
 	} else if ((event->key() == Qt::Key_Equal) && (event->modifiers() == Qt::ControlModifier)) { 
 		fileZoomIn();
 	} else if ((event->key() == Qt::Key_Minus) && (event->modifiers() == Qt::ControlModifier)) { 
@@ -65,8 +65,8 @@ QStringList CFileListWidget::getSelectedItemNameList()
 	int rowSelected;
 	QStandardItem* itemSelected;
     
-    QString outputItemName;
-	QStringList outputItemNameList;
+    QString fileItemName;
+	QStringList fileItemNameList;
 
 	QSortFilterProxyModel* proxyModel;
 	QItemSelectionModel* selectModel;
@@ -86,18 +86,18 @@ QStringList CFileListWidget::getSelectedItemNameList()
 		if (indexSelected.isValid()) {
 			itemSelected = fileListModel_->item(rowSelected, 0);
 			if (itemSelected != 0) {
-				outputItemName = itemSelected->text();
+				fileItemName = itemSelected->text();
 			};
 		}
 
 		// as all items in the same row with differnt columns will also be returned in selectedIndexes
-		if (!outputItemNameList.contains(outputItemName)) {
+		if (!fileItemNameList.contains(fileItemName)) {
 			// not add output name to the list if already added
-			outputItemNameList += outputItemName;
+			fileItemNameList += fileItemName;
 		}
 	}
 
-    return outputItemNameList;
+    return fileItemNameList;
 }
 
 void CFileListWidget::mouseMoveEvent(QMouseEvent *event)

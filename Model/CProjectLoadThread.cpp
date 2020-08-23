@@ -4,7 +4,7 @@ CProjectLoadThread::CProjectLoadThread(QObject *parent)
     : QThread(parent)
 {
 	taggerPtr_ = NULL;
-	outputItemListPtr_ = NULL;
+	fileItemListPtr_ = NULL;
 }
 
 void CProjectLoadThread::setTaggerPtr(QTagger* taggerPtr)
@@ -12,9 +12,9 @@ void CProjectLoadThread::setTaggerPtr(QTagger* taggerPtr)
 	taggerPtr_ = taggerPtr;
 }
 
-void CProjectLoadThread::setOutputItemListPtr(T_OutputItemList* outputItemListPtr)
+void CProjectLoadThread::setFileItemListPtr(T_FileItemList* fileItemListPtr)
 {
-	outputItemListPtr_ = outputItemListPtr;
+	fileItemListPtr_ = fileItemListPtr;
 }
 
 void CProjectLoadThread::setCurrentProjectItem(const CProjectItem& projectItem)
@@ -87,9 +87,9 @@ void CProjectLoadThread::run()
 
 	outputFile = tagDir + "/" + QTagger::kQTAG_DEFAULT_INPUTLIST_FILE;
 
-	if (outputItemListPtr_ != NULL) {
-		outputItemListPtr_->clear();
-		bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *outputItemListPtr_);
+	if (fileItemListPtr_ != NULL) {
+		fileItemListPtr_->clear();
+		bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *fileItemListPtr_);
 	}
 
 	qDebug() << "outputFile = " << outputFile << endl;

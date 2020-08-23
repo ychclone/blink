@@ -1,5 +1,5 @@
-#ifndef CPROFILEDLG_H
-#define CPROFILEDLG_H
+#ifndef CPROJECTDLG_H
+#define CPROJECTDLG_H
 
 #include <QDialog> 
 #include "Model/CProjectItem.h"
@@ -25,6 +25,6 @@ private slots:
 private:
 	QString currentProjectName_;
 };
-#endif // CPROFILEDLG_H
+#endif // CPROJECTDLG_H
 
 
