@@ -3,6 +3,10 @@
 #include <QFileInfo>
 #include <QDir>
 
+#ifdef Q_OS_WIN
+	#include <qt_windows.h>
+#endif
+
 #include "CSearchTextEdit.h"
 #include "Model/CConfigManager.h"
 
