@@ -26,8 +26,6 @@ void CSearchTextEdit::mouseReleaseEvent(QMouseEvent *e)
 		int lineFieldPos = clickedAnchor.lastIndexOf('#');
 		QString sourceFileName = clickedAnchor.left(lineFieldPos);
 
-		qDebug() << "sourceFileName = " << sourceFileName;
-
 		QFileInfo fileInfo(sourceFileName);
 		QString executeDir = fileInfo.absoluteDir().absolutePath();
 		QString editFilename = "";
