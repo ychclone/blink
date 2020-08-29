@@ -138,11 +138,22 @@ void CConfigDlg::on_defaultEditor_toolBn_clicked()
 		editorPathname = QDir::currentPath();
 	}
 
+#ifdef Q_OS_WIN
 	QString programPath = QFileDialog::getOpenFileName(this,
 			tr("Default Editor"), editorPathname, tr("Program (*.exe)"));
 	if (programPath != "") {
 		defaultEditor_lineEdit->setText(programPath);
 	}
+#else
+	QFileDialog fileDialog(this, tr("Default editor"));
+	fileDialog.setFilter(QDir::Executable);
+
+	QString programPath =  fileDialog.getOpenFileName(this, tr("Default editor"), editorPathname);
+
+	if (programPath != "") {
+		defaultEditor_lineEdit->setText(programPath);
+	}
+#endif
 }
 
 void CConfigDlg::on_projectFont_toolBn_clicked()

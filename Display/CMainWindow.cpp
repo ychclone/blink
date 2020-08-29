@@ -435,12 +435,11 @@ void CMainWindow::createActions()
 
 	// default double click, enter action for project list item
 	connect(project_listView, SIGNAL(projectItemTriggered()), this, SLOT(on_loadProjectButton_clicked()));
-
 	connect(actionProjectRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProjectButton_clicked()));
-
 	connect(actionProjectModify, SIGNAL(triggered()), this, SLOT(on_editProjectButton_clicked()));
-
 	connect(actionProjectDelete, SIGNAL(triggered()), this, SLOT(on_deleteProjectButton_clicked()));
+
+	connect(actionProjectCopy, SIGNAL(triggered()), this, SLOT(on_projectCopyPressed()));
 
 	connect(actionProjectExplore, SIGNAL(triggered()), this, SLOT(on_exploreProjectButton_clicked()));
 	connect(actionProjectConsole, SIGNAL(triggered()), this, SLOT(on_consoleProjectButton_clicked()));
@@ -863,6 +862,30 @@ void CMainWindow::on_deleteProjectButton_clicked()
 			}
 		}
     }
+}
+
+void CMainWindow::on_projectCopyPressed()
+{
+	QStringList selectedItemList = getSelectedProjectItemNameList();
+	QString clipBoardStr = "";
+	CProjectItem projectItem;
+	int i = 0;
+
+	if (selectedItemList.size() > 0) {
+		for (i = 0; i < selectedItemList.size(); i++) {
+			projectItem = CProjectManager::getInstance()->getProjectItem(selectedItemList[i]);
+
+			if (i > 0) {
+				clipBoardStr += "\n";
+			}
+
+			clipBoardStr = clipBoardStr + projectItem.srcDir_;
+		}
+
+		QClipboard *clipboard = QApplication::clipboard();
+
+		clipboard->setText(clipBoardStr);
+	}
 }
 
 void CMainWindow::on_exploreProjectButton_clicked()
@@ -1542,10 +1565,11 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 					menu.addAction(actionProjectGroup);
 
 					menu.addAction(actionProjectExplore);
+					menu.addAction(actionProjectCopy);
 
 #ifdef Q_OS_WIN
 					menu.addAction(actionProjectConsole);
-	#endif
+#endif
 					menu.exec(event->globalPos());
 				}
 			}
@@ -1666,10 +1690,15 @@ void CMainWindow::on_fileCopyPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	QString clipBoardStr = "";
+	int i = 0;
 
 	if (selectedItemList.size() > 0) {
-		foreach (const QString& selectedItem, selectedItemList) {
-			clipBoardStr = clipBoardStr + selectedItem +  "\n";
+		for (i = 0; i < selectedItemList.size(); i++) {
+			if (i > 0) {
+				clipBoardStr += "\n";
+			}
+
+			clipBoardStr = clipBoardStr + selectedItemList[i];
 		}
 
 		QClipboard *clipboard = QApplication::clipboard();
@@ -1893,7 +1922,7 @@ void CMainWindow::queryTag(const QString& tag)
 			}
 
 			resultHtml += QString("<div class=\"itemblock\"><div class=\"header\">") +
-						"<a href=\"file:///" + resultItem.filePath_ + "#line" + QString::number(resultItem.fileLineNum_) + "\">" +
+						"<a href=\"" + resultItem.filePath_ + "#" + QString::number(resultItem.fileLineNum_) + "\">" +
 						resultItemFileInfo.fileName() + "</a>" +
 						funcSignatureToPrint +
 						"</div><code>" +

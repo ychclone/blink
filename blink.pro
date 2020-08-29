@@ -1,6 +1,8 @@
 TEMPLATE    = app
 #CONFIG += release
 
+#QMAKE_CXXFLAGS += -g -fno-omit-frame-pointer
+
 QT += widgets xml network
 RC_FILE = Resources/Icons/appIcons.rc
 RESOURCES   = Resources/app.qrc
@@ -27,6 +29,7 @@ SOURCES     += main.cpp \
                Display/CConfigDlg.cpp \
                Display/CEventFilterObj.cpp \
                Display/CSearchTextBrowser.cpp \
+               Display/CSearchTextEdit.cpp \
                Display/CFindReplaceDlg.cpp \
                Model/qTagger/CTagResultItem.cpp \
                Model/qTagger/qTagger.cpp \
@@ -60,6 +63,7 @@ HEADERS     += Utils/commonType.h \
                Display/CConfigDlg.h \
                Display/CEventFilterObj.h \  
                Display/CSearchTextBrowser.h \
+               Display/CSearchTextEdit.h \ 
                Display/CFindReplaceDlg.h \
                Model/qTagger/CTagResultItem.h \
                Model/qTagger/qTagger.h \ 

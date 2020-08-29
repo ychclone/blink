@@ -58,6 +58,7 @@ private slots:
     void on_loadProjectButton_clicked();
     void on_updateProjectButton_clicked();
     void on_rebuildTagProjectButton_clicked();
+	void on_projectCopyPressed();
 
     void on_editProjectButton_clicked();
     void on_deleteProjectButton_clicked();

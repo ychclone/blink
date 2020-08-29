@@ -493,8 +493,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
              <number>5</number>
             </property>
             <item>
-             <widget class="QPlainTextEdit" name="symbol_textBrowser">
-             </widget>
+             <widget class="CSearchTextEdit" name="symbol_textBrowser"/>
             </item>
             <item>
              <widget class="QFrame" name="searchFrame">
@@ -1109,6 +1108,15 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Symbol Regular Expression</string>
    </property>
   </action>
+  <action name="actionProjectCopy">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy Pathnames</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -1125,6 +1133,11 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    <class>CGroupListWidget</class>
    <extends>QTreeView</extends>
    <header>Display/CGroupListWidget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CSearchTextEdit</class>
+   <extends>QPlainTextEdit</extends>
+   <header>Display/CSearchTextEdit.h</header>
   </customwidget>
  </customwidgets>
  <tabstops>
