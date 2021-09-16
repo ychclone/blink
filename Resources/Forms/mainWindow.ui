@@ -333,7 +333,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #97C0FC, st
            <set>Qt::ImhNone</set>
           </property>
           <property name="currentIndex">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="iconSize">
            <size>
@@ -1002,13 +1002,13 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Properties</string>
    </property>
   </action>
-  <action name="actionFileEdit">
+  <action name="actionFileEditExternal">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Edit</string>
+    <string>&amp;Edit (External)</string>
    </property>
   </action>
   <action name="actionProjectAndGroupCaseSensitive">
@@ -1115,6 +1115,18 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="text">
     <string>Copy Pathnames</string>
+   </property>
+  </action>
+  <action name="actionFileEdit">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit</string>
+   </property>
+   <property name="toolTip">
+    <string>&amp;View</string>
    </property>
   </action>
  </widget>

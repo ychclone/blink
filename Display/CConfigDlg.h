@@ -26,6 +26,7 @@ private slots:
 	void on_projectFont_toolBn_clicked();
 
 	void on_symbolFont_toolBn_clicked();
+	void on_editorFont_toolBn_clicked();
 
 	void on_tagDir_toolBn_clicked();
 	void on_tmpDir_toolBn_clicked();
@@ -40,6 +41,7 @@ private:
 
 	QFont projectDefaultFont_;
 	QFont symbolDefaultFont_;
+	QFont editorDefaultFont_;
 
 
 };

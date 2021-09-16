@@ -19,6 +19,8 @@
 #include <QCompleter>
 #include <QStringListModel>
 
+#include "CEditor.h"
+
 #include "Model/CProjectManager.h"
 #include "Model/CProjectLoadThread.h"
 #include "Model/CProjectUpdateThread.h"
@@ -87,7 +89,10 @@ private slots:
 	void on_actionSetting_triggered();
 	void on_actionFindReplaceDialog_triggered();
 
-	void on_fileEditPressed();
+	void launchEditor(const QString &fileName);
+	void on_fileListItemDoubleClicked();
+	void on_fileEditExternalPressed();
+    void on_fileEditPressed();
 	void on_fileCopyPressed();
 	void on_fileExplorePressed();
 	void on_fileConsolePressed();
@@ -219,6 +224,8 @@ private:
 
 	QTextDocument textDocument_;
 	QPlainTextDocumentLayout* textLayout_;
+
+	CEditor editor_;
 
 	QMap<QString, unsigned char> findReplaceFileList_; // unsigned char value not used
 

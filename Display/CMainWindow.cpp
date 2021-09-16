@@ -83,7 +83,7 @@ bTagBuildInProgress_(false)
 	projectLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
 	projectUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_U), this);
 
-	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_F), this);
+	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_B), this);
 	symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
 
 	nextSymbolSearchShortcut = new QShortcut(QKeySequence::FindNext, this);
@@ -265,6 +265,21 @@ bTagBuildInProgress_(false)
 	} else {
 		setSymbolFont(QApplication::font()); // using system font by default
 	}
+
+	// Editor font
+	QString editorFontSettingStr;
+	QFont editorFont;
+
+	editorFontSettingStr = confManager_->getAppSettingValue("EditorFont").toString();
+	editorFont.fromString(editorFontSettingStr);
+
+	/*
+	if (editorFontSettingStr != "") {
+		setEditorFont(editorFont);
+	} else {
+		setEditorFont(QApplication::font()); // using system font by default
+	}
+	*/
 
 	// case sensitive
     bSymbolSearchCaseSensitive = confManager_->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
@@ -460,10 +475,11 @@ void CMainWindow::createActions()
 	connect(actionGroupDelete, SIGNAL(triggered()), this, SLOT(on_deleteGroupButton_clicked()));
 
     // [File action]
+    connect(actionFileEditExternal, SIGNAL(triggered()), this, SLOT(on_fileEditExternalPressed()));
     connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_fileEditPressed()));
 
-    // default double click, enter action for output list item
-	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_fileEditPressed()));
+    // default double click, enter action for file list item
+	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_fileListItemDoubleClicked()));
 
 	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_fileCopyPressed()));
 	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_fileExplorePressed()));
@@ -575,6 +591,9 @@ void CMainWindow::createActions()
 
 	connect(actionWebZoomIn, SIGNAL(triggered()), this, SLOT(webZoomIn()));
 	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
+
+	// connect for lauching editor from symbol panel
+	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::launchEditor);
 }
 
 void CMainWindow::on_newProjectButton_clicked()
@@ -616,6 +635,7 @@ void CMainWindow::on_loadProjectButton_clicked()
 
 				projectLoadThread_.start();
 
+				setWindowTitle(projectItemName + " - Blink");
 			} else {
 				QMessageBox::warning(this, "Load", "Cannot load project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -1624,7 +1644,8 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 			} else {
 				QMenu menu(this);
 
-				menu.addAction(actionFileEdit);
+				menu.addAction(actionFileEditExternal);
+                menu.addAction(actionFileEdit);
 				menu.addAction(actionFileExplore);
 
 				menu.addAction(actionFileCopy);
@@ -1652,7 +1673,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 }
 
-void CMainWindow::on_fileEditPressed()
+void CMainWindow::on_fileEditExternalPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	int itemSelected = selectedItemList.size();
@@ -1682,6 +1703,38 @@ void CMainWindow::on_fileEditPressed()
 #else
 			QProcess::startDetached(consoleCommnad, QStringList(editFilename));
 #endif
+		}
+	}
+}
+
+void CMainWindow::launchEditor(const QString &fileName)
+{
+	editor_.loadFile(fileName);
+	editor_.show();
+	QApplication::setActiveWindow(static_cast<QMainWindow*> (&editor_));
+}
+
+void CMainWindow::on_fileListItemDoubleClicked()
+{
+	if (confManager_->getAppSettingValue("UseExternalEditor").toBool()) {
+        on_fileEditExternalPressed();
+	} else {
+		on_fileEditPressed();
+	}
+}
+
+void CMainWindow::on_fileEditPressed()
+{
+	QStringList selectedItemList = getSelectedFileItemNameList();
+	int itemSelected = selectedItemList.size();
+
+	QString executeDir;
+
+	if (itemSelected > 0) {
+		if (itemSelected > 1) {
+			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
+		} else {
+            launchEditor(selectedItemList.at(0));
 		}
 	}
 }

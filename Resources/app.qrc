@@ -33,5 +33,11 @@
     <file>Icons/22x22/gtk-refresh.png</file>
     <file>Images/graphics32x32.png</file>
     <file>Images/graphics3.png</file>
+    <file>Images/save.png</file>
+	<file>Images/paste.png</file> 
+	<file>Images/open.png</file> 
+	<file>Images/new.png</file> 
+	<file>Images/cut.png</file> 
+	<file>Images/copy.png</file> 
   </qresource>
 </RCC>

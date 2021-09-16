@@ -1,6 +1,8 @@
 TEMPLATE    = app
 #CONFIG += release
 
+CONFIG      += qscintilla2
+
 #QMAKE_CXXFLAGS += -g -fno-omit-frame-pointer
 
 QT += widgets xml network
@@ -11,15 +13,19 @@ RESOURCES   = Resources/app.qrc
 INCLUDEPATH += "Utils"
 
 FORMS       = Resources/Forms/mainWindow.ui \
+              Resources/Forms/editor.ui \ 
               Resources/Forms/projectDialog.ui \
               Resources/Forms/groupDialog.ui \ 
               Resources/Forms/aboutDialog.ui \
               Resources/Forms/configDialog.ui \
-              Resources/Forms/findReplaceDialog.ui 
+              Resources/Forms/findReplaceDialog.ui \
+              Resources/Forms/editorFindDialog.ui 
 
 SOURCES     += main.cpp \
                Utils/CUtils.cpp \
                Display/CMainWindow.cpp \
+               Display/CEditor.cpp \
+			   Display/CEditorFindDlg.cpp \  
                Display/CProjectDlg.cpp \
                Display/CGroupDlg.cpp \ 
                Display/CAboutDlg.cpp \
@@ -54,6 +60,8 @@ SOURCES     += main.cpp \
 HEADERS     += Utils/commonType.h \
                Utils/CUtils.h \
                Display/CMainWindow.h \
+               Display/CEditor.h \
+			   Display/CEditorFindDlg.h \ 
                Display/CProjectDlg.h \
                Display/CGroupDlg.h \ 
                Display/CAboutDlg.h \
