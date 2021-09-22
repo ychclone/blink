@@ -77,6 +77,15 @@ void CConfigDlg::loadSetting()
 
 	bool bUseExternalEditor = confManager->getAppSettingValue("UseExternalEditor").toBool();
 	useExternalEditor_checkBox->setChecked(bUseExternalEditor);
+
+	// default mask for new project
+	QString defaultMaskForNewProject = confManager->getAppSettingValue("defaultMaskForNewProject").toString();
+	if (defaultMaskForNewProject != "") { // load from setting
+        defaultMaskForNewProject_lineEdit->setText(defaultMaskForNewProject);
+	} else {
+        defaultMaskForNewProject_lineEdit->setText("*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml");
+	}
+
 }
 
 void CConfigDlg::saveSetting()
@@ -96,6 +105,7 @@ void CConfigDlg::saveSetting()
 	confManager->setAppSettingValue("EditorFont", editorDefaultFont_.toString());
 
     confManager->setAppSettingValue("UseExternalEditor", useExternalEditor_checkBox->isChecked());
+	confManager->setAppSettingValue("defaultMaskForNewProject", defaultMaskForNewProject_lineEdit->text());
 }
 
 void CConfigDlg::createActions()
@@ -115,6 +125,7 @@ void CConfigDlg::createActions()
 	QObject::connect(editorFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 
 	QObject::connect(useExternalEditor_checkBox, &QCheckBox::stateChanged, this, &CConfigDlg::configContentChanged);
+	QObject::connect(defaultMaskForNewProject_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 }
 
 void CConfigDlg::changePage(QListWidgetItem *current, QListWidgetItem *previous)

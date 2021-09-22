@@ -867,6 +867,8 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 		tokenList.clear();
 		extractWordTokens(currentLineRead, tokenList);
 		foreach (const QString& token, tokenList) {
+			// commented by default, enable token length of one and two
+			/*
 			if (token.length() == 1) { // not storing single character
 				continue;
 			}
@@ -876,6 +878,7 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 					continue;
 				}
 			}
+			*/
 
 			if (!tagCurrentLineSet.contains(token)) { // as not storing tag duplicate in same line
 				tagCurrentLineSet.insert(token);

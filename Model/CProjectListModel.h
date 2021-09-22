@@ -3,6 +3,7 @@
 
 #include <QStandardItemModel>
 #include "Model/CProjectItem.h"
+#include "Model/CConfigManager.h"
 
 class CProjectListModel: public QStandardItemModel
 {
@@ -15,11 +16,12 @@ public:
 
     bool dropMimeData(const QMimeData *data, Qt::DropAction action,
                       int row, int column, const QModelIndex &parent);
-	QStringList mimeTypes() const; 
+	QStringList mimeTypes() const;
 
     Qt::DropActions supportedDropActions() const;
 
 	QWidget* parent_;
+	CConfigManager* confManager_;
 };
 
 #endif // CPROJECT_LIST_MODEL_H

@@ -11,6 +11,7 @@ CProjectListModel::CProjectListModel(QObject *parent)
 	: QStandardItemModel(0, 4, parent)
 {
 	parent_ = static_cast<QWidget*> (parent);
+	confManager_ = CConfigManager::getInstance();
 
     // view when list is empty, view with content in CMainWindow::loadProjectList()
     setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
@@ -69,8 +70,16 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
             // fill default value according to item dropped
             droppedItem.name_ = info.fileName();
             droppedItem.srcDir_ = fName;
-            droppedItem.srcMask_ = "*.cpp *.c *.go *.java *.js *.py *.scala *.ts";
-            droppedItem.headerMask_ = "*.hpp *.h";
+
+			QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
+
+			if (defaultMaskForNewProject == "") {
+				droppedItem.srcMask_ = "*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
+			} else {
+				droppedItem.srcMask_ =  defaultMaskForNewProject;
+			}
+
+            droppedItem.headerMask_ = "";
             droppedItem.labels_ = "";
 
             QDialog* dialog = new CProjectDlg(droppedItem.name_, droppedItem, parent_);
