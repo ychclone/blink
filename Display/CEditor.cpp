@@ -7,6 +7,18 @@
 #include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerjava.h>
 #include <Qsci/qscilexerjavascript.h>
+#include <Qsci/qscilexerruby.h>
+#include <Qsci/qscilexersql.h>
+
+#include <Qsci/qscilexerhtml.h>
+#include <Qsci/qscilexerxml.h>
+#include <Qsci/qscilexercss.h>
+#include <Qsci/qscilexermarkdown.h>
+#include <Qsci/qscilexeryaml.h>
+
+#include <Qsci/qscilexerverilog.h>
+
+#include <Qsci/qscilexermakefile.h>
 
 #include <QFileInfo>
 
@@ -129,8 +141,28 @@ void CEditor::loadFile(const QString& filePath)
 			lexer = new QsciLexerPython;
 		} else if (suffix == "js" || suffix == "ts") {
 			lexer = new QsciLexerJavaScript;
+		} else if (suffix == "rb") {
+			lexer = new QsciLexerRuby;
+		} else if (suffix == "sql") {
+			lexer = new QsciLexerSQL;
+		} else if (suffix == "html") {
+			lexer = new QsciLexerHTML;
+		} else if (suffix == "xml") {
+			lexer = new QsciLexerXML;
+		} else if (suffix == "css") {
+			lexer = new QsciLexerCSS;
+		} else if (suffix == "md") {
+			lexer = new QsciLexerMarkdown;
+		} else if (suffix == "yaml") {
+			lexer = new QsciLexerYAML;
+		} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
+			lexer = new QsciLexerVerilog;
 		} else {
             lexer = new QsciLexerCPP;
+		}
+
+		if (filename == "Makefile") {
+            lexer = new QsciLexerMakefile;
 		}
 
 		setEditorFont(lexer);
@@ -201,7 +233,9 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << endl;
 
-	if (editorFontSettingStr != "") {
+	if (editorFontSettingStr == "") {
+		lexer->setFont(QApplication::font());
+	} else {
 		lexer->setFont(editorFont);
 	}
 }
