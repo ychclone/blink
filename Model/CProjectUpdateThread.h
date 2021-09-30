@@ -27,7 +27,7 @@ public:
 	void cancelUpdate();
 
 signals:
-    void percentageCompleted(int percentage);
+    void percentageCompleted(int percentage, QString indexingFileName);
 	void cancelledTagBuild();
 	void errorDuringRun(const QString& errStr);
 
@@ -36,7 +36,7 @@ private:
     bool runCommand(const QString& program, const QString& workDir, const QString& redirectFile = "");
 
 	void initStep(int totalStep);
-	void finishOneStep();
+	void finishOneStep(const QString& indexingFileName);
 	void finishAllStep();
 
 	int countTotalRunCmd();

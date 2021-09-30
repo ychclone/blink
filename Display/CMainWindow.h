@@ -59,6 +59,8 @@ private slots:
     void on_newProjectButton_clicked();
     void on_loadProjectButton_clicked();
     void on_updateProjectButton_clicked();
+
+	void projectRebuildTag(const QString projectItemName);
     void on_rebuildTagProjectButton_clicked();
 	void on_projectCopyPressed();
 
@@ -89,6 +91,7 @@ private slots:
 	void on_actionSetting_triggered();
 	void on_actionFindReplaceDialog_triggered();
 
+	void launchEditorWithLineNum(const QString &fileName, int lineNum);
 	void launchEditor(const QString &fileName);
 	void on_fileListItemDoubleClicked();
 	void on_fileEditExternalPressed();
@@ -102,7 +105,7 @@ private slots:
 
 	void wheelEvent(QWheelEvent *e);
 
-    void updateTagBuildProgress(int percentage);
+    void updateTagBuildProgress(int percentage, QString indexingFileName);
 	void updateCancelledTagBuild();
 
 	void updateProjectLoadProgress(int percentage);

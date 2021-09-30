@@ -73,17 +73,23 @@ Option->Setting->Main->Default Editor
 # Compilation (Linux) 
 
 1. Download Qt Open Source offline installer:
-https://www.qt.io/offline-installers
+https://download.qt.io/archive/qt/5.14/5.14.2/
 
 2. Install Qt
-3. qmake
-4. make
-5. 
+
+3. Download QScintilla and install
+https://riverbankcomputing.com/software/qscintilla/download
+
 ```
-cp ./blink build/
-cd build
-./blink
+cd QScintilla_src-2.13.0/src
+qmake qscintilla.pro
+make
+make install
 ```
+
+4. cd blink
+5. qmake blink.pro
+6. make
 
 # AppImage
 
@@ -91,7 +97,7 @@ cd build
 https://github.com/probonopd/linuxdeployqt/releases
 
 2. chmod u+x linuxdeployqt-7-x86_64.AppImage
-3. ./linuxdeployqt-7-x86_64.AppImage blinkAppImage/usr/share/applications/blink.desktop -verbose=2 -appimage
+3. ./linuxdeployqt-7-x86_64.AppImage blinkAppImage/usr/share/applications/blink.desktop -verbose=2 -appimage -extra-plugins=iconengines,platformthemes/libqgtk3.so
 
 # Tips
 
@@ -117,7 +123,7 @@ Sol: sudo apt install libgl1-mesa-dev
 ## Qt version not match
 ```
 sudo rm /usr/bin/qmake
-sudo ln -s /home/ychclone/Qt5.13.2/5.13.2/gcc_64/bin/qmake /usr/bin/qmake
+sudo ln -s /home/ychclone/Qt5.14.2/5.14.2/gcc_64/bin/qmake /usr/bin/qmake
 ```
 
 ## Segmentation fault (core dumped) when start

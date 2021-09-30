@@ -30,8 +30,8 @@
 #include "Model/CConfigManager.h"
 
 CEditor::CEditor(QWidget* parent)
-: QMainWindow(parent),
-findDlg_(this)
+	: QMainWindow(parent),
+	findDlg_(this)
 {
 	setupUi(this);
 
@@ -40,7 +40,7 @@ findDlg_(this)
 	savedGeometry = CConfigManager::getInstance()->getValue("Editor", "geometry").toByteArray();
 	this->restoreGeometry(savedGeometry);
 
-    connect(actionOpen, &QAction::triggered, this, &CEditor::openFile);
+	connect(actionOpen, &QAction::triggered, this, &CEditor::openFile);
 	connect(actionSave, &QAction::triggered, this, &CEditor::save);
 	connect(actionSaveAs, &QAction::triggered, this, &CEditor::saveAs);
 	connect(actionFind, &QAction::triggered, this, &CEditor::showFindDialog);
@@ -71,33 +71,33 @@ void CEditor::save()
 
 void CEditor::saveAs()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save File", filePathInTab(tabWidget->currentIndex()));
-    if (fileName.isEmpty()) {
-        return;
+	QString fileName = QFileDialog::getSaveFileName(this, "Save File", filePathInTab(tabWidget->currentIndex()));
+	if (fileName.isEmpty()) {
+		return;
 	}
 
-    saveFile(fileName);
+	saveFile(fileName);
 }
 
 void CEditor::saveFile(const QString &fileName)
 {
-    QFile file(fileName);
-    if (!file.open(QFile::WriteOnly)) {
-        QMessageBox::warning(this, tr("Save file"),
-                             tr("Failed to write to file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
-        return;
-    }
+	QFile file(fileName);
+	if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::warning(this, tr("Save file"),
+				tr("Failed to write to file %1:\n%2.")
+				.arg(fileName)
+				.arg(file.errorString()));
+		return;
+	}
 
-    QTextStream fileOutput(&file);
-    QApplication::setOverrideCursor(Qt::WaitCursor);
+	QTextStream fileOutput(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
 
 	fileOutput << editorTabMap_[fileName].textEdit->text();
 
-    QApplication::restoreOverrideCursor();
+	QApplication::restoreOverrideCursor();
 
-    statusBar()->showMessage(tr("File saved"), 2000);
+	statusBar()->showMessage(tr("File saved"), 2000);
 
 	editorTabMap_[fileName].textEdit->setModified(false);
 	setWindowModified(false);
@@ -115,6 +115,12 @@ void CEditor::findText(const QString& text, bool bMatchWholeWord, bool bCaseSens
 	qDebug() << "findText = " << text;
 
 	editorTabMap_[currentFileName].textEdit->findFirst(text, bRegularExpression, bCaseSensitive, bMatchWholeWord, true, true);
+}
+
+void CEditor::loadFileWithLineNum(const QString& filePath, int lineNumber)
+{
+	loadFile(filePath);
+	editorTabMap_[filePath].textEdit->setFirstVisibleLine(lineNumber);
 }
 
 void CEditor::loadFile(const QString& filePath)
@@ -158,11 +164,11 @@ void CEditor::loadFile(const QString& filePath)
 		} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
 			lexer = new QsciLexerVerilog;
 		} else {
-            lexer = new QsciLexerCPP;
+			lexer = new QsciLexerCPP;
 		}
 
 		if (filename == "Makefile") {
-            lexer = new QsciLexerMakefile;
+			lexer = new QsciLexerMakefile;
 		}
 
 		setEditorFont(lexer);
@@ -205,12 +211,12 @@ void CEditor::loadFile(const QString& filePath)
 
 void CEditor::createActions(QsciScintilla* textEdit)
 {
-    connect(actionCut, &QAction::triggered, textEdit, &QsciScintilla::cut);
-    connect(actionCopy, &QAction::triggered, textEdit, &QsciScintilla::copy);
-    connect(actionPaste, &QAction::triggered, textEdit, &QsciScintilla::paste);
+	connect(actionCut, &QAction::triggered, textEdit, &QsciScintilla::cut);
+	connect(actionCopy, &QAction::triggered, textEdit, &QsciScintilla::copy);
+	connect(actionPaste, &QAction::triggered, textEdit, &QsciScintilla::paste);
 
-    connect(actionUndo, &QAction::triggered, textEdit, &QsciScintilla::undo);
-    connect(actionRedo, &QAction::triggered, textEdit, &QsciScintilla::redo);
+	connect(actionUndo, &QAction::triggered, textEdit, &QsciScintilla::undo);
+	connect(actionRedo, &QAction::triggered, textEdit, &QsciScintilla::redo);
 
 	connect(textEdit, &QsciScintilla::textChanged, this, &CEditor::textEditModified);
 }
@@ -234,9 +240,9 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << endl;
 
 	if (editorFontSettingStr == "") {
-		lexer->setFont(QApplication::font());
-	} else {
 		lexer->setFont(editorFont);
+	} else {
+		lexer->setFont(QApplication::font()); // using system default font
 	}
 }
 
@@ -247,8 +253,8 @@ void CEditor::saveWidgetPosition()
 
 void CEditor::closeEvent(QCloseEvent *event)
 {
-    saveWidgetPosition();
-    event->accept();
+	saveWidgetPosition();
+	event->accept();
 }
 
 void CEditor::tabChanged(int tabIndex) {
@@ -262,7 +268,7 @@ void CEditor::tabChanged(int tabIndex) {
 }
 
 void CEditor::closeCurrentTab() {
-    this->closeTab(tabWidget->currentIndex());
+	this->closeTab(tabWidget->currentIndex());
 }
 
 QString CEditor::filePathInTab(int tabIndex)
@@ -287,7 +293,7 @@ void CEditor::closeTab(int tabIndex)
 
 	qDebug() << "filePathRemoveFromMap = " << filePathRemoveFromMap;
 
-    tabWidget->removeTab(tabIndex);
+	tabWidget->removeTab(tabIndex);
 
 	// close widget if tab count equals zero
 	if (tabWidget->count() == 0) {

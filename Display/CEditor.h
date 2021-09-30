@@ -26,6 +26,7 @@ public:
     CEditor(QWidget* parent = 0);
 
 	virtual ~CEditor() {};
+	void loadFileWithLineNum(const QString& filePath, int lineNumber);
 	void loadFile(const QString& filePath);
 
 private slots:

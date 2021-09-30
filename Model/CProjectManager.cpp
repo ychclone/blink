@@ -1,11 +1,11 @@
 #include "CProjectManager.h"
 #include "CConfigManager.h"
 
-#include "Utils/CUtils.h" 
+#include "Utils/CUtils.h"
 
 CProjectManager* CProjectManager::manager_ = 0;
 
-const char* CProjectManager::kGROUP_PROFILE_SEPERATOR = ","; 
+const char* CProjectManager::kGROUP_PROFILE_SEPERATOR = ",";
 
 CProjectManager::CProjectManager()
 {
@@ -20,7 +20,7 @@ CProjectManager* CProjectManager::getInstance()
     return manager_;
 }
 
-void CProjectManager::setProjectFile(const QString& projectFileName)  
+void CProjectManager::setProjectFile(const QString& projectFileName)
 {
     projectFile_ = projectFileName;
 }
@@ -76,9 +76,9 @@ void CProjectManager::addItem(const CProjectItem& newItem)
     flushStorage();
 }
 
-void CProjectManager::updateProjectItem(const QString& projectItemName, const CProjectItem& newItem)
+void CProjectManager::updateProjectItem(bool newProject, const QString& projectItemName, const CProjectItem& newItem)
 {
-	QString tagDir; 
+	QString tagDir;
 
 	// current directory
 	QDir currentDir(QDir::currentPath());
@@ -87,9 +87,9 @@ void CProjectManager::updateProjectItem(const QString& projectItemName, const CP
         projectMap_.remove(projectItemName); // remove old one
 
 		// current directory
-		QDir currentDir(QDir::currentPath()); 
+		QDir currentDir(QDir::currentPath());
 
-		// using absoluteFilePath so relative and absolute path also possible   
+		// using absoluteFilePath so relative and absolute path also possible
 		tagDir = currentDir.absoluteFilePath(CConfigManager::getInstance()->getAppSettingValue("TagDir").toString() + "/" + projectItemName);
 		QDir dir(tagDir);
 
@@ -100,6 +100,10 @@ void CProjectManager::updateProjectItem(const QString& projectItemName, const CP
     projectMap_[newItem.name_] = newItem;
     emit projectMapUpdated();
     flushStorage();
+
+	if (newProject) {
+		emit newProjectAdded(projectItemName);
+	}
 }
 
 void CProjectManager::updateGroupItem(const QString& groupItemName, const CGroupItem& newItem)
@@ -116,12 +120,12 @@ void CProjectManager::updateGroupItem(const QString& groupItemName, const CGroup
 
 void CProjectManager::removeProjectItem(const QString& projectItemName)
 {
-	QString tagDir; 
+	QString tagDir;
 
 	// current directory
-	QDir currentDir(QDir::currentPath()); 
+	QDir currentDir(QDir::currentPath());
 
-	// using absoluteFilePath so relative and absolute path also possible   
+	// using absoluteFilePath so relative and absolute path also possible
 	tagDir = currentDir.absoluteFilePath(CConfigManager::getInstance()->getAppSettingValue("TagDir").toString() + "/" + projectItemName);
 	QDir dir(tagDir);
 

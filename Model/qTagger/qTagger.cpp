@@ -499,7 +499,7 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 		if (tag.contains(tagToQuery, caseSensitivity)) {
 			matchedTokenList += tag;
 		}
-		if (matchedTokenList.size() > 20) {
+		if (matchedTokenList.size() > 500) {
 			break;
 		}
 	}

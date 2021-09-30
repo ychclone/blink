@@ -375,7 +375,7 @@ void CMainWindow::setSymbolFont(QFont symbolFont)
 	QString symbolFontSize = QString::number(symbolFont.pointSize());
 	QString lineHeight = QString::number(symbolFont.pointSize() / 3);
 
-	QString textDocumentSyleStr = QString("a {color: #0066FF; font-weight: bold; font-family: %1; text-decoration: none} functionsig {color: #33F000; font-weight:bold; font-family: %1;} code { display: table-row; font-family: Consolas; white-space: nowrap} linenum {color: #9999CC; font-family: %1} keyword {color: #00CCCC; font-weight:bold} spacesize {font-size: %3pt} body {background: #FAFAFA; font-size: %2pt}").arg(symbolFontFamily, symbolFontSize, lineHeight);
+	QString textDocumentSyleStr = QString("a {color: #0066FF; font-weight: bold; font-family: %1; text-decoration: none} functionsig {color: #33F000; font-weight:bold; font-family: %1;} code {display: table-row; font-family: Consolas; white-space: nowrap} linenum {color: #9999CC; font-family: %1} keyword {color: #00CCCC; font-weight:bold} spacesize {font-size: %3pt} body {background: #FAFAFA; font-size: %2pt}").arg(symbolFontFamily, symbolFontSize, lineHeight);
 
 	textDocument_.setDefaultStyleSheet(textDocumentSyleStr);
 }
@@ -493,11 +493,12 @@ void CMainWindow::createActions()
 
 	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
 
-    connect(CProjectManager::getInstance(), SIGNAL(projectMapUpdated()), this, SLOT(loadProjectList()));
-	connect(CProjectManager::getInstance(), SIGNAL(groupMapUpdated()), this, SLOT(loadGroupList()));
+    connect(CProjectManager::getInstance(), &CProjectManager::projectMapUpdated, this, &CMainWindow::loadProjectList);
+	connect(CProjectManager::getInstance(), &CProjectManager::groupMapUpdated, this, &CMainWindow::loadGroupList);
+	connect(CProjectManager::getInstance(), &CProjectManager::newProjectAdded, this, &CMainWindow::projectRebuildTag);
 
     connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
-    connect(&projectUpdateThread_, SIGNAL(percentageCompleted(int)), this, SLOT(updateTagBuildProgress(int)));
+    connect(&projectUpdateThread_, &CProjectUpdateThread::percentageCompleted, this, &CMainWindow::updateTagBuildProgress);
 
 	// update progress bar for cancelled tag build
 	connect(&projectUpdateThread_, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
@@ -593,7 +594,7 @@ void CMainWindow::createActions()
 	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
 
 	// connect for lauching editor from symbol panel
-	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::launchEditor);
+	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::launchEditorWithLineNum);
 }
 
 void CMainWindow::on_newProjectButton_clicked()
@@ -669,7 +670,7 @@ void CMainWindow::on_updateProjectButton_clicked()
 				projectItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
 
 				// tag last update date time updated so need update in project manager
-				CProjectManager::getInstance()->updateProjectItem(projectItemName, projectItem);
+				CProjectManager::getInstance()->updateProjectItem(false, projectItemName, projectItem);
 
 				statusBar()->showMessage("Updating tag for " + projectItem.name_ + "...");
 
@@ -683,41 +684,46 @@ void CMainWindow::on_updateProjectButton_clicked()
     }
 }
 
+void CMainWindow::projectRebuildTag(const QString projectItemName)
+{
+    CProjectItem projectItem;
+	QDateTime currDateTime;
+
+	projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
+
+	QDir currentDir(QDir::currentPath());
+
+	// only update project if source directory exists
+	if (currentDir.exists(projectItem.srcDir_)) {
+		currDateTime = QDateTime::currentDateTime();
+		projectItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
+
+		// tag last update date time updated so need update in project manager
+		CProjectManager::getInstance()->updateProjectItem(false, projectItemName, projectItem);
+
+		statusBar()->showMessage("Rebuilding tag for " + projectItem.name_ + "...");
+
+		projectUpdateThread_.setRebuildTag(true);
+		projectUpdateThread_.setCurrentProjectItem(projectItem);
+		projectUpdateThread_.start(QThread::HighestPriority); // priority for update thread
+	} else {
+		QMessageBox::warning(this, "Load", "Cannot rebuilt project. Source directory doesn't exists.", QMessageBox::Ok);
+	}
+}
+
 void CMainWindow::on_rebuildTagProjectButton_clicked()
 {
 	QStringList projectItemNameList = getSelectedProjectItemNameList();
 	int projectSelected = projectItemNameList.size();
 
     QString projectItemName;
-    CProjectItem projectItem;
-	QDateTime currDateTime;
 
     if (projectSelected != 0) {
 		if (projectSelected > 1) {
 			QMessageBox::information(this, "Rebuild", "Only one project can be rebuilt each time", QMessageBox::Ok);
 		} else {
 			projectItemName = projectItemNameList.at(0);
-
-			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
-
-			QDir currentDir(QDir::currentPath());
-
-			// only update project if source directory exists
-			if (currentDir.exists(projectItem.srcDir_)) {
-				currDateTime = QDateTime::currentDateTime();
-				projectItem.tagUpdateDateTime_ = currDateTime.toString("dd/MM/yyyy hh:mm:ss");
-
-				// tag last update date time updated so need update in project manager
-				CProjectManager::getInstance()->updateProjectItem(projectItemName, projectItem);
-
-				statusBar()->showMessage("Rebuilding tag for " + projectItem.name_ + "...");
-
-				projectUpdateThread_.setRebuildTag(true);
-				projectUpdateThread_.setCurrentProjectItem(projectItem);
-				projectUpdateThread_.start(QThread::HighestPriority); // priority for update thread
-			} else {
-                QMessageBox::warning(this, "Load", "Cannot rebuilt project. Source directory doesn't exists.", QMessageBox::Ok);
-			}
+			projectRebuildTag(projectItemName);
 		}
     }
 }
@@ -1197,6 +1203,8 @@ void CMainWindow::on_actionSetting_triggered()
 		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
 
 		setSymbolFont(updatedSymbolFont);
+		// update symbol panel
+		on_searchButton_clicked();
 	}
 }
 
@@ -1281,7 +1289,7 @@ void CMainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
-void CMainWindow::updateTagBuildProgress(int percentage)
+void CMainWindow::updateTagBuildProgress(int percentage, QString indexingFileName)
 {
     // show the progress bar when pecentage completed >= 0
     if (percentage >= 0) {
@@ -1290,6 +1298,10 @@ void CMainWindow::updateTagBuildProgress(int percentage)
     }
 
     progressBar_.setValue(percentage);
+
+	if (indexingFileName != "") {
+        statusBar()->showMessage("Indexing " + indexingFileName + "...");
+	}
 
     // hide the progress bar when completed
     if (percentage == 100) {
@@ -1690,6 +1702,14 @@ void CMainWindow::on_fileEditExternalPressed()
 
 			QString consoleCommnad = confManager_->getAppSettingValue("DefaultEditor").toString();
 
+			if (consoleCommnad == "") {
+				QMessageBox msgBox;
+				msgBox.setIcon(QMessageBox::Information);
+				msgBox.setText("External editor has not be defined. Please set it in Options -> Settings -> Main -> External Editor");
+				msgBox.exec();
+				return;
+			}
+
 #ifdef Q_OS_WIN
 			editFilename = "\"" + selectedItemList.at(0) + "\"";
 #else
@@ -1705,6 +1725,13 @@ void CMainWindow::on_fileEditExternalPressed()
 #endif
 		}
 	}
+}
+
+void CMainWindow::launchEditorWithLineNum(const QString &fileName, int lineNum)
+{
+	editor_.loadFileWithLineNum(fileName, lineNum);
+	editor_.show();
+	QApplication::setActiveWindow(static_cast<QMainWindow*> (&editor_));
 }
 
 void CMainWindow::launchEditor(const QString &fileName)

@@ -22,24 +22,24 @@ void CProjectUpdateThread::initStep(int totalStep)
     stepCompleted_ = 0;
 	totalStep_ = totalStep;
 
-	emit percentageCompleted(0); // emit 0 initially
+	emit percentageCompleted(0, ""); // emit 0 initially
 }
 
-void CProjectUpdateThread::finishOneStep()
+void CProjectUpdateThread::finishOneStep(const QString& indexingFileName)
 {
 	int endPercent;
 	stepCompleted_++;
 	endPercent = stepCompleted_ * (100 / totalStep_);
-	emit percentageCompleted(endPercent);
+	emit percentageCompleted(endPercent, indexingFileName);
 
 	if (stepCompleted_ >= totalStep_) {
-		emit percentageCompleted(100); // always 100% if finish all steps
+		emit percentageCompleted(100, ""); // always 100% if finish all steps
 	}
 }
 
 void CProjectUpdateThread::finishAllStep()
 {
-	emit percentageCompleted(100);
+	emit percentageCompleted(100, "");
 }
 
 bool CProjectUpdateThread::runCommand(const QString& program, const QString& workDir, const QString& redirectFile)
@@ -72,7 +72,7 @@ bool CProjectUpdateThread::runCommand(const QString& program, const QString& wor
 			break;
 	}
 
-	finishOneStep(); // for updating progress bar
+	finishOneStep(""); // for updating progress bar
 	return true;
 }
 
@@ -112,15 +112,28 @@ int CProjectUpdateThread::createTag(QTagger& tagger, const T_FileItemList& input
 	long totalFile = inputFileList.size();
 	tagger.initKeywordFileTokenMap();
 
+	unsigned long long int totalFileSize = 0;
+	unsigned long long int processedFileSize = 0;
+
+	for (i = 0; i < totalFile; i++) {
+		totalFileSize += inputFileList.at(i).fileSize_;
+	}
+
 	for (i = 0; i < totalFile; i++) {
 		currentFilePath = inputFileList.at(i).fileName_; // index start from 0
 		fileId = inputFileList.at(i).fileId_;
 
 		qDebug() << fileId << ":" << currentFilePath;
 
+		emit percentageCompleted(static_cast<int> (static_cast<long double> (processedFileSize) / totalFileSize * 100), currentFilePath);
 		tagger.parseSourceFile(fileId, currentFilePath);
 
-		emit percentageCompleted(static_cast<int> (static_cast<float> (i) / totalFile * 100));
+		processedFileSize += inputFileList.at(i).fileSize_;
+
+		if (bCancelUpdate_) {
+			emit cancelledTagBuild();
+			return 0;
+		}
 	}
 	return 0;
 }
@@ -170,6 +183,9 @@ void CProjectUpdateThread::run()
 	if (bRebuildTag_) {
 		T_FileItemList resultFileList;
 
+		QElapsedTimer timer;
+		timer.start();
+
 		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList);
 
 		// create tag
@@ -179,14 +195,16 @@ void CProjectUpdateThread::run()
 
 		tagger.writeTagDb(tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
-		finishOneStep(); // for updating progress bar
+		qDebug() << "Tag creation took" << timer.elapsed() << "milliseconds";
+
+		finishOneStep(""); // for updating progress bar
 
 		if (bCancelUpdate_) {
 			emit cancelledTagBuild();
 			return;
 		}
 
-		finishOneStep(); // for updating progress bar
+		finishOneStep(""); // for updating progress bar
 	} else { // update tag
 
 		T_FileItemList newFileList;
@@ -221,7 +239,7 @@ void CProjectUpdateThread::run()
 			assignedFileId[fileItem.fileId_] = fileItem.fileId_; // file id assigned
 		}
 
-		finishOneStep(); // for updating progress bar
+		finishOneStep(""); // for updating progress bar
 
 		// new file list, for this update tag, not save the file list to file yet as need to update file id
 		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, newFileList, false);
@@ -260,7 +278,7 @@ void CProjectUpdateThread::run()
 
 		bListFileSaveResult = CSourceFileList::saveFileList(fileListFilename, fileMapIdxByFileId);
 
-		finishOneStep(); // for updating progress bar
+		finishOneStep(""); // for updating progress bar
 
 		// deleted file, modified file
 
@@ -301,14 +319,14 @@ void CProjectUpdateThread::run()
 		tagger.updateTag(fileMapIdxByFileId, tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME, fileIdCreatedMap, fileIdModifiedMap, fileIdDeletedMap);
 		tagger.writeTagDb(tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
-		finishOneStep(); // for updating progress bar
+		finishOneStep(""); // for updating progress bar
 
 		if (bCancelUpdate_) {
 			emit cancelledTagBuild();
 			return;
 		}
 
-		finishOneStep(); // for updating progress bar
+		finishOneStep(""); // for updating progress bar
 	}
 
 	for (int i = 1; i < MAX_SUPPORTED_RUN_COMMAND+1; i++) { // from 1 to MAX_SUPPORTED_RUN_COMMAND

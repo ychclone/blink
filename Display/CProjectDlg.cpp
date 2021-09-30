@@ -19,20 +19,20 @@ CProjectDlg::CProjectDlg(const QString& projectName, const CProjectItem& project
 {
     setupUi(this);
 
-	currentProjectName_ = projectName; 
+	currentProjectName_ = projectName;
 
     projectName_lineEdit->setText(projectItem.name_);
     srcDir_lineEdit->setText(projectItem.srcDir_);
     srcFileMask_lineEdit->setText(projectItem.srcMask_);
     headerfileMask_lineEdit->setText(projectItem.headerMask_);
-    labels_lineEdit->setText(projectItem.labels_); 
+    labels_lineEdit->setText(projectItem.labels_);
 
     // connect slot only after when CProjectDlg has already been loaded and initial content filled in
     QObject::connect(projectName_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
     QObject::connect(srcDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
     QObject::connect(headerfileMask_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
     QObject::connect(srcFileMask_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
-    QObject::connect(labels_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged())); 
+    QObject::connect(labels_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
 
 }
 
@@ -66,7 +66,7 @@ void CProjectDlg::on_applyButton_clicked()
 		return;
 	}
 	// labels can be empty so no checking
-    
+
     modifiedItem.name_ = projectName_lineEdit->text();
     modifiedItem.srcDir_ = srcDir_lineEdit->text();
     modifiedItem.srcMask_ = srcFileMask_lineEdit->text();
@@ -78,12 +78,26 @@ void CProjectDlg::on_applyButton_clicked()
 
     modifiedItem.labels_ = labels_lineEdit->text();
 
-    if (currentProjectName_ == "") { // new Project
-		CProjectManager::getInstance()->updateProjectItem(modifiedItem.name_, modifiedItem); 
-	} else {
-		// use currentProjectName_ for updateProjectItem as name may have be changed
-		CProjectManager::getInstance()->updateProjectItem(currentProjectName_, modifiedItem);
-	}
+    qDebug() << "currentProjectName_ in on_applyButton_clicked() = " << currentProjectName_;
+
+    CProjectItem projectItem = CProjectManager::getInstance()->getProjectItem(currentProjectName_);
+    qDebug() << "projectItem.tagUpdateDateTime_ = " << projectItem.tagUpdateDateTime_;
+
+    if (projectItem.tagUpdateDateTime_ == "") { // new project
+        if (currentProjectName_ == "") { // no project loaded yet
+            CProjectManager::getInstance()->updateProjectItem(true, modifiedItem.name_, modifiedItem);
+        } else {
+            // use currentProjectName_ for updateProjectItem as name may have be changed
+            CProjectManager::getInstance()->updateProjectItem(true, currentProjectName_, modifiedItem);
+        }
+    } else { // old project which has updated tag time
+        if (currentProjectName_ == "") { // no project loaded yet
+            CProjectManager::getInstance()->updateProjectItem(false, modifiedItem.name_, modifiedItem);
+        } else {
+            // use currentProjectName_ for updateProjectItem as name may have be changed
+            CProjectManager::getInstance()->updateProjectItem(false, currentProjectName_, modifiedItem);
+        }
+    }
 
 	setWindowModified(false);
 }

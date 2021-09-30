@@ -84,7 +84,6 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 
             QDialog* dialog = new CProjectDlg(droppedItem.name_, droppedItem, parent_);
             dialog->exec();
-
         } else {
             QMessageBox::information(parent_, "Add project", "Only folder is supported!", QMessageBox::Ok);
         }
