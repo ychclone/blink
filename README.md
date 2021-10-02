@@ -1,7 +1,7 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
-GUI indexed grep for source code, files locator, search and replace.
+GUI of indexed grep for source code, files locator, search and replace.
 Switch differnt projects and start searching.
 Drag and drop of filenames to your favourite editor.
 
