@@ -432,9 +432,16 @@ void CMainWindow::loadFileList()
 	CFileItem fileItem;
 
 	fileListModel_->clearAndResetModel();
+	unsigned long eventLoopCounter = 0; // event loop counter to prevent ui freeze when loading large amount
 
 	foreach (const CFileItem& fileItem, fileItemList_) {
 		fileListModel_->addItem(fileItem);
+		if (eventLoopCounter >= 1000) { // prevent ui freeze
+			updateFileListWidget();
+			QCoreApplication::processEvents();
+			eventLoopCounter = 0;
+		}
+		eventLoopCounter++;
 	}
 	updateFileListWidget();
 }
@@ -505,9 +512,9 @@ void CMainWindow::createActions()
 	// error occurs during run command
 	connect(&projectUpdateThread_, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
 
-	connect(&projectLoadThread_, SIGNAL(projectLoadPercentageCompleted(int)), this, SLOT(updateProjectLoadProgress(int)));
+	connect(&projectLoadThread_, &CProjectLoadThread::projectLoadPercentageCompleted, this, &CMainWindow::updateProjectLoadProgress);
 
-	connect(&groupLoadThread_, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)));
+	connect(&groupLoadThread_, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)), Qt::DirectConnection);
 
     // connecting shortcut action
 	connect(projectPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_projectPatternLineEditShortcutPressed()));
