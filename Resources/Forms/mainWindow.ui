@@ -694,7 +694,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <property name="title">
      <string>&amp;Project</string>
     </property>
-    <addaction name="actionProjectNew"/>
+    <addaction name="actionProjectAddDirectory"/>
     <addaction name="actionProjectLoad"/>
     <addaction name="actionProjectRebuildTag"/>
     <addaction name="actionProjectModify"/>
@@ -757,7 +757,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionProjectNew"/>
+   <addaction name="actionProjectAddDirectory"/>
    <addaction name="actionProjectLoad"/>
    <addaction name="actionProjectRebuildTag"/>
    <addaction name="actionProjectModify"/>
@@ -789,13 +789,13 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Setting</string>
    </property>
   </action>
-  <action name="actionProjectNew">
+  <action name="actionProjectAddDirectory">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/gtk-new.png</normaloff>:/Icons/22x22/gtk-new.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;New</string>
+    <string>&amp;Add directory...</string>
    </property>
   </action>
   <action name="actionProjectLoad">

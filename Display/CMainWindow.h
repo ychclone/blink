@@ -56,7 +56,8 @@ public slots:
 	void loadFileList();
 
 private slots:
-    void on_newProjectButton_clicked();
+	void on_projectAddDirectoryButton_clicked();
+
     void on_loadProjectButton_clicked();
     void on_updateProjectButton_clicked();
 

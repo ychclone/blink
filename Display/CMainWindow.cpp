@@ -451,7 +451,7 @@ void CMainWindow::createActions()
     connect(actionAbout, SIGNAL(triggered()), this, SLOT(on_aboutButton_clicked()));
 
 	// [Project action]
-    connect(actionProjectNew, SIGNAL(triggered()), this, SLOT(on_newProjectButton_clicked()));
+	connect(actionProjectAddDirectory, &QAction::triggered, this, &CMainWindow::on_projectAddDirectoryButton_clicked);
 
 	connect(actionProjectLoad, SIGNAL(triggered()), this, SLOT(on_loadProjectButton_clicked()));
 
@@ -604,10 +604,40 @@ void CMainWindow::createActions()
 	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::launchEditorWithLineNum);
 }
 
-void CMainWindow::on_newProjectButton_clicked()
+void CMainWindow::on_projectAddDirectoryButton_clicked()
 {
-    QDialog* dialog = new CProjectDlg();
-    dialog->exec();
+	QFileDialog dialog;
+	dialog.setFileMode(QFileDialog::Directory);
+	dialog.setOption(QFileDialog::ShowDirsOnly);
+	dialog.setViewMode(QFileDialog::Detail);
+
+	int result = dialog.exec();
+
+	QString directory;
+	if (result) {
+		directory = dialog.selectedFiles()[0];
+
+		CProjectItem projectItem;
+		QFileInfo fileInfo(directory);
+
+		projectItem.name_ = fileInfo.fileName();
+		projectItem.srcDir_ = directory;
+
+		QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
+
+		if (defaultMaskForNewProject == "") {
+			projectItem.srcMask_ = "*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
+		} else {
+			projectItem.srcMask_ =  defaultMaskForNewProject;
+		}
+
+		projectItem.headerMask_ = "";
+		projectItem.labels_ = "";
+
+		QDialog* dialog = new CProjectDlg(projectItem.name_, projectItem, this);
+		dialog->exec();
+	}
+
 }
 
 // load the project into environment
@@ -1596,7 +1626,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 				} else {
 					QMenu menu(this);
 
-					menu.addAction(actionProjectNew);
+					menu.addAction(actionProjectAddDirectory);
 					menu.addAction(actionProjectLoad);
 					menu.addAction(actionProjectRebuildTag);
 					menu.addAction(actionProjectModify);
