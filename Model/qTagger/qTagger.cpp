@@ -489,8 +489,11 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 		}
 		tagItem.tag_ = tagName;
 
-		tagFileRecordStr = line.mid(tagFieldIndex);
+		tagFileRecordStr = line.mid(tagFieldIndex + 1);
+
 		tagFileRecordStrList = tagFileRecordStr.split(kDB_FIELD_FILE_RECORD_SEPERATOR, QString::SkipEmptyParts);
+
+		tagItem.tagFileRecord_.clear();
 
 		foreach (const QString& fileRecordStr, tagFileRecordStrList) {
 			lineFieldIndex = fileRecordStr.indexOf(kDB_FIELD_FILE_SEPERATOR);
@@ -503,6 +506,8 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 			foreach (const QString& lineNumStr, lineNumStrList) {
 				tagFileRecord.lineNum_ << lineNumStr.toULong();
 			}
+
+			tagItem.tagFileRecord_ << tagFileRecord;
 		}
 
 		tagList_.append(tagItem);
