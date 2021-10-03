@@ -1947,7 +1947,12 @@ void CMainWindow::queryTag(const QString& tag)
 		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
 
+		QElapsedTimer timer;
+		timer.start();
+
 		tagger_.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
+
+		qDebug() << "queryTag took" << timer.elapsed() << "ms";
 
 		//QString tagToQuery = tag.toHtmlEscaped();
 		QString tagToQuery = tagToQueryFiltered.toHtmlEscaped();

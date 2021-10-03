@@ -9,12 +9,15 @@
 #include <QHash>
 #include <QtCore>
 #include <QElapsedTimer>
+#include <QVector>
 
 #include "commonType.h"
 #include "CUtils.h"
 #include "CTagResultItem.h"
 
 #include "CSourceFileList.h"
+
+#include "CTagItem.h"
 
 typedef QMap<QString, QString> T_TokenMapType;
 
@@ -33,8 +36,10 @@ public:
 	int writeTagDb(const QString& tagDbFileName);
 
 	int loadTagList(const QString& tagDbFileName);
-	QStringList getTagList();
 	int getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
+
+	int queryTagLoadedSymbol(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
+						QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
 
 	int queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
 				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
@@ -70,7 +75,7 @@ private:
 
 	QSet<QString> keywordSet_;
 
-	QStringList tagList_;
+	QVector<CTagItem> tagList_;
 
 	T_TokenMapType tokenMap_;
 

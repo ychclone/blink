@@ -471,14 +471,41 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	QTextStream tagDb(&tagDbFile);
 	tagList_.clear();
 
+	CTagItem tagItem;
+	QString tagFileRecordStr = "";
+	QStringList tagFileRecordStrList;
+	CTagFileRecord tagFileRecord;
+
+	int lineFieldIndex = 0;
+	QString lineNumListStr = "";
+	QStringList lineNumStrList;
+
 	while (!tagDb.atEnd()) {
 		line = tagDb.readLine();
 		tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR);
 
 		if (tagFieldIndex != -1) {
-			tagName = line.mid(0, tagFieldIndex);
+			tagName = line.left(tagFieldIndex);
 		}
-		tagList_.append(tagName);
+		tagItem.tag_ = tagName;
+
+		tagFileRecordStr = line.mid(tagFieldIndex);
+		tagFileRecordStrList = tagFileRecordStr.split(kDB_FIELD_FILE_RECORD_SEPERATOR, QString::SkipEmptyParts);
+
+		foreach (const QString& fileRecordStr, tagFileRecordStrList) {
+			lineFieldIndex = fileRecordStr.indexOf(kDB_FIELD_FILE_SEPERATOR);
+			tagFileRecord.fileId_ = fileRecordStr.left(lineFieldIndex).toULong();
+
+			lineNumListStr = fileRecordStr.mid(lineFieldIndex + 1);
+			lineNumStrList = lineNumListStr.split(kDB_FIELD_LINE_SEPERATOR, QString::SkipEmptyParts);
+
+			tagFileRecord.lineNum_.clear();
+			foreach (const QString& lineNumStr, lineNumStrList) {
+				tagFileRecord.lineNum_ << lineNumStr.toULong();
+			}
+		}
+
+		tagList_.append(tagItem);
 	}
 
 	tagDbFile.close();
@@ -487,17 +514,12 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	return 0;
 }
 
-QStringList QTagger::getTagList()
-{
-	return tagList_;
-}
-
 int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;
-	foreach (const QString &tag, tagList_) {
-		if (tag.contains(tagToQuery, caseSensitivity)) {
-			matchedTokenList += tag;
+	foreach (const CTagItem &tagItem, tagList_) {
+		if (tagItem.tag_.contains(tagToQuery, caseSensitivity)) {
+			matchedTokenList += tagItem.tag_;
 		}
 		if (matchedTokenList.size() > 500) {
 			break;
@@ -505,6 +527,13 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 	}
 
 	return 0;
+}
+
+int QTagger::queryTagLoadedSymbol(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
+					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression)
+{
+
+
 }
 
 int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,

@@ -1,5 +1,5 @@
-#ifndef COUTPUT_ITEM_H
-#define COUTPUT_ITEM_H
+#ifndef CFILE_ITEM_H
+#define CFILE_ITEM_H
 
 #include <QTextStream>
 #include <QString>
@@ -20,7 +20,7 @@ public:
 	long fileSize_;
 };
 
-#endif // COUTPUT_ITEM_H
+#endif // CFILE_ITEM_H
 
 
 

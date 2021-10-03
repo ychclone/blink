@@ -13,19 +13,19 @@ RESOURCES   = Resources/app.qrc
 INCLUDEPATH += "Utils"
 
 FORMS       = Resources/Forms/mainWindow.ui \
-              Resources/Forms/editor.ui \ 
+              Resources/Forms/editor.ui \
               Resources/Forms/projectDialog.ui \
-              Resources/Forms/groupDialog.ui \ 
+              Resources/Forms/groupDialog.ui \
               Resources/Forms/aboutDialog.ui \
               Resources/Forms/configDialog.ui \
               Resources/Forms/findReplaceDialog.ui \
-              Resources/Forms/editorFindDialog.ui 
+              Resources/Forms/editorFindDialog.ui
 
 SOURCES     += main.cpp \
                Utils/CUtils.cpp \
                Display/CMainWindow.cpp \
                Display/CEditor.cpp \
-			   Display/CEditorFindDlg.cpp \  
+               Display/CEditorFindDlg.cpp \
                Display/CProjectDlg.cpp \
                Display/CGroupDlg.cpp \ 
                Display/CAboutDlg.cpp \
@@ -37,12 +37,14 @@ SOURCES     += main.cpp \
                Display/CSearchTextBrowser.cpp \
                Display/CSearchTextEdit.cpp \
                Display/CFindReplaceDlg.cpp \
+               Model/qTagger/CTagItem.cpp \
+               Model/qTagger/CTagFileRecord.cpp \
                Model/qTagger/CTagResultItem.cpp \
                Model/qTagger/qTagger.cpp \
-               Model/qTagger/CSourceFileList.cpp \ 
+               Model/qTagger/CSourceFileList.cpp \
                Model/qFindReplacer/qFindReplacer.cpp \
                Model/CProjectListModel.cpp \
-               Model/CGroupListModel.cpp \ 
+               Model/CGroupListModel.cpp \
                Model/CFileListModel.cpp \
                Model/CProjectManager.cpp \
                Model/CProjectUpdateThread.cpp \
@@ -58,40 +60,42 @@ SOURCES     += main.cpp \
 
 
 HEADERS     += Utils/commonType.h \
-               Utils/CUtils.h \
-               Display/CMainWindow.h \
-               Display/CEditor.h \
-			   Display/CEditorFindDlg.h \ 
-               Display/CProjectDlg.h \
-               Display/CGroupDlg.h \ 
-               Display/CAboutDlg.h \
-               Display/CProjectListWidget.h \
-               Display/CGroupListWidget.h \
-               Display/CFileListWidget.h \
-               Display/CConfigDlg.h \
-               Display/CEventFilterObj.h \  
-               Display/CSearchTextBrowser.h \
-               Display/CSearchTextEdit.h \ 
-               Display/CFindReplaceDlg.h \
-               Model/qTagger/CTagResultItem.h \
-               Model/qTagger/qTagger.h \ 
-               Model/qTagger/CSourceFileList.h \
-			   Model/qFindReplacer/qFindReplacer.h \
-               Model/CProjectListModel.h \ 
-               Model/CGroupListModel.h \
-               Model/CFileListModel.h \
-               Model/CProjectManager.h \
-               Model/CProjectUpdateThread.h \
-               Model/CProjectLoadThread.h \
-               Model/CGroupLoadThread.h \
-               Model/CConfigManager.h \
-               Model/CProjectItem.h \ 
-               Model/CGroupItem.h \
-               Model/CFileItem.h \
-               Model/CRunCommand.h \
-               Model/CFindReplaceModel.h \
-               Storage/CXmlStorageHandler.h \
-               Storage/IStorageHandler.h \
+                Utils/CUtils.h \
+                Display/CMainWindow.h \
+                Display/CEditor.h \
+                Display/CEditorFindDlg.h \
+                Display/CProjectDlg.h \
+                Display/CGroupDlg.h \ 
+                Display/CAboutDlg.h \
+                Display/CProjectListWidget.h \
+                Display/CGroupListWidget.h \
+                Display/CFileListWidget.h \
+                Display/CConfigDlg.h \
+                Display/CEventFilterObj.h \
+                Display/CSearchTextBrowser.h \
+                Display/CSearchTextEdit.h \ 
+                Display/CFindReplaceDlg.h \
+                Model/qTagger/CTagItem.h \ 
+                Model/qTagger/CTagFileRecord.h \
+                Model/qTagger/CTagResultItem.h \
+                Model/qTagger/qTagger.h \ 
+                Model/qTagger/CSourceFileList.h \
+                Model/qFindReplacer/qFindReplacer.h \
+                Model/CProjectListModel.h \ 
+                Model/CGroupListModel.h \
+                Model/CFileListModel.h \
+                Model/CProjectManager.h \
+                Model/CProjectUpdateThread.h \
+                Model/CProjectLoadThread.h \
+                Model/CGroupLoadThread.h \
+                Model/CConfigManager.h \
+                Model/CProjectItem.h \ 
+                Model/CGroupItem.h \
+                Model/CFileItem.h \
+                Model/CRunCommand.h \
+                Model/CFindReplaceModel.h \
+                Storage/CXmlStorageHandler.h \
+                Storage/IStorageHandler.h \
 
 
 
