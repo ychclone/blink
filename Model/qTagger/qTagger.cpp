@@ -529,11 +529,162 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 	return 0;
 }
 
-int QTagger::queryTagLoadedSymbol(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
+int QTagger::queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,
 					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression)
 {
+	if (!tagToQuery.isEmpty()) {
+		QStringList tagToQueryList;
+		QStringList lineFilterStrList;
 
+		QStringList fileNameFilterStrList;
+		QStringList functionNameFilterStrList;
+		QStringList excludePatternFilterStrList;
+		QString tagToQueryStr;
 
+		int linePrintBeforeMatch = 0;
+		int linePrintAfterMatch = 0;
+
+		tagToQueryList = tagToQuery.split(" ", QString::SkipEmptyParts);
+
+        if (tagToQueryList.size() >= 2) {
+			if (keywordSet_.contains(tagToQueryList.at(0))) { // not using keyword for query, i.e. no keyword for first word
+				tagToQueryList.swap(0, 1);
+			}
+		}
+
+		tagToQueryStr = tagToQueryList.takeFirst(); // take first and remove first tag for query
+
+		int i;
+
+		QString queryField;
+
+		bool bStrConvertOk;
+
+		for (i = 0; i < tagToQueryList.size(); i++) {
+			queryField = tagToQueryList.at(i);
+
+			if (queryField.startsWith("/f")) { // file name filter
+                queryField.remove(0, 2); // remove header
+				if (!queryField.isEmpty()) {
+					fileNameFilterStrList << queryField;
+				}
+			} else if (queryField.startsWith("/t")) { // function name filter
+                queryField.remove(0, 2); // remove header
+				if (!queryField.isEmpty()) {
+					functionNameFilterStrList << queryField;
+				}
+			} else if (queryField.startsWith("/x")) { // exclude pattern filter
+                queryField.remove(0, 2); // remove header
+				if (!queryField.isEmpty()) {
+					excludePatternFilterStrList << queryField;
+				}
+			} else if (queryField.startsWith("/b")) { // number of line to print before matches
+                queryField.remove(0, 2); // remove header
+				linePrintBeforeMatch = queryField.toInt(&bStrConvertOk);
+			} else if (queryField.startsWith("/a")) { // number of line to print after matches
+                queryField.remove(0, 2); // remove header
+				linePrintAfterMatch = queryField.toInt(&bStrConvertOk);
+			} else if (queryField.startsWith("/n")) { // number of line to print before and after matches
+                queryField.remove(0, 2); // remove header
+				linePrintBeforeMatch = queryField.toInt(&bStrConvertOk);
+				linePrintAfterMatch = linePrintBeforeMatch;
+			} else {
+				lineFilterStrList << queryField;
+			}
+		}
+
+		tagToQueryFiltered = tagToQueryStr;
+
+		// query in tag list
+		QRegularExpression tagQueryRegEx(tagToQueryStr);
+		QRegularExpressionMatch tagQueryMatch;
+		QString tagField;
+		bool bSymbolMatch;
+
+		int tagFieldIndex;
+		int lineFieldIndex;
+
+		unsigned long fileId;
+
+		QString line;
+
+		QString queryResultFileRecordListStr;
+		QStringList queryResultFileRecordList;
+
+		QString queryResultFileName;
+
+		QString queryResultLineNumListStr;
+		QStringList queryResultLineNumStrList;
+
+		QList<unsigned long> queryResultLineNumList;
+
+		bool bMatchedFileNameFilter;
+		long k;
+
+		if (caseSensitivity == Qt::CaseInsensitive) {
+			tagQueryRegEx.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+		}
+
+		foreach (const CTagItem& tagItem, tagList_) {
+			tagField = tagItem.tag_;
+
+			bSymbolMatch = false;
+
+			if (symbolRegularExpression) {
+				tagQueryMatch = tagQueryRegEx.match(tagField);
+				if (tagQueryMatch.hasMatch()) {
+					bSymbolMatch = true;
+				}
+			} else {
+                if (tagField == tagToQueryStr) { // exact match
+                    bSymbolMatch = true;
+				}
+			}
+
+			if (bSymbolMatch) {
+				foreach (const CTagFileRecord& tagFileRecord, tagItem.tagFileRecord_) {
+					fileId = tagFileRecord.fileId_;
+
+#ifdef kDEBUG_QTAGGER_QUERY
+					qDebug() << "fileId = " << fileId;
+#endif
+
+					queryResultFileName = inputFileItemList[fileId].fileName_;
+
+#ifdef kDEBUG_QTAGGER_QUERY
+					qDebug() << "queryResultFileName = " << queryResultFileName;
+#endif
+
+					// filename filter, assume not matched if not empty, only matched if any query filename matched
+					if (fileNameFilterStrList.empty()) {
+						bMatchedFileNameFilter = true;
+					} else {
+						bMatchedFileNameFilter = false;
+
+						//qDebug() << "fileName = " << fileName << endl;
+
+						for (k = 0; k < fileNameFilterStrList.size(); k++) {
+
+							//qDebug() << "fileNameFilterStrList.at(k) = " << fileNameFilterStrList.at(k) << endl;
+							if (queryResultFileName.contains(fileNameFilterStrList.at(k))) {
+								bMatchedFileNameFilter = true;
+								break;
+							}
+						}
+					}
+
+					if (!bMatchedFileNameFilter) { // skip if not match file name
+						continue;
+					}
+
+					getFileLineContent(queryResultFileName, tagFileRecord.lineNum_, resultList,
+									lineFilterStrList, functionNameFilterStrList, excludePatternFilterStrList,
+									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity);
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,

@@ -38,8 +38,8 @@ public:
 	int loadTagList(const QString& tagDbFileName);
 	int getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
-	int queryTagLoadedSymbol(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
-						QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
+	int queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,
+					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
 
 	int queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
 				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);

@@ -1951,6 +1951,7 @@ void CMainWindow::queryTag(const QString& tag)
 		timer.start();
 
 		tagger_.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
+		//tagger_.queryTagLoadedSymbol(fileItemList_, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
 
 		qDebug() << "queryTag took" << timer.elapsed() << "ms";
 
