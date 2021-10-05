@@ -2,6 +2,7 @@
 #include <QFileDialog>
 
 #include <QFontDialog>
+#include <QDebug>
 
 #include "CConfigDlg.h"
 #include "Model/CConfigManager.h"
@@ -86,6 +87,12 @@ void CConfigDlg::loadSetting()
         defaultMaskForNewProject_lineEdit->setText("*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml");
 	}
 
+    unsigned int limitSearchRow = confManager->getAppSettingValue("limitSearchRow").toUInt();
+	if (limitSearchRow == 0) { // default setting
+		limitSearchRow_lineEdit->setText("30000");
+	} else {
+		limitSearchRow_lineEdit->setText(QString::number(limitSearchRow));
+	}
 }
 
 void CConfigDlg::saveSetting()
@@ -106,6 +113,8 @@ void CConfigDlg::saveSetting()
 
     confManager->setAppSettingValue("UseExternalEditor", useExternalEditor_checkBox->isChecked());
 	confManager->setAppSettingValue("defaultMaskForNewProject", defaultMaskForNewProject_lineEdit->text());
+
+	confManager->setAppSettingValue("limitSearchRow", limitSearchRow_lineEdit->text());
 }
 
 void CConfigDlg::createActions()
@@ -126,6 +135,8 @@ void CConfigDlg::createActions()
 
 	QObject::connect(useExternalEditor_checkBox, &QCheckBox::stateChanged, this, &CConfigDlg::configContentChanged);
 	QObject::connect(defaultMaskForNewProject_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
+
+	QObject::connect(limitSearchRow_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 }
 
 void CConfigDlg::changePage(QListWidgetItem *current, QListWidgetItem *previous)

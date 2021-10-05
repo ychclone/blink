@@ -1,8 +1,8 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
-# Blink grep
-GUI of indexed grep for source code, files locator, search and replace.
-Switch differnt projects and start searching.
+# Blink code search
+GUI of live indexed grep for source code, files locator, search and replace.
+Switch different projects and start searching.
 Drag and drop of filenames to your favourite editor.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/afn8q3ai3e7wphrf?svg=true)](https://ci.appveyor.com/project/ychclone/blink)
@@ -12,17 +12,19 @@ Drag and drop of filenames to your favourite editor.
 
 # Features
 * Search without delay using prebuilt index, comparing to ack or ripgrep
-* Very small index size compared to trigram
+* Live grep
 * Queries support autocomplete
-* Switch multiple projects easily with individual index
-* Support drag and drop for filename
+* Drag and drop for filename to your favorite 
+* Switch between multiple projects
+* Very small index size compared to trigram
 * Replaces in files for searched symbol
 * Cross platform and requires no installation
 
 # Download, Install
 
 Windows and Linux binaries are available at 
-https://github.com/ychclone/blink/releases
+* https://sourceforge.net/projects/blink-code-search/files/
+* https://github.com/ychclone/blink/releases
 
 # File listing
 ![File listing](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_filelisting.png)
@@ -141,7 +143,7 @@ could be initialized. Reinstalling the application may fix this problem.
 
 Sol: 
 ```
-export QT_QPA_PLATFORM_PLUGIN_PATH=/home/ychclone/Qt5.13.2/5.13.2/gcc_64/plugins/platforms
+export QT_QPA_PLATFORM_PLUGIN_PATH=/home/ychclone/Qt5.14.2/5.14.2/gcc_64/plugins/platforms
 ```
 
 

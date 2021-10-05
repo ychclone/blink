@@ -133,6 +133,8 @@ private slots:
     void on_nextSymbolButton_clicked();
 	void on_previousSymbolButton_clicked();
 
+	void on_actionLiveSearch_toggled();
+
 	void frameSymbolLineEditChanged();
 
 	void on_cancelTagUpdate();
@@ -142,6 +144,7 @@ private slots:
 	void keyPressEvent(QKeyEvent *event);
 
 	void queryTag(const QString& tag);
+	void queryTagRowLimit(const QString& tag, unsigned int limitSearchRow);
 
 private:
 	void updateProjectListWidget();

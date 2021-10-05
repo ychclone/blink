@@ -195,8 +195,8 @@ int QTagger::writeTagDb(const QString& tagDbFileName)
 }
 
 int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned long>& lineNumList, QList<CTagResultItem>& resultLineList,
-							const QStringList& lineFilterStrList, const QStringList& functionNameFilterStrList, const QStringList& excludePatternFilterStrList,
-							int linePrintBeforeMatch, int linePrintAfterMatch, const Qt::CaseSensitivity& caseSensitivity)
+							const QStringList& lineFilterStrList, const QStringList& excludePatternFilterStrList,
+							int linePrintBeforeMatch, int linePrintAfterMatch, const Qt::CaseSensitivity& caseSensitivity, unsigned long limitSearchRow)
 {
 	QFile sourceFile(fileName);
 	QString line;
@@ -209,16 +209,12 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 	int functionBracketIndex;
 	int closeBracketIndex;
 
-	bool bCanSkip;
-
 	QStringList lastLines;
 	QList<int> lastManualIndentLevelList;
 
 	QString lastLinesJoined;
 
-
 	bool bMatchedLineFilterStringList;
-	bool bMatchedFunctionNameFilter;
 	bool bPassExcludePatternFilter;
 
 	if (!sourceFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -243,8 +239,6 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 	int indentLevel = 0;
 
 	int openBracketIndex = 0;
-
-	resetCommentSkip();
 
 	resultItem.functionSignature_.clear();
 
@@ -271,12 +265,6 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			break;
 		}
 
-		bCanSkip = skipInsideCommentAndRemoveComment(line, currentLineNum);
-
-		if (bCanSkip) {
-			continue;
-		}
-
 		lastLines.append(line);
 		lastManualIndentLevelList.append(manualIndentLevel);
 
@@ -284,29 +272,6 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 		openBracketIndex = line.indexOf("{");
 		if (openBracketIndex != -1) {
 			indentLevel++;
-		}
-
-		if ((prevousIndentLevel == 0) && (indentLevel == 1)) {
-			lastLinesJoined = "";
-
-			for (i = lastLines.size() - 1; i >= 0; i--) { // search most recent bracket match
-				functionBracketIndex = lastLines.at(i).indexOf("(");
-                if (functionBracketIndex != -1) {
-					lastLinesJoined = lastLines.at(i);
-					lastLinesJoined.truncate(functionBracketIndex);
-					lastLinesJoined = lastLinesJoined.trimmed();
-					break;
-				}
-			}
-
-			QString functionName;
-			extractLastToken(lastLinesJoined, functionName);
-
-			if (!keywordSet_.isEmpty()) {
-				if (!keywordSet_.contains(functionName)) {
-					resultItem.functionSignature_ = functionName;
-				}
-			}
 		}
 
 		// decrement indent level
@@ -320,6 +285,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
                 if (bGotPendingResultItem) {
 					resultLineList << pendingResultItem;
+					if (resultLineList.length() >= limitSearchRow) {
+						sourceFile.close();
+						return 0;
+					}
 					bGotPendingResultItem = false;
 				}
 
@@ -351,33 +320,8 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 					}
 				}
 
-				// function filter, assume not matched if not empty, only matched if any query function name matched
-				if (functionNameFilterStrList.empty()) {
-					bMatchedFunctionNameFilter = true;
-				} else {
-					bMatchedFunctionNameFilter = false;
-
-					// consider as already mismatch if function signature is empty
-					if (resultItem.functionSignature_.isEmpty()) {
-						bMatchedFunctionNameFilter = false;
-					} else {
-						bMatchedFunctionNameFilter = false;
-
-                        //qDebug() << "resultItem.functionSignature_ = " << resultItem.functionSignature_ << endl;
-
-						for (k = 0; k < functionNameFilterStrList.size(); k++) {
-							//qDebug() << "functionNameFilterStrList.at(k) = " << functionNameFilterStrList.at(k) << endl;
-
-							if (resultItem.functionSignature_.contains(functionNameFilterStrList.at(k))) {
-								bMatchedFunctionNameFilter = true;
-								break;
-							}
-						}
-					}
-				}
-
 				// valid only if all matched
-				if (bMatchedLineFilterStringList && bMatchedFunctionNameFilter && bPassExcludePatternFilter) {
+				if (bMatchedLineFilterStringList && bPassExcludePatternFilter) {
 					if ((linePrintBeforeMatch > 0) && (linePrintAfterMatch > 0)) {
 						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 
@@ -414,6 +358,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 						resultItem.fileLineSrcBeforeList_.clear(); // reuse resultItem
 						resultItem.beforeIndentLevelList_.clear();
 
+						if (resultLineList.length() >= limitSearchRow) {
+							sourceFile.close();
+							return 0;
+						}
 					} else if (linePrintAfterMatch > 0) {
 						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 						pendingResultItem = resultItem;
@@ -422,6 +370,11 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 						linePrintAfter = linePrintAfterMatch;
 					} else {
 						resultLineList << resultItem;
+
+						if (resultLineList.length() >= limitSearchRow) {
+							sourceFile.close();
+							return 0;
+						}
 					}
 				}
 
@@ -435,6 +388,11 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 					if (linePrintAfter == 0) { // finish appending line after to print
                         resultLineList << pendingResultItem;
+
+						if (resultLineList.length() >= limitSearchRow) {
+							sourceFile.close();
+							return 0;
+						}
 						bGotPendingResultItem = false;
 					}
 				}
@@ -519,13 +477,60 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	return 0;
 }
 
-int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
+int QTagger::levenshteinDistance(const QString &source, const QString &target)
+{
+    // Mostly token from https://qgis.org/api/2.14/qgsstringutils_8cpp_source.html
+    if (source == target) {
+        return 0;
+    }
+
+    const int sourceCount = source.count();
+    const int targetCount = target.count();
+
+    if (source.isEmpty()) {
+        return targetCount;
+    }
+
+    if (target.isEmpty()) {
+        return sourceCount;
+    }
+
+    if (sourceCount > targetCount) {
+        return levenshteinDistance(target, source);
+    }
+
+    QVector<int> column;
+    column.fill(0, targetCount + 1);
+    QVector<int> previousColumn;
+    previousColumn.reserve(targetCount + 1);
+    for (int i = 0; i < targetCount + 1; i++) {
+        previousColumn.append(i);
+    }
+
+    for (int i = 0; i < sourceCount; i++) {
+        column[0] = i + 1;
+        for (int j = 0; j < targetCount; j++) {
+            column[j + 1] = std::min({
+                1 + column.at(j),
+                1 + previousColumn.at(1 + j),
+                previousColumn.at(j) + ((source.at(i) == target.at(j)) ? 0 : 1)
+            });
+        }
+        column.swap(previousColumn);
+    }
+
+    return previousColumn.at(targetCount);
+}
+
+int QTagger::getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;
 	foreach (const CTagItem &tagItem, tagList_) {
 		if (tagItem.tag_.contains(tagToQuery, caseSensitivity)) {
-			matchedTokenList += tagItem.tag_;
+			int distance = levenshteinDistance(tagToQuery, tagItem.tag_);
+			matchedTokenList[distance] = tagItem.tag_;
 		}
+
 		if (matchedTokenList.size() > 500) {
 			break;
 		}
@@ -535,14 +540,13 @@ int QTagger::getMatchedTags(const QString& tagToQuery, QStringList& matchedToken
 }
 
 int QTagger::queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,
-					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression)
+					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression, unsigned long limitSearchRow)
 {
 	if (!tagToQuery.isEmpty()) {
 		QStringList tagToQueryList;
 		QStringList lineFilterStrList;
 
 		QStringList fileNameFilterStrList;
-		QStringList functionNameFilterStrList;
 		QStringList excludePatternFilterStrList;
 		QString tagToQueryStr;
 
@@ -572,11 +576,6 @@ int QTagger::queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const
                 queryField.remove(0, 2); // remove header
 				if (!queryField.isEmpty()) {
 					fileNameFilterStrList << queryField;
-				}
-			} else if (queryField.startsWith("/t")) { // function name filter
-                queryField.remove(0, 2); // remove header
-				if (!queryField.isEmpty()) {
-					functionNameFilterStrList << queryField;
 				}
 			} else if (queryField.startsWith("/x")) { // exclude pattern filter
                 queryField.remove(0, 2); // remove header
@@ -682,10 +681,18 @@ int QTagger::queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const
 						continue;
 					}
 
+					if (resultList.length() >= limitSearchRow) {
+						break;
+					}
+
 					getFileLineContent(queryResultFileName, tagFileRecord.lineNum_, resultList,
-									lineFilterStrList, functionNameFilterStrList, excludePatternFilterStrList,
-									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity);
+									lineFilterStrList, excludePatternFilterStrList,
+									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity, limitSearchRow);
 				}
+			}
+
+			if (resultList.length() >= limitSearchRow) {
+				break;
 			}
 		}
 	}
@@ -730,11 +737,6 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
                 queryField.remove(0, 2); // remove header
 				if (!queryField.isEmpty()) {
 					fileNameFilterStrList << queryField;
-				}
-			} else if (queryField.startsWith("/t")) { // function name filter
-                queryField.remove(0, 2); // remove header
-				if (!queryField.isEmpty()) {
-					functionNameFilterStrList << queryField;
 				}
 			} else if (queryField.startsWith("/x")) { // exclude pattern filter
                 queryField.remove(0, 2); // remove header
@@ -889,93 +891,14 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 					}
 
 					getFileLineContent(queryResultFileName, queryResultLineNumList, resultList,
-									lineFilterStrList, functionNameFilterStrList, excludePatternFilterStrList,
-									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity);
+									lineFilterStrList, excludePatternFilterStrList,
+									linePrintBeforeMatch, linePrintAfterMatch, caseSensitivity, 30000);
 				}
 			}
 		}
 		tagDbFile.close();
 	}
 	return 0;
-}
-
-int QTagger::resetCommentSkip()
-{
-	bBlockCommentFollowing_ = false;
-	blockCommentStartIndex_ = -1;
-	blockCommentEndIndex_ = -1;
-
-	blockCommentBeginCol_ = -1;
-	blockCommentBeginLine_ = 0;
-
-	lineCommentStartIndex_ = -1;
-	commentAction_ = NON_COMMENT;
-
-	bSkipCommentIndexCheck_ = false;
-	return 0;
-}
-
-bool QTagger::skipInsideCommentAndRemoveComment(QString& currentLineRead, const unsigned long lineNumReading)
-{
-	currentLineRead = currentLineRead.trimmed();
-
-	// do not check comment start when already inside comment
-	if (!bBlockCommentFollowing_) {
-		commentAction_ = NON_COMMENT;
-
-		lineCommentStartIndex_ = currentLineRead.indexOf("//");
-		blockCommentStartIndex_ = currentLineRead.indexOf("/*");
-
-		// check if contains comment
-		if ((lineCommentStartIndex_ >= 0) && (blockCommentStartIndex_ == -1)) { // only line comment string
-			commentAction_ = LINE_COMMENT;
-		} else if ((blockCommentStartIndex_ >= 0) && (lineCommentStartIndex_ == -1)) { // only block comment string
-			commentAction_ = BLOCK_COMMENT;
-		} else if ((lineCommentStartIndex_ >= 0) && (blockCommentStartIndex_ >= 0)) { // contains both kind of comment, depends on which appears earlier
-			if (lineCommentStartIndex_ < blockCommentStartIndex_) {
-				commentAction_ = LINE_COMMENT;
-			} else if (blockCommentStartIndex_ < lineCommentStartIndex_)  {
-				commentAction_ = BLOCK_COMMENT;
-			}
-		}
-
-		if (commentAction_ == LINE_COMMENT) {
-			currentLineRead.remove(lineCommentStartIndex_, currentLineRead.length() - lineCommentStartIndex_); // remove from start of line comment until line end
-		} else if (commentAction_ == BLOCK_COMMENT) {
-			blockCommentBeginCol_ = blockCommentStartIndex_;
-
-			bBlockCommentFollowing_ = true;
-			blockCommentBeginLine_ = lineNumReading;
-		}
-	}
-
-	// skipping comment, as comment following
-	if (bBlockCommentFollowing_) {
-		blockCommentEndIndex_ = currentLineRead.indexOf("*/");
-
-		if (blockCommentEndIndex_ == -1) { // no comment end
-			if (blockCommentBeginLine_ == lineNumReading) { // has comment started in this line, only skip the line start with comment
-				currentLineRead.remove(blockCommentBeginCol_, currentLineRead.length() - blockCommentBeginCol_);
-			} else {
-				return true; // still comment, can skip
-			}
-		} else { // has comment end
-			if (blockCommentBeginLine_ == lineNumReading) { // comment start, end at the same line
-				currentLineRead.remove(blockCommentBeginCol_, blockCommentEndIndex_ - blockCommentBeginCol_ + 2); // include length of comment end string
-			} else { // skip comment from column 0
-				currentLineRead.remove(0, blockCommentEndIndex_ - blockCommentBeginCol_ + 2); // include length of comment end string
-			}
-
-			bBlockCommentFollowing_ = false;
-		}
-	}
-
-    // after remove all comment, can skip the line if it becomes empty
-	if (currentLineRead.isEmpty()) {
-		return true;
-	}
-
-	return false;
 }
 
 int QTagger::getManualIndentLevel(QString& line)
@@ -1029,9 +952,6 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 	int fileIdFieldIndex;
 
 	unsigned long lineNumReading = 0;
-	bool bCanSkip;
-
-	resetCommentSkip();
 
 	while (!sourcefileStream.atEnd()) {
 		lineNumReading++;
@@ -1041,12 +961,6 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 		currentLineRead = sourcefileStream.readLine();
 		if (sourcefileStream.atEnd()) {
 			break;
-		}
-
-		bCanSkip = skipInsideCommentAndRemoveComment(currentLineRead, lineNumReading);
-
-		if (bCanSkip) {
-			continue;
 		}
 
 		tokenList.clear();
@@ -1130,28 +1044,6 @@ void QTagger::extractWordTokens(const QString& str, QStringList& tokenList)
 			}
 		}
 	}
-}
-
-void QTagger::extractLastToken(const QString& str, QString& lastToken)
-{
-    int i;
-
-	QString currentWord = "";
-	unsigned char currentChar;
-
-	for (i = str.length()-1; i >= 0 ; i--) { // search from the end of string
-		currentChar = (unsigned char) (str.at(i).toLatin1());
-		if (((currentChar >= 'a') && (currentChar <= 'z')) // small capital
-			|| ((currentChar >= 'A') && (currentChar <= 'Z')) // large capital
-			|| ((currentChar >= '0') && (currentChar <= '9')) // Number
-			|| (currentChar == ':')
-			|| (currentChar == '_')) { // undercore
-            currentWord = currentChar + currentWord; // add char to the beginning
-		} else {
-			break;
-		}
-	}
-	lastToken = currentWord;
 }
 
 void QTagger::loadKeywordFile()

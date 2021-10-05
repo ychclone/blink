@@ -689,6 +689,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionFileCaseSensitive"/>
     <addaction name="actionSymbolCaseSensitive"/>
     <addaction name="actionSymbolRegularExpression"/>
+    <addaction name="actionLiveSearch"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -1127,6 +1128,14 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="toolTip">
     <string>&amp;View</string>
+   </property>
+  </action>
+  <action name="actionLiveSearch">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Live search</string>
    </property>
   </action>
  </widget>

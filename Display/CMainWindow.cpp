@@ -217,6 +217,7 @@ bTagBuildInProgress_(false)
 	bool bFileFilterCaseSensitive;
 	bool bSymbolSearchCaseSensitive;
 	bool bSymbolSearchRegularExpression;
+	bool bLiveSearch;
 
 	bProjectAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProjectAndGroupFilterCaseSensitive", false).toBool();
 	if (bProjectAndGroupFilterCaseSensitive) {
@@ -295,6 +296,14 @@ bTagBuildInProgress_(false)
 		actionSymbolRegularExpression->setChecked(true);
 	} else {
 		actionSymbolRegularExpression->setChecked(false);
+	}
+
+	// live search
+    bLiveSearch = confManager_->getAppSettingValue("LiveSearch", true).toBool();
+	if (bLiveSearch) {
+		actionLiveSearch->setChecked(true);
+	} else {
+		actionLiveSearch->setChecked(false);
 	}
 
     createActions();
@@ -436,13 +445,14 @@ void CMainWindow::loadFileList()
 
 	foreach (const CFileItem& fileItem, fileItemList_) {
 		fileListModel_->addItem(fileItem);
-		if (eventLoopCounter >= 1000) { // prevent ui freeze
+		if (eventLoopCounter >= 2000) { // prevent ui freeze
 			updateFileListWidget();
 			QCoreApplication::processEvents();
 			eventLoopCounter = 0;
 		}
 		eventLoopCounter++;
 	}
+
 	updateFileListWidget();
 }
 
@@ -588,6 +598,7 @@ void CMainWindow::createActions()
 #else
 	symbol_textBrowser->setReadOnly(true);
 	symbol_textBrowser->setLineWrapMode(QPlainTextEdit::NoWrap);
+	//symbol_textBrowser->setUndoRedoEnabled(false);
 
 	QTextCharFormat charFormat;
 	charFormat.setFontFamily("Consolas");
@@ -670,6 +681,8 @@ void CMainWindow::on_loadProjectButton_clicked()
 				projectLoadThread_.setCurrentProjectItem(projectItem);
 				projectLoadThread_.setTaggerPtr(&tagger_);
 				projectLoadThread_.setFileItemListPtr(&fileItemList_);
+
+				search_lineEdit->setEnabled(false);
 
 				projectLoadThread_.start();
 
@@ -1164,6 +1177,17 @@ void CMainWindow::on_actionAlways_on_top_toggled()
     on_actionTransparent_toggled(); // still transparency
 }
 
+void CMainWindow::on_actionLiveSearch_toggled()
+{
+	qDebug() << "on_actionLiveSearch_toggled IN";
+
+	if (actionLiveSearch->isChecked()) {
+		confManager_->setAppSettingValue("LiveSearch", true);
+	} else {
+		confManager_->setAppSettingValue("LiveSearch", false);
+	}
+}
+
 void CMainWindow::setTransparency(bool enable)
 {
     if (enable) {
@@ -1356,9 +1380,13 @@ void CMainWindow::updateProjectLoadProgress(int percentage)
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
 
+		search_lineEdit->setEnabled(true);
+
         statusBar()->showMessage("Project " + currentProjectItem_.name_ + " loaded.");
     } else if (percentage == 0) {
 		statusBar()->showMessage("Failed to load Project " + currentProjectItem_.name_ + ".");
+
+		search_lineEdit->setEnabled(true);
 	}
 }
 
@@ -1521,7 +1549,12 @@ void CMainWindow::searchLineEditChanged()
     }
 
 	QStringList tagList;
-	tagger_.getMatchedTags(search_lineEdit->text(), tagList, caseSensitivity);
+	QMap<int, QString> tagMap;
+	tagger_.getMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
+
+	for (auto tag: tagMap) {
+		tagList.push_back(tag);
+	}
 
 	stringListModel_.setStringList(tagList);
 
@@ -1531,6 +1564,11 @@ void CMainWindow::searchLineEditChanged()
 	completer_.setFilterMode(Qt::MatchContains);
 
 	search_lineEdit->setCompleter(&completer_);
+
+	bool bLiveSearch = confManager_->getAppSettingValue("LiveSearch", true).toBool();
+	if (bLiveSearch) {
+		queryTagRowLimit(search_lineEdit->text(), 1000);
+	}
 }
 
 void CMainWindow::on_symbolSearchFrameShortcutPressed()
@@ -1907,6 +1945,19 @@ void CMainWindow::on_filePropertiesPressed()
 
 void CMainWindow::queryTag(const QString& tag)
 {
+	unsigned int limitSearchRow = confManager_->getAppSettingValue("limitSearchRow").toUInt();
+	if (limitSearchRow == 0) {
+		limitSearchRow = 30000;
+	}
+
+	queryTagRowLimit(tag, limitSearchRow);
+}
+
+void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchRow)
+{
+	QElapsedTimer timerQuery;
+	timerQuery.start();
+
 	QString tagDbFileName, inputFileName;
 
 	QString resultHtml;
@@ -1931,7 +1982,6 @@ void CMainWindow::queryTag(const QString& tag)
 	webView->show();
 	*/
 
-	QString funcSignatureToPrint;
 	QString lineSrcBeforeToPrint;
 	QString lineSrcAfterToPrint;
 
@@ -1950,8 +2000,7 @@ void CMainWindow::queryTag(const QString& tag)
 		QElapsedTimer timer;
 		timer.start();
 
-		//tagger_.queryTag(inputFileName, tagDbFileName, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
-		tagger_.queryTagLoadedSymbol(fileItemList_, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression);
+		tagger_.queryTagLoadedSymbol(fileItemList_, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression, limitSearchRow);
 
 		qDebug() << "queryTag took" << timer.elapsed() << "ms";
 
@@ -1977,13 +2026,8 @@ void CMainWindow::queryTag(const QString& tag)
 			resultItemSrcLine = resultItemSrcLine.toHtmlEscaped();
 			resultItemSrcLine.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
 
-			funcSignatureToPrint = "";
 			lineSrcBeforeToPrint = "";
 			lineSrcAfterToPrint = "";
-
-			if (resultItem.functionSignature_ != "") {
-				funcSignatureToPrint = "<functionsig>&nbsp;&nbsp;&nbsp;" + resultItem.functionSignature_ + "</functionsig>";
-			}
 
 			minIndent = resultItem.lineSrcIndentLevel_;
 
@@ -2044,18 +2088,13 @@ void CMainWindow::queryTag(const QString& tag)
 				}
 			}
 
-			resultHtml += QString("<div class=\"itemblock\"><div class=\"header\">") +
-						"<a href=\"" + resultItem.filePath_ + "#" + QString::number(resultItem.fileLineNum_) + "\">" +
-						resultItemFileInfo.fileName() + "</a>" +
-						funcSignatureToPrint +
-						"</div><code>" +
+			resultHtml += QString("<div><a href=\"") + resultItem.filePath_ + "#" + QString::number(resultItem.fileLineNum_) + "\">" +
+						resultItemFileInfo.fileName() + "</a></div>" +
 						lineSrcBeforeToPrint +
 
 						"<linenum>" + QString::number(resultItem.fileLineNum_) + "</linenum> " +
 						resultItemSrcLine +
-
-						lineSrcAfterToPrint +
-						"</code></div><div><spacesize>&nbsp;</spacesize></div>";
+						lineSrcAfterToPrint + "<div><spacesize>&nbsp;</spacesize></div>";
 
 			//qDebug() << "resultHtml = " << resultHtml << endl;
 
@@ -2087,10 +2126,15 @@ void CMainWindow::queryTag(const QString& tag)
 		symbol_textBrowser->setHtml(resultHtml);
 		symbol_textBrowser->show();
 #else
+		QElapsedTimer timerSetHtml;
+		timerSetHtml.start();
 
 		textDocument_.setHtml(resultHtml);
 
+		qDebug() << "setHtml took" << timerSetHtml.elapsed() << "ms";
+
 		symbol_textBrowser->setDocument(&textDocument_);
+
 		symbol_textBrowser->show();
 		/*
 		symbol_textBrowser->clear();
@@ -2109,6 +2153,7 @@ void CMainWindow::queryTag(const QString& tag)
 
 	}
 
+	qDebug() << "queryTag full took" << timerQuery.elapsed() << "ms";
 }
 
 void CMainWindow::on_searchButton_clicked()

@@ -36,16 +36,15 @@ public:
 	int writeTagDb(const QString& tagDbFileName);
 
 	int loadTagList(const QString& tagDbFileName);
-	int getMatchedTags(const QString& tagToQuery, QStringList& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
+
+	int levenshteinDistance(const QString &source, const QString &target);
+	int getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
 	int queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,
-					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
+					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression, unsigned long limitSearchRow);
 
 	int queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
 				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
-
-	int resetCommentSkip();
-	bool skipInsideCommentAndRemoveComment(QString& currentLineRead, const unsigned long lineNumReading);
 
 	int getManualIndentLevel(QString& line);
 
@@ -69,7 +68,6 @@ public:
 private:
 
 	void extractWordTokens(const QString& str, QStringList& tokenList);
-	void extractLastToken(const QString& str, QString& lastToken);
 
 	void loadKeywordFile();
 
@@ -80,23 +78,8 @@ private:
 	T_TokenMapType tokenMap_;
 
 	int getFileLineContent(const QString& fileName, const QList<unsigned long>& lineNumList, QList<CTagResultItem>& resultLineList,
-			const QStringList& lineFilterStrList, const QStringList& functionNameFilterStrList, const QStringList& excludePatternFilterStrList,
-			int linePrintBeforeMatch, int linePrintAfterMatch, const Qt::CaseSensitivity& caseSensitivity);
-
-	typedef enum {NON_COMMENT, LINE_COMMENT, BLOCK_COMMENT} ENUM_CommentAction;
-
-	// for comment handling
-	bool bBlockCommentFollowing_;
-	int blockCommentStartIndex_;
-	int blockCommentEndIndex_;
-
-	int blockCommentBeginCol_;
-	unsigned long blockCommentBeginLine_;
-
-	int lineCommentStartIndex_;
-	ENUM_CommentAction commentAction_;
-
-	bool bSkipCommentIndexCheck_;
+			const QStringList& lineFilterStrList, const QStringList& excludePatternFilterStrList,
+			int linePrintBeforeMatch, int linePrintAfterMatch, const Qt::CaseSensitivity& caseSensitivity, unsigned long limitSearchRow);
 
 
 

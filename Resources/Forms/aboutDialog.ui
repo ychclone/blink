@@ -67,7 +67,7 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Blink v1.6.3</string>
+          <string>Blink v1.7.0</string>
          </property>
         </widget>
        </item>
