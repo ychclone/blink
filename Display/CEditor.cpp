@@ -230,6 +230,22 @@ void CEditor::textEditModified()
 	setWindowModified(editorTabMap_[currentFileName].textEdit->isModified());
 }
 
+void CEditor::updateAllEditorFont()
+{
+	QFont editorFont;
+
+	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
+	editorFont.fromString(editorFontSettingStr);
+
+	if (editorFontSettingStr == "") {
+        editorFont = QApplication::font();
+	}
+
+	for (auto editorTab: editorTabMap_) {
+		editorTab.textEdit->lexer()->setFont(editorFont);
+	}
+}
+
 void CEditor::setEditorFont(QsciLexer* lexer)
 {
 	QFont editorFont;
@@ -240,9 +256,9 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << endl;
 
 	if (editorFontSettingStr == "") {
-		lexer->setFont(editorFont);
-	} else {
 		lexer->setFont(QApplication::font()); // using system default font
+	} else {
+		lexer->setFont(editorFont);
 	}
 }
 

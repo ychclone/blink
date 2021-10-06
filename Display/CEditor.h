@@ -29,6 +29,8 @@ public:
 	void loadFileWithLineNum(const QString& filePath, int lineNumber);
 	void loadFile(const QString& filePath);
 
+	void updateAllEditorFont();
+
 private slots:
 
 private:
@@ -39,6 +41,7 @@ private:
 	void createActions(QsciScintilla* textEdit);
 
 	void textEditModified();
+
 	void setEditorFont(QsciLexer* lexer);
 
 	void save();

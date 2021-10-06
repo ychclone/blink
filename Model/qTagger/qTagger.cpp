@@ -982,8 +982,8 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 			if (!tagCurrentLineSet.contains(token)) { // as not storing tag duplicate in same line
 				tagCurrentLineSet.insert(token);
 
-				if (!keywordSet_.contains(token)) { // not storing language keyword
-
+				//if (!keywordSet_.contains(token)) { // not storing language keyword
+                    // store keyword as well
 					fileIdField = kDB_FIELD_FILE_RECORD_SEPERATOR + fileIdStr + kDB_FIELD_FILE_SEPERATOR;
 
 					if (tokenMap.contains(token)) { // token already exists
@@ -1003,7 +1003,7 @@ bool QTagger::parseSourceFile(unsigned long fileId, const QString& fileName, T_T
 					} else { // new entry
 						tokenMap[token] = fileIdField + QString::number(lineNumReading);
 					}
-				}
+				//}
 			}
 		}
 	}

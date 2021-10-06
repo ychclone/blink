@@ -440,8 +440,12 @@ void CMainWindow::loadFileList()
 {
 	CFileItem fileItem;
 
+	progressBar_.show();
+
 	fileListModel_->clearAndResetModel();
 	unsigned long eventLoopCounter = 0; // event loop counter to prevent ui freeze when loading large amount
+	int progressBarVal = 0;
+	unsigned long totalLoopCounter = 0;
 
 	foreach (const CFileItem& fileItem, fileItemList_) {
 		fileListModel_->addItem(fileItem);
@@ -449,11 +453,16 @@ void CMainWindow::loadFileList()
 			updateFileListWidget();
 			QCoreApplication::processEvents();
 			eventLoopCounter = 0;
+			progressBarVal = static_cast<int> (static_cast<long double> (totalLoopCounter) / fileItemList_.length() * 100);
+			progressBar_.setValue(progressBarVal);
 		}
 		eventLoopCounter++;
+		totalLoopCounter++;
 	}
 
 	updateFileListWidget();
+	progressBar_.setValue(100);
+	progressBar_.hide();
 }
 
 void CMainWindow::createActions()
@@ -1262,6 +1271,8 @@ void CMainWindow::on_actionSetting_triggered()
 		file_listView->updateOutputFont(updatedProjectFont);
 
 		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
+
+		editor_.updateAllEditorFont();
 
 		setSymbolFont(updatedSymbolFont);
 		// update symbol panel
