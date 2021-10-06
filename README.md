@@ -14,7 +14,7 @@ Drag and drop of filenames to your favourite editor.
 * Search without delay using prebuilt index, comparing to ack or ripgrep
 * Live grep
 * Queries support autocomplete
-* Drag and drop for filename to your favorite 
+* Drag and drop for filename to your favourite editor 
 * Switch between multiple projects
 * Very small index size compared to trigram
 * Replaces in files for searched symbol
