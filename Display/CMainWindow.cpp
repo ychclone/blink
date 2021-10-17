@@ -575,6 +575,9 @@ void CMainWindow::createActions()
 	connect(&completer_, SIGNAL(activated(const QString &)),
             this, SLOT(queryTag(const QString&)));
 
+	connect(&completer_, SIGNAL(highlighted(const QString &)),
+            this, SLOT(queryTagTop1000(const QString&)));
+
     // symbol search frame
 	connect(symbolSearchFrameShortcut, SIGNAL(activated()), this, SLOT(on_symbolSearchFrameShortcutPressed()));
 	connect(frameSymbol_lineEdit, SIGNAL(textChanged(const QString &)),
@@ -2167,6 +2170,14 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 	qDebug() << "queryTag full took" << timerQuery.elapsed() << "ms";
 }
 
+void CMainWindow::queryTagTop1000(const QString& tag)
+{
+	bool bLiveSearch = confManager_->getAppSettingValue("LiveSearch", true).toBool();
+	if (bLiveSearch) {
+		queryTagRowLimit(tag, 1000);
+	}
+
+}
 void CMainWindow::on_searchButton_clicked()
 {
 	QString tagToQuery;

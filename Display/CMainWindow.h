@@ -145,6 +145,7 @@ private slots:
 
 	void queryTag(const QString& tag);
 	void queryTagRowLimit(const QString& tag, unsigned int limitSearchRow);
+	void queryTagTop1000(const QString& tag);
 
 private:
 	void updateProjectListWidget();

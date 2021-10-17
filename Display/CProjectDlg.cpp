@@ -84,12 +84,7 @@ void CProjectDlg::on_applyButton_clicked()
     qDebug() << "projectItem.tagUpdateDateTime_ = " << projectItem.tagUpdateDateTime_;
 
     if (projectItem.tagUpdateDateTime_ == "") { // new project
-        if (currentProjectName_ == "") { // no project loaded yet
-            CProjectManager::getInstance()->updateProjectItem(true, modifiedItem.name_, modifiedItem);
-        } else {
-            // use currentProjectName_ for updateProjectItem as name may have be changed
-            CProjectManager::getInstance()->updateProjectItem(true, currentProjectName_, modifiedItem);
-        }
+        CProjectManager::getInstance()->updateProjectItem(true, modifiedItem.name_, modifiedItem);
     } else { // old project which has updated tag time
         if (currentProjectName_ == "") { // no project loaded yet
             CProjectManager::getInstance()->updateProjectItem(false, modifiedItem.name_, modifiedItem);

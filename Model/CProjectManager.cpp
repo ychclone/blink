@@ -84,10 +84,10 @@ void CProjectManager::updateProjectItem(bool newProject, const QString& projectI
 	QDir currentDir(QDir::currentPath());
 
 	if (projectItemName != newItem.name_) { // project renamed
-        projectMap_.remove(projectItemName); // remove old one
+		qDebug() << "newItem.name_ = " << newItem.name_;
+		qDebug() << "projectItemName = " << projectItemName;
 
-		// current directory
-		QDir currentDir(QDir::currentPath());
+        projectMap_.remove(projectItemName); // remove old one
 
 		// using absoluteFilePath so relative and absolute path also possible
 		tagDir = currentDir.absoluteFilePath(CConfigManager::getInstance()->getAppSettingValue("TagDir").toString() + "/" + projectItemName);
