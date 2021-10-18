@@ -19,7 +19,7 @@
 
 #include "CTagItem.h"
 
-typedef QMap<QString, QString> T_TokenMapType;
+typedef QHash<QString, QString> T_TokenMapType;
 
 class QTagger
 {
@@ -38,6 +38,10 @@ public:
 	int loadTagList(const QString& tagDbFileName);
 
 	int levenshteinDistance(const QString &source, const QString &target);
+
+	bool fuzzyMatch(const QString& targetInput, const QString& patternInput, const Qt::CaseSensitivity& caseSensitivity);
+	int getFuzzyMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
+
 	int getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
 	int queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,

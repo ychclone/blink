@@ -133,6 +133,7 @@ private slots:
     void on_nextSymbolButton_clicked();
 	void on_previousSymbolButton_clicked();
 
+	void on_actionFuzzyAutoComplete_toggled();
 	void on_actionLiveSearch_toggled();
 
 	void frameSymbolLineEditChanged();

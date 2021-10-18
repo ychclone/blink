@@ -690,6 +690,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionSymbolCaseSensitive"/>
     <addaction name="actionSymbolRegularExpression"/>
     <addaction name="actionLiveSearch"/>
+    <addaction name="actionFuzzyAutoComplete"/>
    </widget>
    <widget class="QMenu" name="menuProject">
     <property name="title">
@@ -1098,7 +1099,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
      <normaloff>:/Icons/22x22/zoom-3.png</normaloff>:/Icons/22x22/zoom-3.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Replace in files</string>
+    <string>&amp;Replace in Files</string>
    </property>
   </action>
   <action name="actionSymbolRegularExpression">
@@ -1136,6 +1137,14 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="text">
     <string>Live search</string>
+   </property>
+  </action>
+  <action name="actionFuzzyAutoComplete">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fuzzy Auto Complete</string>
    </property>
   </action>
  </widget>

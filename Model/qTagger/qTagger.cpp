@@ -522,6 +522,63 @@ int QTagger::levenshteinDistance(const QString &source, const QString &target)
     return previousColumn.at(targetCount);
 }
 
+bool QTagger::fuzzyMatch(const QString& targetInput, const QString& patternInput, const Qt::CaseSensitivity& caseSensitivity)
+{
+	int i = 0;
+	int patternPos = 0;
+	int matchedChar = 0;
+	QString target, pattern;
+
+	if (caseSensitivity == Qt::CaseInsensitive) {
+		target = targetInput.toLower();
+		pattern = patternInput.toLower();
+	} else {
+		target = targetInput;
+		pattern = patternInput;
+	}
+
+	for (i = 0; i < target.length(); i++) {
+		if (pattern.at(patternPos) == target.at(i)) {
+			patternPos++;
+			matchedChar++;
+		} else {
+			continue;
+		}
+		if (matchedChar == pattern.length()) { // all char in pattern match
+			break;
+		}
+		if (patternPos >= pattern.length()) { // no match for all chars in pattern
+			break;
+		}
+		if (i + pattern.length() - patternPos > target.length()) { // not match yet pattern reach end of string
+			break;
+		}
+	}
+
+	if (matchedChar == pattern.length()) {
+		return true;
+	} else {
+		return false;
+	}
+}
+
+int QTagger::getFuzzyMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
+{
+	QStringList result;
+	foreach (const CTagItem &tagItem, tagList_) {
+		if (fuzzyMatch(tagItem.tag_, tagToQuery, caseSensitivity)) {
+			int distance = levenshteinDistance(tagToQuery, tagItem.tag_);
+			matchedTokenList[distance] = tagItem.tag_;
+		}
+
+		if (matchedTokenList.size() > 500) {
+			break;
+		}
+	}
+
+	return 0;
+}
+
 int QTagger::getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;

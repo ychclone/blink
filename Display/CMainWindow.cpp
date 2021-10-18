@@ -218,6 +218,7 @@ bTagBuildInProgress_(false)
 	bool bSymbolSearchCaseSensitive;
 	bool bSymbolSearchRegularExpression;
 	bool bLiveSearch;
+	bool bFuzzyAutoComplete;
 
 	bProjectAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProjectAndGroupFilterCaseSensitive", false).toBool();
 	if (bProjectAndGroupFilterCaseSensitive) {
@@ -304,6 +305,14 @@ bTagBuildInProgress_(false)
 		actionLiveSearch->setChecked(true);
 	} else {
 		actionLiveSearch->setChecked(false);
+	}
+
+	// fuzzy auto complete
+    bFuzzyAutoComplete = confManager_->getAppSettingValue("FuzzyAutoComplete", true).toBool();
+	if (bFuzzyAutoComplete) {
+		actionFuzzyAutoComplete->setChecked(true);
+	} else {
+		actionFuzzyAutoComplete->setChecked(false);
 	}
 
     createActions();
@@ -1189,10 +1198,17 @@ void CMainWindow::on_actionAlways_on_top_toggled()
     on_actionTransparent_toggled(); // still transparency
 }
 
+void CMainWindow::on_actionFuzzyAutoComplete_toggled()
+{
+	if (actionFuzzyAutoComplete->isChecked()) {
+		confManager_->setAppSettingValue("FuzzyAutoComplete", true);
+	} else {
+		confManager_->setAppSettingValue("FuzzyAutoComplete", false);
+	}
+}
+
 void CMainWindow::on_actionLiveSearch_toggled()
 {
-	qDebug() << "on_actionLiveSearch_toggled IN";
-
 	if (actionLiveSearch->isChecked()) {
 		confManager_->setAppSettingValue("LiveSearch", true);
 	} else {
@@ -1564,7 +1580,14 @@ void CMainWindow::searchLineEditChanged()
 
 	QStringList tagList;
 	QMap<int, QString> tagMap;
-	tagger_.getMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
+
+    bool bFuzzyAutoComplete = confManager_->getAppSettingValue("FuzzyAutoComplete", true).toBool();
+
+	if (bFuzzyAutoComplete) {
+		tagger_.getFuzzyMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
+	} else {
+		tagger_.getMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
+	}
 
 	for (auto tag: tagMap) {
 		tagList.push_back(tag);
@@ -1576,6 +1599,10 @@ void CMainWindow::searchLineEditChanged()
 	completer_.setModelSorting(QCompleter::CaseSensitivelySortedModel);
 	completer_.setCaseSensitivity(caseSensitivity);
 	completer_.setFilterMode(Qt::MatchContains);
+
+	if (bFuzzyAutoComplete) {
+		completer_.setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+	}
 
 	search_lineEdit->setCompleter(&completer_);
 

@@ -1,8 +1,8 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
-GUI of live indexed grep for source code, files locator, search and replace.
-Switch different projects and start searching.
+GUI of live indexed grep for source code. Fuzzy suggestion in autocomplete.
+Files locator, search and replace. Switch different projects and start searching.
 Drag and drop of filenames to your favourite editor.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/afn8q3ai3e7wphrf?svg=true)](https://ci.appveyor.com/project/ychclone/blink)
@@ -12,8 +12,8 @@ Drag and drop of filenames to your favourite editor.
 
 # Features
 * Search without delay using prebuilt index, comparing to ack or ripgrep
+* Fuzzy suggestion in autocomplete
 * Live grep
-* Queries support autocomplete
 * Drag and drop for filename to your favourite editor 
 * Switch between multiple projects
 * Very small index size compared to trigram
