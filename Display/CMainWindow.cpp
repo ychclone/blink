@@ -268,20 +268,20 @@ bTagBuildInProgress_(false)
 		setSymbolFont(QApplication::font()); // using system font by default
 	}
 
-	// Editor font
-	QString editorFontSettingStr;
-	QFont editorFont;
+	// Symbol Auto Complete font
+	QString symbolAutoCompleteFontSettingStr;
+	QFont symbolAutoCompleteFont;
 
-	editorFontSettingStr = confManager_->getAppSettingValue("EditorFont").toString();
-	editorFont.fromString(editorFontSettingStr);
+	symbolAutoCompleteFontSettingStr = confManager_->getAppSettingValue("SymbolAutoCompleteFont").toString();
+	symbolAutoCompleteFont.fromString(symbolAutoCompleteFontSettingStr);
 
-	/*
-	if (editorFontSettingStr != "") {
-		setEditorFont(editorFont);
+	if (symbolAutoCompleteFontSettingStr != "") {
+		setSymbolAutoCompleteFont(symbolAutoCompleteFont);
 	} else {
-		setEditorFont(QApplication::font()); // using system font by default
+		setSymbolAutoCompleteFont(QApplication::font()); // using system font by default
 	}
-	*/
+
+    // editor font set directly in CEditor::CEditor
 
 	// case sensitive
     bSymbolSearchCaseSensitive = confManager_->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
@@ -396,6 +396,11 @@ void CMainWindow::setSymbolFont(QFont symbolFont)
 	QString textDocumentSyleStr = QString("a {color: #0066FF; font-weight: bold; font-family: %1; text-decoration: none} functionsig {color: #33F000; font-weight:bold; font-family: %1;} code {display: table-row; font-family: Consolas; white-space: nowrap} linenum {color: #9999CC; font-family: %1} keyword {color: #00CCCC; font-weight:bold} spacesize {font-size: %3pt} body {background: #FAFAFA; font-size: %2pt}").arg(symbolFontFamily, symbolFontSize, lineHeight);
 
 	textDocument_.setDefaultStyleSheet(textDocumentSyleStr);
+}
+
+void CMainWindow::setSymbolAutoCompleteFont(QFont symbolAutoCompleteFont)
+{
+	completer_.popup()->setFont(symbolAutoCompleteFont);
 }
 
 void CMainWindow::loadProjectList()
@@ -1289,11 +1294,14 @@ void CMainWindow::on_actionSetting_triggered()
 		group_listView->updateGroupFont(updatedProjectFont);
 		file_listView->updateOutputFont(updatedProjectFont);
 
-		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
-
 		editor_.updateAllEditorFont();
 
+		QFont updatedSymbolFont = static_cast<CConfigDlg*> (dialog)->getSymbolDefaultFont();
 		setSymbolFont(updatedSymbolFont);
+
+		QFont updatedSymbolAutoCompleteFont = static_cast<CConfigDlg*> (dialog)->getSymbolAutoCompleteDefaultFont();
+		setSymbolAutoCompleteFont(updatedSymbolAutoCompleteFont);
+
 		// update symbol panel
 		on_searchButton_clicked();
 	}
@@ -1579,7 +1587,7 @@ void CMainWindow::searchLineEditChanged()
     }
 
 	QStringList tagList;
-	QMap<int, QString> tagMap;
+	QMultiMap<int, QString> tagMap;
 
     bool bFuzzyAutoComplete = confManager_->getAppSettingValue("FuzzyAutoComplete", true).toBool();
 
@@ -2049,7 +2057,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 		QString tagToQuery = tagToQueryFiltered.toHtmlEscaped();
 
 		resultHtml = "<html>";
-		//resultHtml += "<head><link rel=\"stylesheet\" href=\"file:///" + QCoreApplication::applicationDirPath() + "/Html/style.css\" type=\"text/css\" media=\"screen\"/></head>";
 		resultHtml += "<body>";
 		resultHtml += "<pre>";
 

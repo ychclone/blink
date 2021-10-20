@@ -562,13 +562,13 @@ bool QTagger::fuzzyMatch(const QString& targetInput, const QString& patternInput
 	}
 }
 
-int QTagger::getFuzzyMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
+int QTagger::getFuzzyMatchedTags(const QString& tagToQuery, QMultiMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;
 	foreach (const CTagItem &tagItem, tagList_) {
 		if (fuzzyMatch(tagItem.tag_, tagToQuery, caseSensitivity)) {
 			int distance = levenshteinDistance(tagToQuery, tagItem.tag_);
-			matchedTokenList[distance] = tagItem.tag_;
+			matchedTokenList.insert(distance, tagItem.tag_);
 		}
 
 		if (matchedTokenList.size() > 500) {
@@ -579,13 +579,13 @@ int QTagger::getFuzzyMatchedTags(const QString& tagToQuery, QMap<int, QString>& 
 	return 0;
 }
 
-int QTagger::getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
+int QTagger::getMatchedTags(const QString& tagToQuery, QMultiMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity)
 {
 	QStringList result;
 	foreach (const CTagItem &tagItem, tagList_) {
 		if (tagItem.tag_.contains(tagToQuery, caseSensitivity)) {
 			int distance = levenshteinDistance(tagToQuery, tagItem.tag_);
-			matchedTokenList[distance] = tagItem.tag_;
+			matchedTokenList.insert(distance, tagItem.tag_);
 		}
 
 		if (matchedTokenList.size() > 500) {

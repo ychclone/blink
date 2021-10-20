@@ -79,6 +79,7 @@ void CFindReplaceDlg::on_replaceButton_clicked()
 
 		if (!bLetterNumOrUnderscore) {
 			QMessageBox::information(this, "File Replaces", "Only letter, number or underscore is supported for match whole word", QMessageBox::Ok);
+			return;
 		}
 	}
 

@@ -28,6 +28,11 @@ QFont CConfigDlg::getSymbolDefaultFont()
 	return symbolDefaultFont_;
 }
 
+QFont CConfigDlg::getSymbolAutoCompleteDefaultFont()
+{
+	return symbolAutoCompleteDefaultFont_;
+}
+
 void CConfigDlg::loadSetting()
 {
 	CConfigManager* confManager;
@@ -63,6 +68,18 @@ void CConfigDlg::loadSetting()
 	// update symbol font in setting display
 	QString symbolFontTextToDisplay = symbolDefaultFont_.family() + ", " + QString::number(symbolDefaultFont_.pointSize());
 	symbolFont_lineEdit->setText(symbolFontTextToDisplay);
+
+	// Symbol Auto Complete font
+	QString symbolAutoCompleteFontStr = confManager->getAppSettingValue("SymbolAutoCompleteFont").toString();
+	if (symbolAutoCompleteFontStr != "") { // load from setting
+		symbolAutoCompleteDefaultFont_.fromString(symbolAutoCompleteFontStr);
+	} else {
+		symbolAutoCompleteDefaultFont_ = QApplication::font(); // using application font as default font
+	}
+
+	// update symbol auto complete font in setting display
+	QString symbolAutoCompleteFontTextToDisplay = symbolAutoCompleteDefaultFont_.family() + ", " + QString::number(symbolAutoCompleteDefaultFont_.pointSize());
+	symbolAutoCompleteFont_lineEdit->setText(symbolAutoCompleteFontTextToDisplay);
 
 	// Editor font
 	QString editorFontStr = confManager->getAppSettingValue("EditorFont").toString();
@@ -109,6 +126,8 @@ void CConfigDlg::saveSetting()
 
 	confManager->setAppSettingValue("ProjectFont", projectDefaultFont_.toString());
 	confManager->setAppSettingValue("SymbolFont", symbolDefaultFont_.toString());
+	confManager->setAppSettingValue("SymbolAutoCompleteFont", symbolAutoCompleteDefaultFont_.toString());
+
 	confManager->setAppSettingValue("EditorFont", editorDefaultFont_.toString());
 
     confManager->setAppSettingValue("UseExternalEditor", useExternalEditor_checkBox->isChecked());
@@ -131,6 +150,7 @@ void CConfigDlg::createActions()
 	QObject::connect(timeoutRunExtProgram_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(projectFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(symbolFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
+	QObject::connect(symbolAutoCompleteFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(editorFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 
 	QObject::connect(useExternalEditor_checkBox, &QCheckBox::stateChanged, this, &CConfigDlg::configContentChanged);
@@ -227,6 +247,21 @@ void CConfigDlg::on_symbolFont_toolBn_clicked()
 		// update symbol font setting display
 		QString fontTextToDisplay = symbolDefaultFont_.family() + ", " + QString::number(symbolDefaultFont_.pointSize());
 		symbolFont_lineEdit->setText(fontTextToDisplay);
+	}
+}
+
+void CConfigDlg::on_symbolAutoCompleteFont_toolBn_clicked()
+{
+	bool bOkClicked;
+	QFont selectedFont = QFontDialog::getFont(
+						&bOkClicked, symbolAutoCompleteDefaultFont_, this);
+
+	if (bOkClicked) {
+		symbolAutoCompleteDefaultFont_ = selectedFont;
+
+		// update symbol font setting display
+		QString fontTextToDisplay = symbolAutoCompleteDefaultFont_.family() + ", " + QString::number(symbolAutoCompleteDefaultFont_.pointSize());
+		symbolAutoCompleteFont_lineEdit->setText(fontTextToDisplay);
 	}
 }
 

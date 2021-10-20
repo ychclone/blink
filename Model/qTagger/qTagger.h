@@ -40,9 +40,9 @@ public:
 	int levenshteinDistance(const QString &source, const QString &target);
 
 	bool fuzzyMatch(const QString& targetInput, const QString& patternInput, const Qt::CaseSensitivity& caseSensitivity);
-	int getFuzzyMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
+	int getFuzzyMatchedTags(const QString& tagToQuery, QMultiMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
-	int getMatchedTags(const QString& tagToQuery, QMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
+	int getMatchedTags(const QString& tagToQuery, QMultiMap<int, QString>& matchedTokenList, const Qt::CaseSensitivity& caseSensitivity);
 
 	int queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const QString& tagToQuery,
 					QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression, unsigned long limitSearchRow);

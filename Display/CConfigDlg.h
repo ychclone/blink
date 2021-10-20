@@ -15,6 +15,7 @@ public:
 
 	QFont getProjectDefaultFont();
 	QFont getSymbolDefaultFont();
+	QFont getSymbolAutoCompleteDefaultFont();
 
 private slots:
 	void changePage(QListWidgetItem *current, QListWidgetItem *previous);
@@ -26,6 +27,8 @@ private slots:
 	void on_projectFont_toolBn_clicked();
 
 	void on_symbolFont_toolBn_clicked();
+	void on_symbolAutoCompleteFont_toolBn_clicked();
+
 	void on_editorFont_toolBn_clicked();
 
 	void on_tagDir_toolBn_clicked();
@@ -41,6 +44,7 @@ private:
 
 	QFont projectDefaultFont_;
 	QFont symbolDefaultFont_;
+	QFont symbolAutoCompleteDefaultFont_;
 	QFont editorDefaultFont_;
 
 

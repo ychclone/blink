@@ -154,6 +154,7 @@ private:
 	void updateFileListWidget();
 
 	void setSymbolFont(QFont symbolFont);
+	void setSymbolAutoCompleteFont(QFont symbolFont);
     void createActions();
 
     QStringList getSelectedProjectItemNameList();
