@@ -33,7 +33,7 @@ Windows and Linux binaries are available at
 ![Code search](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png)
 
 # Replace in files
-![Replace in files](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_replaceinfiles.png | width=680)
+<img src="https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_replaceinfiles.png" width="680">
 
 # Usage
 
@@ -41,7 +41,7 @@ Windows and Linux binaries are available at
 project tab.
 ![Drop folder](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_drop_folder.png)
 2. A new project dialog will appears. Type the file extensions that you want to index.
-![New project](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_new_project.png | width=512) 
+<img src="https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_new_project.png" width="512">
 3. Right click on the project name
 4. Click "Rebuild Symbol"
 5. Double click the project name to make it the active project.
