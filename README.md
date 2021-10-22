@@ -73,7 +73,17 @@ could be set in configuration. The filename could be dropped to
 other editor.
 Option->Setting->Main->Default Editor
 
-# Compilation (Linux) 
+# Compilation (CMake Linux) 
+
+```
+sudo apt-get install -y cmake
+sudo apt-get install -y qtbase5-dev
+sudo apt-get install -y libqscintilla2-qt5-dev
+cmake .
+make
+```
+
+# Compilation (QMake Linux) 
 
 1. Download Qt Open Source offline installer:
 https://download.qt.io/archive/qt/5.14/5.14.2/
