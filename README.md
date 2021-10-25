@@ -26,11 +26,11 @@ Windows and Linux binaries are available at
 * https://sourceforge.net/projects/blink-code-search/files/
 * https://github.com/ychclone/blink/releases
 
-# File listing
-![File listing](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_filelisting.png)
-
 # Code search
 ![Code search](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png)
+
+# File listing
+![File listing](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_filelisting.png)
 
 # Replace in files
 <img src="https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_replaceinfiles.png" width="680">
