@@ -11,7 +11,7 @@ Drag and drop of filenames to your favourite editor.
 ![Screencast](https://raw.githubusercontent.com/ychclone/blink/master/Screencast/Usage.gif)
 
 # Features
-* Search without delay using prebuilt index, comparing to ack or ripgrep
+* Fast search using prebuilt index
 * Fuzzy suggestion in autocomplete
 * Live grep
 * Drag and drop for filename to your favourite editor 
