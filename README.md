@@ -86,6 +86,7 @@ make
 
 ## Runtime
 ```
+sudo apt-get install -y qt5-default
 sudo apt-get install -y libqscintilla2-qt5-13
 ```
 
