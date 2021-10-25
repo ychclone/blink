@@ -75,12 +75,18 @@ Option->Setting->Main->Default Editor
 
 # Compilation (CMake Linux) 
 
+## Build
 ```
 sudo apt-get install -y cmake
 sudo apt-get install -y qtbase5-dev
 sudo apt-get install -y libqscintilla2-qt5-dev
 cmake .
 make
+```
+
+## Runtime
+```
+sudo apt-get install -y libqscintilla2-qt5-13
 ```
 
 # Compilation (QMake Linux) 
@@ -155,12 +161,5 @@ Sol:
 ```
 export QT_QPA_PLATFORM_PLUGIN_PATH=/home/ychclone/Qt5.14.2/5.14.2/gcc_64/plugins/platforms
 ```
-
-
-
-
-
-
-
 
 
