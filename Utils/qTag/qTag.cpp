@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
 	bool lFlag = false; // input file
 
 	char *qValue = NULL;
-	char *tValue = NULL; 
-	char *lValue = NULL; 
+	char *tValue = NULL;
+	char *lValue = NULL;
 
 	int cOpt;
 
@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 	if (iFlag) {
 		caseSensitive = Qt::CaseInsensitive;
 	} else {
-		caseSensitive = Qt::CaseSensitive; 
+		caseSensitive = Qt::CaseSensitive;
 	}
 
 	// handling of input file
@@ -99,34 +99,38 @@ int main(int argc, char *argv[])
 		inputFileName = lValue;
 	}
 
-	// handling of tag database file	
+	// handling of tag database file
 	if (tFlag) {
 		tagDbFileName = tValue;
 	}
-	
+
 	if (cFlag) { // remove existing env and db files first
 		QElapsedTimer timer;
 		timer.start();
-		
+
 		T_FileItemList fileList;
 
 		CSourceFileList::loadFileList(inputFileName, fileList);
 
-		qDebug() << "Processing File..." << endl;
-		
-		tagger.createTag(fileList); 
+		qDebug() << "Processing File..." << Qt::endl;
+
+		tagger.createTag(fileList);
 		tagger.writeTagDb(tagDbFileName);
 
-		qDebug() << "Operation took" << QString::number(((double) timer.elapsed() / 1000), 'f', 3) << "s" << endl;
+		qDebug() << "Operation took" << QString::number(((double) timer.elapsed() / 1000), 'f', 3) << "s" << Qt::endl;
 	}
-	
+
     // handling of tag to be query
 	if (qFlag) {
 		// read currently load project
+
+        qDebug() << "applicationDirPath() A IN" << Qt::endl;
+		qDebug() << "QCoreApplication::applicationDirPath() = " << QCoreApplication::applicationDirPath() << Qt::endl;
 		QFile qTagConfigFile(QCoreApplication::applicationDirPath() + "/" + configFileName);
+		qDebug() << "applicationDirPath() A OUT" << Qt::endl;
 
 		if (!qTagConfigFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-			qDebug() << "Cannot open config file (" << configFileName << ") for reading!" << endl;
+			qDebug() << "Cannot open config file (" << configFileName << ") for reading!" << Qt::endl;
 			return -1;
 		}
 
@@ -135,19 +139,27 @@ int main(int argc, char *argv[])
 		QString configStr;
 		QString projectLoadStr = "projectLoad=";
 
-		while (!qTagConfigFileIn.atEnd()) {  
+		while (!qTagConfigFileIn.atEnd()) {
 			configStr = qTagConfigFileIn.readLine();
 			if (configStr.startsWith(projectLoadStr)) {
 				configStr.remove(0, projectLoadStr.length());
-				
-				tagDbFileName = QString(QCoreApplication::applicationDirPath() + "/" + QTagger::kQTAG_TAGS_DIR) + "/" + configStr + "/" + tagDbFileName;
-				inputFileName = QString(QCoreApplication::applicationDirPath() + "/" + QTagger::kQTAG_TAGS_DIR) + "/" + configStr + "/" + inputFileName; 
+
+				qDebug() << "applicationDirPath() B IN" << Qt::endl;
+				qDebug() << "QCoreApplication::applicationDirPath() = " << QCoreApplication::applicationDirPath() << Qt::endl;
+				tagDbFileName = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + configStr + "/" + tagDbFileName;
+				qDebug() << "applicationDirPath() B OUT" << Qt::endl;
+
+				qDebug() << "applicationDirPath() C IN" << Qt::endl;
+				qDebug() << "QCoreApplication::applicationDirPath() = " << QCoreApplication::applicationDirPath() << Qt::endl;
+				inputFileName = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + configStr + "/" + inputFileName;
+				qDebug() << "applicationDirPath() C OUT" << Qt::endl;
+
 				break;
 			}
 		}
 
 		qTagConfigFile.close();
-		
+
 		// start query
 		tagToQuery = QString(qValue);
 
@@ -157,8 +169,8 @@ int main(int argc, char *argv[])
 		tagger.queryTag(inputFileName, tagDbFileName, tagToQuery, tagToQueryFiltered, resultList, caseSensitive);
 
 		foreach (const CTagResultItem& result, resultList) {
-            //cout << "[" << result.functionSignature_.toStdString() << "]" << endl;
-			cout << result << endl;
+            //cout << "[" << result.functionSignature_.toStdString() << "]" << Qt::endl;
+			cout << result << Qt::endl;
 		}
 	}
 

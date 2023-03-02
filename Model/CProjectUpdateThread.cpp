@@ -105,11 +105,12 @@ int CProjectUpdateThread::countTotalRunCmd()
 
 int CProjectUpdateThread::createTag(QTagger& tagger, const T_FileItemList& inputFileList)
 {
-	long i = 0;
+	qsizetype i = 0;
 	unsigned long fileId = 0;
 	QString currentFilePath;
 
-	long totalFile = inputFileList.size();
+	qsizetype totalFile = inputFileList.size();
+
 	tagger.initKeywordFileTokenMap();
 
 	unsigned long long int totalFileSize = 0;
@@ -120,13 +121,18 @@ int CProjectUpdateThread::createTag(QTagger& tagger, const T_FileItemList& input
 	}
 
 	for (i = 0; i < totalFile; i++) {
+		qDebug() << "inputFileList.at(i).fileName_ = " << inputFileList.at(i).fileName_ << Qt::endl;
+
 		currentFilePath = inputFileList.at(i).fileName_; // index start from 0
 		fileId = inputFileList.at(i).fileId_;
 
 		qDebug() << fileId << ":" << currentFilePath;
 
 		emit percentageCompleted(static_cast<int> (static_cast<long double> (processedFileSize) / totalFileSize * 100), currentFilePath);
+
+		qDebug() << "parseSourceFile IN" << Qt::endl;
 		tagger.parseSourceFile(fileId, currentFilePath);
+		qDebug() << "parseSourceFile OUT" << Qt::endl;
 
 		processedFileSize += inputFileList.at(i).fileSize_;
 
@@ -158,7 +164,7 @@ void CProjectUpdateThread::run()
 	QString tmpDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TmpDir").toString());
 
 	// using absoluteFilePath so relative and absolute path also possible
-	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + projectItem_.name_);
+	QString tagDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)+ "/tags/" + projectItem_.name_;
 	QString tagName = "tags";
 
 	QString fileListFilename = tagDir + "/" + CSourceFileList::kFILE_LIST;
@@ -180,154 +186,30 @@ void CProjectUpdateThread::run()
 
 	nameFilters = srcMaskList + headerMaskList;
 
-	if (bRebuildTag_) {
-		T_FileItemList resultFileList;
+	// create tag
+	QTagger tagger;
 
-		QElapsedTimer timer;
-		timer.start();
+	T_FileItemList resultFileList;
 
-		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList);
+	QElapsedTimer timer;
+	timer.start();
 
-		// create tag
-		QTagger tagger;
+	CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList);
 
-		createTag(tagger, resultFileList);
+	createTag(tagger, resultFileList);
 
-		tagger.writeTagDb(tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME);
+	tagger.writeTagDb(tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
-		qDebug() << "Tag creation took" << timer.elapsed() << "milliseconds";
+	qDebug() << "Tag creation took" << timer.elapsed() << "milliseconds";
 
-		finishOneStep(""); // for updating progress bar
+	finishOneStep(""); // for updating progress bar
 
-		if (bCancelUpdate_) {
-			emit cancelledTagBuild();
-			return;
-		}
-
-		finishOneStep(""); // for updating progress bar
-	} else { // update tag
-
-		T_FileItemList newFileList;
-		T_FileItemList existingFileList;
-
-		QMap<long, long> fileIdDeletedMap;
-		QMap<long, long> fileIdModifiedMap;
-		QMap<long, long> fileIdCreatedMap;
-
-		int bListFileOpenResult;
-		int bListFileSaveResult;
-
-		// key: filename
-		QMap<QString, CFileItem> existingFileInfoMap;
-		QMap<QString, CFileItem> newFileInfoMap;
-
-		// key: file id
-		QMap<long, CFileItem> fileMapIdxByFileId;
-
-		// key: file id
-		QMap<long, long> assignedFileId;
-
-		CFileItem updatedFileItem;
-
-		// existing file list i.e. before update tag
-		bListFileOpenResult = CSourceFileList::loadFileList(fileListFilename, existingFileList);
-
-		// put the existing file list into a map
-		foreach (const CFileItem& fileItem, existingFileList) {
-			existingFileInfoMap[fileItem.fileName_] = fileItem;
-
-			assignedFileId[fileItem.fileId_] = fileItem.fileId_; // file id assigned
-		}
-
-		finishOneStep(""); // for updating progress bar
-
-		// new file list, for this update tag, not save the file list to file yet as need to update file id
-		CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, newFileList, false);
-
-		long newFileId = 0;
-
-		// put the new file list into a map
-		foreach (const CFileItem& fileItem, newFileList) {
-			updatedFileItem = fileItem;
-
-			// use previous file id if file exist before
-			QMap<QString, CFileItem>::iterator it = existingFileInfoMap.find(fileItem.fileName_);
-
-			if (it == existingFileInfoMap.end()) { // not exist before
-
-				if (newFileId == 0) { // assign to largest key +1 if not exist yet
-					QMapIterator<long, long> itMap(assignedFileId);
-					itMap.toBack();
-					itMap.previous();
-					newFileId = itMap.key() + 1;
-				}
-
-				updatedFileItem.fileId_ = newFileId;
-				newFileId++; // the next file id will be +1
-
-			} else {  // exist before
-				updatedFileItem.fileId_ = it.value().fileId_; // reuse previous file id for assignment
-			}
-
-			newFileInfoMap[updatedFileItem.fileName_] = updatedFileItem;
-			fileMapIdxByFileId[updatedFileItem.fileId_] = updatedFileItem;
-
-			qDebug() << "filename in newlist" << updatedFileItem.fileName_;
-			qDebug() << "fileid in newlist" << updatedFileItem.fileId_;
-		}
-
-		bListFileSaveResult = CSourceFileList::saveFileList(fileListFilename, fileMapIdxByFileId);
-
-		finishOneStep(""); // for updating progress bar
-
-		// deleted file, modified file
-
-		foreach (const CFileItem& fileItem, existingFileList) {
-
-			QMap<QString, CFileItem>::iterator it = newFileInfoMap.find(fileItem.fileName_);
-
-			if (it == newFileInfoMap.end()) { // deleted file: in existingFileList, but not in newModifyTimeMap
-				qDebug() << "Deleted file: " << fileItem.fileName_;
-                fileIdDeletedMap[fileItem.fileId_] = fileItem.fileId_;
-			} else {
-				if (it.value().fileLastModified_ != fileItem.fileLastModified_) { // modified file: check by file modification date time
-					qDebug() << "Modified file: " << fileItem.fileName_;
-					fileIdModifiedMap[fileItem.fileId_] = fileItem.fileId_;
-				} else {
-                    qDebug() << "Same file: " << fileItem.fileName_;
-				}
-
-				newFileInfoMap.erase(it); // remove checked item so remaining would be new files
-			}
-		}
-
-		// new file: the remaining files
-		QMap<QString, CFileItem>::const_iterator mapIt = newFileInfoMap.constBegin();
-		while (mapIt != newFileInfoMap.constEnd()) {
-			qDebug() << "New file: " << mapIt.key();
-			fileIdCreatedMap[mapIt.value().fileId_] = mapIt.value().fileId_;
-			++mapIt;
-		}
-
-		qDebug() << "fileIdModifiedMap:" << fileIdModifiedMap;
-		qDebug() << "fileIdDeletedMap:" << fileIdDeletedMap;
-		qDebug() << "fileIdCreatedMap:" << fileIdCreatedMap;
-
-		// update tag
-		QTagger tagger;
-
-		tagger.updateTag(fileMapIdxByFileId, tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME, fileIdCreatedMap, fileIdModifiedMap, fileIdDeletedMap);
-		tagger.writeTagDb(tagDir + "/" + QTagger::kQTAG_DEFAULT_TAGDBNAME);
-
-		finishOneStep(""); // for updating progress bar
-
-		if (bCancelUpdate_) {
-			emit cancelledTagBuild();
-			return;
-		}
-
-		finishOneStep(""); // for updating progress bar
+	if (bCancelUpdate_) {
+		emit cancelledTagBuild();
+		return;
 	}
+
+	finishOneStep(""); // for updating progress bar
 
 	for (int i = 1; i < MAX_SUPPORTED_RUN_COMMAND+1; i++) { // from 1 to MAX_SUPPORTED_RUN_COMMAND
 		cmdKey = QString("UpdateTagRunCmd") + QString::number(i);
@@ -355,7 +237,7 @@ void CProjectUpdateThread::run()
 		finishAllStep(); // finish all step as it's the last one
 	}
 
-
+	return;
 }
 
 

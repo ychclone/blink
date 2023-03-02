@@ -3,8 +3,6 @@
 #include <QApplication>
 #include <QtXml>
 
-#include <QDesktopWidget>
-
 #include "Display/CEventFilterObj.h"
 #include "Model/CConfigManager.h"
 
@@ -18,18 +16,12 @@ int main(int argc, char *argv[])
 
     CXmlStorageHandler xmlStorageHandler;
 
-    CProjectManager::getInstance()->setProjectFile("record.xml");
+    CProjectManager::getInstance()->setProjectFile(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/" + "record.xml");
     CProjectManager::getInstance()->setStorageHandler(xmlStorageHandler);
     CProjectManager::getInstance()->attachStorage();
 
     // load profile list after storage ready
 	window->loadProjectList();
-
-    // load group list after storage ready
-	window->loadGroupList();
-
-    // Center the main window on screen for the first time
-    QDesktopWidget desktopWidget; // get desktop info
 
 	QByteArray savedGeometry;
 
@@ -47,15 +39,13 @@ int main(int argc, char *argv[])
     splitterSizeStr = confManager->getValue("Window", "splitter").toString();
     splitterSizeStr = splitterSizeStr.trimmed();
 
-	splitterSizeStrList = splitterSizeStr.split(" ", QString::SkipEmptyParts);
+	splitterSizeStrList = splitterSizeStr.split(" ", Qt::SkipEmptyParts);
 
     foreach (const QString& splitterSize, splitterSizeStrList) {
 		splitterSizeList.append(splitterSize.toInt());
 	}
 
 	window->setSplitterSizes(splitterSizeList);
-
-    qDebug() << desktopWidget.screenGeometry();
 
     qDebug() << window->geometry();
     qDebug() << window->frameGeometry();

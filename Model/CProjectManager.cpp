@@ -5,8 +5,6 @@
 
 CProjectManager* CProjectManager::manager_ = 0;
 
-const char* CProjectManager::kGROUP_PROFILE_SEPERATOR = ",";
-
 CProjectManager::CProjectManager()
 {
 
@@ -32,17 +30,17 @@ void CProjectManager::setStorageHandler(const CXmlStorageHandler& handler)
 
 void CProjectManager::attachStorage()
 {
-    handler_.loadFromFile(projectFile_, projectMap_, groupMap_);
+    handler_.loadFromFile(projectFile_, projectMap_);
 }
 
 void CProjectManager::flushStorage()
 {
-    handler_.saveToFile(projectFile_, projectMap_, groupMap_);
+    handler_.saveToFile(projectFile_, projectMap_);
 }
 
 void CProjectManager::detachStorage()
 {
-    handler_.saveToFile(projectFile_, projectMap_, groupMap_);
+    handler_.saveToFile(projectFile_, projectMap_);
 }
 
 void CProjectManager::getProjectMap(QMap<QString, CProjectItem>& projectMap)
@@ -50,24 +48,13 @@ void CProjectManager::getProjectMap(QMap<QString, CProjectItem>& projectMap)
 	projectMap = projectMap_;
 }
 
-void CProjectManager::getGroupMap(QMap<QString, CGroupItem>& groupMap)
-{
-	groupMap = groupMap_;
-}
-
 CProjectItem CProjectManager::getProjectItem(const QString& projectItemName) const
 {
 //    qDebug() << "getItem" << projectItemName << "called!\n";
-//    qDebug() << "projectMap_[projectItemName].name_ = " << projectMap_[projectItemName].name_ << endl;
-//    qDebug() << "projectMap_[projectItemName].srcDir_ = " << projectMap_[projectItemName].srcDir_ << endl;
+//    qDebug() << "projectMap_[projectItemName].name_ = " << projectMap_[projectItemName].name_ << Qt::endl;
+//    qDebug() << "projectMap_[projectItemName].srcDir_ = " << projectMap_[projectItemName].srcDir_ << Qt::endl;
     return projectMap_[projectItemName];
 }
-
-CGroupItem CProjectManager::getGroupItem(const QString& groupItemName) const
-{
-    return groupMap_[groupItemName];
-}
-
 
 void CProjectManager::addItem(const CProjectItem& newItem)
 {
@@ -90,7 +77,7 @@ void CProjectManager::updateProjectItem(bool newProject, const QString& projectI
         projectMap_.remove(projectItemName); // remove old one
 
 		// using absoluteFilePath so relative and absolute path also possible
-		tagDir = currentDir.absoluteFilePath(CConfigManager::getInstance()->getAppSettingValue("TagDir").toString() + "/" + projectItemName);
+		tagDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + projectItemName;
 		QDir dir(tagDir);
 
 		// remove tag directory
@@ -106,18 +93,6 @@ void CProjectManager::updateProjectItem(bool newProject, const QString& projectI
 	}
 }
 
-void CProjectManager::updateGroupItem(const QString& groupItemName, const CGroupItem& newItem)
-{
-	if (groupItemName != newItem.name_) { // group renamed
-		groupMap_.remove(groupItemName); // remove old one
-	}
-
-    groupMap_[newItem.name_] = newItem;
-    emit groupMapUpdated();
-    flushStorage();
-}
-
-
 void CProjectManager::removeProjectItem(const QString& projectItemName)
 {
 	QString tagDir;
@@ -126,7 +101,7 @@ void CProjectManager::removeProjectItem(const QString& projectItemName)
 	QDir currentDir(QDir::currentPath());
 
 	// using absoluteFilePath so relative and absolute path also possible
-	tagDir = currentDir.absoluteFilePath(CConfigManager::getInstance()->getAppSettingValue("TagDir").toString() + "/" + projectItemName);
+	tagDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + projectItemName;
 	QDir dir(tagDir);
 
 	// remove tag directory
@@ -137,13 +112,6 @@ void CProjectManager::removeProjectItem(const QString& projectItemName)
     emit projectMapUpdated();
     flushStorage();
 
-}
-
-void CProjectManager::removeGroupItem(const QString& groupItemName)
-{
-    groupMap_.remove(groupItemName);
-    emit groupMapUpdated();
-    flushStorage();
 }
 
 void CProjectManager::destroy()

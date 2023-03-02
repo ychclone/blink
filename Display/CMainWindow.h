@@ -19,16 +19,19 @@
 #include <QCompleter>
 #include <QStringListModel>
 
+// qsciscintilla
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexer.h>
+
+
+
 #include "CEditor.h"
 
 #include "Model/CProjectManager.h"
 #include "Model/CProjectLoadThread.h"
 #include "Model/CProjectUpdateThread.h"
 
-#include "Model/CGroupLoadThread.h"
-
 #include "Model/CProjectListModel.h"
-#include "Model/CGroupListModel.h"
 #include "Model/CFileListModel.h"
 
 #include "Model/CFindReplaceModel.h"
@@ -36,6 +39,8 @@
 #include "Model/CConfigManager.h"
 
 #include "ui_mainWindow.h"
+
+#include "CEditorFindDlg.h"
 
 #include "Utils/commonType.h"
 
@@ -52,7 +57,6 @@ public:
 
 public slots:
     void loadProjectList();
-    void loadGroupList();
 	void loadFileList();
 
 private slots:
@@ -71,13 +75,6 @@ private slots:
 	void on_exploreProjectButton_clicked();
 	void on_consoleProjectButton_clicked();
 
-
-    void on_newGroupButton_clicked();
-    void on_loadGroupButton_clicked();
-    void on_updateGroupButton_clicked();
-    void on_editGroupButton_clicked();
-    void on_deleteGroupButton_clicked();
-
     void on_aboutButton_clicked();
     void on_clearOutputButton_clicked();
     void on_clearLogButton_clicked();
@@ -93,6 +90,21 @@ private slots:
 	void on_actionFindReplaceDialog_triggered();
 
 	void launchEditorWithLineNum(const QString &fileName, int lineNum);
+
+	void setCodeBrowserFont(QsciLexer* lexer);
+	void showInCodeBrowser(const QString &filePath, int lineNum);
+	void codeBrowserModified();
+	void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void newFile();
+	void openFile();
+	void saveFile();
+	void closeFile();
+	void saveFileAs();
+	void saveFileImpl(const QString &fileName);
+	void showFindDialog();
+	void loadFile(const QString& filePath);
+	void setEditorFont(QsciLexer* lexer);
+
 	void launchEditor(const QString &fileName);
 	void on_fileListItemDoubleClicked();
 	void on_fileEditExternalPressed();
@@ -110,12 +122,10 @@ private slots:
 	void updateCancelledTagBuild();
 
 	void updateProjectLoadProgress(int percentage);
-	void updateGroupLoadProgress(int percentage);
 
 	void on_errorDuringRun(const QString& cmdStr);
 
 	void on_projectPatternLineEditShortcutPressed();
-	void on_groupPatternLineEditShortcutPressed();
 
 	void on_filePatternLineEditShortcutPressed();
 	void on_searchLineEditShortcutPressed();
@@ -123,7 +133,6 @@ private slots:
 	void on_infoTabWidgetToolBn_clicked();
 
 	void projectFilterRegExpChanged();
-	void groupFilterRegExpChanged();
 
 	void fileFilterRegExpChanged();
 
@@ -150,7 +159,6 @@ private slots:
 
 private:
 	void updateProjectListWidget();
-    void updateGroupListWidget();
 	void updateFileListWidget();
 
 	void setSymbolFont(QFont symbolFont);
@@ -158,7 +166,6 @@ private:
     void createActions();
 
     QStringList getSelectedProjectItemNameList();
-	QStringList getSelectedGroupItemNameList();
 	QStringList getSelectedFileItemNameList();
 
     void setAlwaysOnTop(bool enable);
@@ -170,11 +177,7 @@ private:
 
     QProgressBar progressBar_;
 
-	QActionGroup *filterMethodGroup;
-	QRegExp::PatternSyntax patternSyntax_;
-
 	CProjectListModel* projectListModel_;
-    CGroupListModel* groupListModel_;
     CFileListModel* fileListModel_;
 
 	CFindReplaceModel findReplaceModel_;
@@ -182,18 +185,12 @@ private:
     CProjectLoadThread projectLoadThread_;
     CProjectUpdateThread projectUpdateThread_;
 
-	CGroupLoadThread groupLoadThread_;
-
 	QSortFilterProxyModel* projectListProxyModel_;
 	QItemSelectionModel* projectListSelectionModel_;
-
-	QSortFilterProxyModel* groupListProxyModel_;
-	QItemSelectionModel* groupListSelectionModel_;
 
     QTimeLine timeLine_;
 
     QShortcut* projectPatternLineEditShortcut;
-	QShortcut* groupPatternLineEditShortcut;
 
 	QShortcut* fileSearchShortcut;
 	QShortcut* tagSearchShortcut;
@@ -221,7 +218,6 @@ private:
 	int infoTabWidgetWidth;
 
 	CProjectItem currentProjectItem_;
-	CGroupItem currentGroupItem_;
 
 	CConfigManager* confManager_;
 
@@ -239,6 +235,12 @@ private:
 
 	QMap<QString, unsigned char> findReplaceFileList_; // unsigned char value not used
 
+    QsciScintilla codeBrowser_;
+	QString codeBrowserFileName_;
+	CEditorFindDlg findDlg_;
+
+    QLabel* m_statusLeft;
+    QLabel* m_statusRight;
 };
 #endif // CMAINWINDOW_H
 

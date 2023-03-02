@@ -67,14 +67,14 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Blink v1.7.4</string>
+          <string>Blink v1.8.0</string>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>&lt;a href=&quot;https://github.com/ychclone/blink&quot;&gt;https://github.com/ychclone/blink&lt;/a&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/ychclone/blink&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/ychclone/blink&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/ychclone/blink&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://sourceforge.net/projects/blink-code-search/&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="openExternalLinks">
           <bool>true</bool>
@@ -84,7 +84,7 @@
        <item>
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>(c) 2021</string>
+          <string>(c) 2023</string>
          </property>
         </widget>
        </item>

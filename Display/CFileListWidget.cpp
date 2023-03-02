@@ -10,14 +10,14 @@
 CFileListWidget::CFileListWidget(QWidget *parent)
 : QTreeView(parent)
 {
-	QFont currentFont = static_cast <QWidget*> (this)->font(); 
-	fileFontSize_ = currentFont.pointSize(); 
+	QFont currentFont = static_cast <QWidget*> (this)->font();
+	fileFontSize_ = currentFont.pointSize();
 }
 
 void CFileListWidget::setFileListModel(CFileListModel *fileListModel)
 {
 	fileListModel_ = fileListModel;
-} 
+}
 
 void CFileListWidget::mousePressEvent(QMouseEvent *event)
 {
@@ -27,29 +27,31 @@ void CFileListWidget::mousePressEvent(QMouseEvent *event)
 	QTreeView::mousePressEvent(event);
 }
 
-void CFileListWidget::mouseDoubleClickEvent(QMouseEvent* event)
+void CFileListWidget::mouseReleaseEvent(QMouseEvent* event)
 {
-	emit fileItemTriggered(); 
-    QTreeView::mouseDoubleClickEvent(event);
+	if (event->button() == Qt::LeftButton) {
+		emit fileItemTriggered();
+	}
+    QTreeView::mouseReleaseEvent(event);
 }
 
 void CFileListWidget::keyPressEvent(QKeyEvent* event)
 {
 	if (event->key() == Qt::Key_Return) {
-		emit fileItemTriggered(); 
-	} else if ((event->key() == Qt::Key_Equal) && (event->modifiers() == Qt::ControlModifier)) { 
+		emit fileItemTriggered();
+	} else if ((event->key() == Qt::Key_Equal) && (event->modifiers() == Qt::ControlModifier)) {
 		fileZoomIn();
-	} else if ((event->key() == Qt::Key_Minus) && (event->modifiers() == Qt::ControlModifier)) { 
+	} else if ((event->key() == Qt::Key_Minus) && (event->modifiers() == Qt::ControlModifier)) {
 		fileZoomOut();
-	} 
+	}
 	QTreeView::keyPressEvent(event);
 }
 
-void CFileListWidget::updateOutputFont(const QFont& outputFont) 
+void CFileListWidget::updateOutputFont(const QFont& outputFont)
 {
 	QFont currentFont = static_cast <QWidget*> (this)->font();
 
-	if (currentFont != outputFont) { 
+	if (currentFont != outputFont) {
 		static_cast <QWidget*> (this)->setFont(outputFont);
 
 		fileFontSize_ = outputFont.pointSize();
@@ -64,7 +66,7 @@ QStringList CFileListWidget::getSelectedItemNameList()
 	QModelIndex indexSelected, mappedIndex;
 	int rowSelected;
 	QStandardItem* itemSelected;
-    
+
     QString fileItemName;
 	QStringList fileItemNameList;
 
@@ -123,7 +125,7 @@ void CFileListWidget::mouseMoveEvent(QMouseEvent *event)
 		QUrl url = QUrl::fromLocalFile(filePath);
 		urlList.append(url);
 	}
-	
+
 	mimeData->setUrls(urlList);
 	drag->setMimeData(mimeData);
 
@@ -143,7 +145,7 @@ void CFileListWidget::fileZoomIn()
 {
 	fileFontSize_++;
 	QFont fnt = static_cast <QWidget*> (this)->font();
-	fnt.setPointSize(fileFontSize_); 
+	fnt.setPointSize(fileFontSize_);
 	static_cast <QWidget*> (this)->setFont(fnt);
 
 	updateFileListWidget();
@@ -154,16 +156,18 @@ void CFileListWidget::fileZoomOut()
 	if (fileFontSize_ > 1) {
 		fileFontSize_--;
 		QFont fnt = static_cast <QWidget*> (this)->font();
-		fnt.setPointSize(fileFontSize_); 
+		fnt.setPointSize(fileFontSize_);
 		static_cast <QWidget*> (this)->setFont(fnt);
 	}
 
-	updateFileListWidget(); 
+	updateFileListWidget();
 }
 
 
 void CFileListWidget::wheelEvent(QWheelEvent *e)
 {
+	/* YCH modified (begin), commented temporary */
+	/*
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();
         if (e->delta() > 0) {
@@ -172,7 +176,9 @@ void CFileListWidget::wheelEvent(QWheelEvent *e)
 		   fileZoomOut();
 		}
 	}
-	QTreeView::wheelEvent(e); 
+	*/
+	/* YCH modified (end), commented temporary */
+	QTreeView::wheelEvent(e);
 }
 
 

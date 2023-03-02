@@ -2,7 +2,7 @@
 #define CFILE_LIST_WIDGET_H
 
 #include <QTreeView>
-#include <QMouseEvent> 
+#include <QMouseEvent>
 #include <QStringList>
 
 #include <QShortcut>
@@ -20,10 +20,10 @@ public:
 
 	void mousePressEvent(QMouseEvent *event);
 
-	void mouseDoubleClickEvent(QMouseEvent* event);
+	void mouseReleaseEvent(QMouseEvent* event);
 	void keyPressEvent(QKeyEvent* event);
 
-	void updateOutputFont(const QFont& outputFont); 
+	void updateOutputFont(const QFont& outputFont);
 
 	void mouseMoveEvent(QMouseEvent *event);
 
@@ -44,7 +44,7 @@ private:
 	CFileListModel* fileListModel_;
 
 	long fileFontSize_;
-    
+
 };
 
 #endif // CFILE_LIST_WIDGET_H

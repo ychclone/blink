@@ -1,5 +1,5 @@
 #include "CSearchTextBrowser.h"
-#include <QMessageBox> 
+#include <QMessageBox>
 
 #ifdef Q_OS_WIN
 	#include <qt_windows.h>
@@ -10,11 +10,11 @@ CSearchTextBrowser::CSearchTextBrowser(QWidget *parent)
 {
 	setLineWrapMode(QTextEdit::NoWrap);
 
-	selectAllShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_A), this);
-	connect(selectAllShortcut, SIGNAL(activated()), this, SLOT(on_selectAllPressed()));  
+	selectAllShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_A), this);
+	connect(selectAllShortcut, SIGNAL(activated()), this, SLOT(on_selectAllPressed()));
 
 //	page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-	connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(on_urlClicked(const QUrl &))); 
+	connect(this, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(on_urlClicked(const QUrl &)));
 
 	confManager_ = CConfigManager::getInstance();
 
@@ -42,6 +42,7 @@ bool CSearchTextBrowser::findText(const QString & subString, QTextDocument::Find
 
 void CSearchTextBrowser::wheelEvent(QWheelEvent *e)
 {
+	/*
 	if (e->modifiers() == Qt::ControlModifier) {
 		e->accept();
 		if (e->delta() > 0) {
@@ -53,6 +54,9 @@ void CSearchTextBrowser::wheelEvent(QWheelEvent *e)
 	} else {
 		QTextBrowser::wheelEvent(e);
 	}
+	*/
+
+	QTextBrowser::wheelEvent(e);
 }
 
 void CSearchTextBrowser::contextMenuEvent(QContextMenuEvent *event)
@@ -61,10 +65,10 @@ void CSearchTextBrowser::contextMenuEvent(QContextMenuEvent *event)
     QMenu menu(this);
 
 	menu.addAction(pageAction(QWebPage::SelectAll));
-	menu.addAction(pageAction(QWebPage::Copy)); 
+	menu.addAction(pageAction(QWebPage::Copy));
 
-	menu.exec(event->globalPos()); 
-*/	
+	menu.exec(event->globalPos());
+*/
 
     // bypass original context menu, e.g. reload
 	//QWebView::contextMenuEvent(event);
@@ -77,7 +81,7 @@ void CSearchTextBrowser::on_selectAllPressed()
 
 void CSearchTextBrowser::on_urlClicked(const QUrl& urlClicked)
 {
-//	QMessageBox::information(this, "CSearchWebView",  urlClicked.path(), QMessageBox::Ok); 
+//	QMessageBox::information(this, "CSearchWebView",  urlClicked.path(), QMessageBox::Ok);
 
 	QString filePath = urlClicked.path();
 	filePath.remove(0, 1); // remove beginning "/" character
@@ -89,19 +93,19 @@ void CSearchTextBrowser::on_urlClicked(const QUrl& urlClicked)
 	QString lineNum = urlClicked.fragment();
 	lineNum.remove(0, 4); // remove beginning "line" string
 
-#ifdef Q_OS_WIN 
+#ifdef Q_OS_WIN
 	QString cmdParam;
 
 	QString executeMethod = "open";
 	QString consoleCommnad = confManager_->getAppSettingValue("DefaultEditor").toString();
 
 	if (consoleCommnad.endsWith("gvim.exe")) {
-        cmdParam = "+" + lineNum + " " + filePath;  // +lineNum fileName 
+        cmdParam = "+" + lineNum + " " + filePath;  // +lineNum fileName
 	} else {
-	   	cmdParam = filePath;  // fileName 
+	   	cmdParam = filePath;  // fileName
 	}
 
-	ShellExecute(NULL, reinterpret_cast<const wchar_t*>(executeMethod.utf16()), reinterpret_cast<const wchar_t*>(consoleCommnad.utf16()), 
+	ShellExecute(NULL, reinterpret_cast<const wchar_t*>(executeMethod.utf16()), reinterpret_cast<const wchar_t*>(consoleCommnad.utf16()),
 		reinterpret_cast<const wchar_t*> (cmdParam.utf16()), reinterpret_cast<const wchar_t*>(executeDir.utf16()), SW_NORMAL);
 #else
 	// not implemented

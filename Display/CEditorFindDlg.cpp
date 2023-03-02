@@ -25,6 +25,7 @@ CEditorFindDlg::CEditorFindDlg(QWidget* parent)
 
 void CEditorFindDlg::createActions()
 {
+	connect(find_lineEdit, &QLineEdit::textChanged, this, &CEditorFindDlg::on_findButton_clicked);
 }
 
 void CEditorFindDlg::on_findButton_clicked()

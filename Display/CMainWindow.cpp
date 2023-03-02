@@ -21,6 +21,22 @@
 
 #include <QTextDocument>
 
+// qsciscintilla
+#include <QTextStream>
+#include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexerpython.h>
+#include <Qsci/qscilexerjava.h>
+#include <Qsci/qscilexerjavascript.h>
+#include <Qsci/qscilexerruby.h>
+#include <Qsci/qscilexersql.h>
+#include <Qsci/qscilexerhtml.h>
+#include <Qsci/qscilexerxml.h>
+#include <Qsci/qscilexercss.h>
+#include <Qsci/qscilexermarkdown.h>
+#include <Qsci/qscilexeryaml.h>
+#include <Qsci/qscilexerverilog.h>
+#include <Qsci/qscilexermakefile.h>
+
 #ifdef Q_OS_WIN
 	#include <qt_windows.h>
 #endif
@@ -28,7 +44,6 @@
 #include "CMainWindow.h"
 #include "CAboutDlg.h"
 #include "CProjectDlg.h"
-#include "CGroupDlg.h"
 #include "CConfigDlg.h"
 #include "CFindReplaceDlg.h"
 
@@ -38,7 +53,8 @@
 
 CMainWindow::CMainWindow(QWidget* parent)
 : QMainWindow(parent),
-bTagBuildInProgress_(false)
+bTagBuildInProgress_(false),
+findDlg_(this)
 {
 	bool bAutoHideMenu;
 
@@ -60,9 +76,6 @@ bTagBuildInProgress_(false)
 		menuBar()->hide();
 	}
 
-    // add progressbar for status bar
-    statusBar()->addPermanentWidget(&progressBar_, 1);
-
     // setting for timeline
     timeLine_.setDuration(200);
     timeLine_.setFrameRange(0, 100);
@@ -70,20 +83,18 @@ bTagBuildInProgress_(false)
     // defining shortcut
 
 	// filter under project tab
-	projectPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_P), this);
-	// filter under group tab
-	groupPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_G), this);
+	projectPatternLineEditShortcut = new QShortcut(QKeySequence(Qt::ALT | Qt::Key_P), this);
 
-	fileSearchShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_F), this);
-	tagSearchShortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::Key_S), this);
+	fileSearchShortcut = new QShortcut(QKeySequence(Qt::ALT | Qt::Key_F), this);
+	tagSearchShortcut = new QShortcut(QKeySequence(Qt::ALT | Qt::Key_S), this);
 
-	outputExploreShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_E), this);
-	outputConsoleShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_M), this);
+	outputExploreShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_E), this);
+	outputConsoleShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_M), this);
 
-	projectLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_L), this);
-	projectUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_U), this);
+	projectLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_L), this);
+	projectUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_U), this);
 
-	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_B), this);
+	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_B), this);
 	symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
 
 	nextSymbolSearchShortcut = new QShortcut(QKeySequence::FindNext, this);
@@ -99,7 +110,6 @@ bTagBuildInProgress_(false)
 
     // shortcut in application context
 	projectPatternLineEditShortcut->setContext(Qt::ApplicationShortcut);
-	groupPatternLineEditShortcut->setContext(Qt::ApplicationShortcut);
 
 	fileSearchShortcut->setContext(Qt::ApplicationShortcut);
 	tagSearchShortcut->setContext(Qt::ApplicationShortcut);
@@ -130,26 +140,6 @@ bTagBuildInProgress_(false)
 	project_listView->setDropIndicatorShown(true);
     updateProjectListWidget();
 
-	// group_listView, groupListModel_
-	groupListModel_ = new CGroupListModel(this);
-
-	groupListProxyModel_ = new QSortFilterProxyModel;
-	groupListProxyModel_->setSourceModel(static_cast <QStandardItemModel*> (groupListModel_));
-    groupListProxyModel_->setDynamicSortFilter(true);
-
-	groupListSelectionModel_ = new QItemSelectionModel(groupListProxyModel_);
-
-	group_listView->setRootIsDecorated(false);
-	group_listView->setModel(groupListProxyModel_);
-
-	group_listView->setSelectionModel(groupListSelectionModel_);
-	group_listView->setSortingEnabled(true);
-
-	group_listView->setDragEnabled(false);
-	group_listView->setAcceptDrops(true);
-	group_listView->setDropIndicatorShown(true);
-    updateGroupListWidget();
-
 	// file_listView, fileListModel_
 	fileListModel_ = new CFileListModel(this);
 
@@ -163,6 +153,19 @@ bTagBuildInProgress_(false)
 
 	file_listView->setDragEnabled(true);
 	file_listView->setAcceptDrops(false);
+
+	verticalSplitter->addWidget(&codeBrowser_);
+
+    codeBrowser_.setCaretLineBackgroundColor(QColor("#FFFF66"));
+	codeBrowser_.setCaretLineVisible(true);
+
+	m_statusLeft = new QLabel("", this);
+	m_statusRight = new QLabel("", this);
+	statusBar()->addPermanentWidget(m_statusLeft, 1);
+	statusBar()->addPermanentWidget(m_statusRight, 1);
+
+    // add progressbar for status bar
+    statusBar()->addPermanentWidget(&progressBar_, 1);
 
 	// view
 	bool bAlwaysOnTop;
@@ -244,11 +247,9 @@ bTagBuildInProgress_(false)
 	if (projectFontSettingStr != "") {
 		project_listView->updateProjectFont(projectFont);
 		file_listView->updateOutputFont(projectFont); // update output font as well
-		group_listView->updateGroupFont(projectFont); // update group font as well
 	} else {
 		project_listView->updateProjectFont(QApplication::font()); // using system font by default
 		file_listView->updateOutputFont(QApplication::font());
-		group_listView->updateGroupFont(QApplication::font());
 	}
 
 	// text document for symbol, need to be initialized before setting symbol font
@@ -316,6 +317,24 @@ bTagBuildInProgress_(false)
 	}
 
     createActions();
+
+	Qt::CaseSensitivity caseSensitivity;
+
+    if (actionSymbolCaseSensitive->isChecked()) {
+		caseSensitivity = Qt::CaseSensitive;
+		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", true);
+    } else {
+        caseSensitivity = Qt::CaseInsensitive;
+		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", false);
+    }
+
+	completer_.setModelSorting(QCompleter::CaseSensitivelySortedModel);
+	completer_.setCaseSensitivity(caseSensitivity);
+	completer_.setFilterMode(Qt::MatchContains);
+
+	completer_.setCompletionMode(QCompleter::PopupCompletion);
+
+	search_lineEdit->setCompleter(&completer_);
 }
 
 void CMainWindow::setSplitterSizes(const QList<int>& splitterSizeList)
@@ -334,16 +353,11 @@ void CMainWindow::restoreTabWidgetPos()
         mainTabWidget->clear();
 
         // from ui_mainWindow.h
-        QIcon icon15;
-        icon15.addFile(QString::fromUtf8(":/Icons/22x22/document-open-6.png"), QSize(), QIcon::Normal, QIcon::Off);
-        mainTabWidget->addTab(groupTab, icon15, QString());
-
         QIcon icon14;
         icon14.addFile(QString::fromUtf8(":/Icons/22x22/view-process-all.png"), QSize(), QIcon::Normal, QIcon::Off);
         mainTabWidget->addTab(projectTab, icon14, QString());
 
         mainTabWidget->setTabText(mainTabWidget->indexOf(projectTab), QCoreApplication::translate("mainWindow", "Project", 0, 0));
-        mainTabWidget->setTabText(mainTabWidget->indexOf(groupTab), QCoreApplication::translate("mainWindow", "Group", 0, 0));
     }
 
     // symbol instead of file tab first
@@ -370,15 +384,6 @@ void CMainWindow::updateProjectListWidget()
 	project_listView->resizeColumnToContents(2);
     project_listView->resizeColumnToContents(3);
 }
-
-void CMainWindow::updateGroupListWidget()
-{
-	group_listView->resizeColumnToContents(0);
-	group_listView->resizeColumnToContents(1);
-	group_listView->resizeColumnToContents(2);
-    group_listView->resizeColumnToContents(3);
-}
-
 
 void CMainWindow::updateFileListWidget()
 {
@@ -425,30 +430,6 @@ void CMainWindow::loadProjectList()
 
 	updateProjectListWidget();
 }
-
-void CMainWindow::loadGroupList()
-{
-    QStringList groupList;
-	CGroupItem groupItem;
-
-  	groupListModel_->clear();  // header data will also be clear
-	groupListModel_->setColumnCount(4); // need to set back column count when QStandardItemModel clear otherwise setData will return false
-
-    groupListModel_->setHeaderData(0, Qt::Horizontal, QObject::tr("Name"));
-    groupListModel_->setHeaderData(1, Qt::Horizontal, QObject::tr("Tag Update Datatime"));
-    groupListModel_->setHeaderData(2, Qt::Horizontal, QObject::tr("Group Create Datetime"));
-    groupListModel_->setHeaderData(3, Qt::Horizontal, QObject::tr("Labels"));
-
-	QMap<QString, CGroupItem> groupMap;
-	CProjectManager::getInstance()->getGroupMap(groupMap);
-
-    foreach (const CGroupItem& groupItem, groupMap) {
-		groupListModel_->addGroupItem(groupItem);
-    }
-
-	updateGroupListWidget();
-}
-
 
 void CMainWindow::loadFileList()
 {
@@ -499,21 +480,6 @@ void CMainWindow::createActions()
 	connect(actionProjectExplore, SIGNAL(triggered()), this, SLOT(on_exploreProjectButton_clicked()));
 	connect(actionProjectConsole, SIGNAL(triggered()), this, SLOT(on_consoleProjectButton_clicked()));
 
-	connect(actionProjectGroup, SIGNAL(triggered()), this, SLOT(on_newGroupButton_clicked()));
-
-	// [Group action]
-    connect(actionGroupNew, SIGNAL(triggered()), this, SLOT(on_newGroupButton_clicked()));
-
-	connect(actionGroupLoad, SIGNAL(triggered()), this, SLOT(on_loadGroupButton_clicked()));
-
-	// default double click, enter action for group list item
-	connect(group_listView, SIGNAL(groupItemTriggered()), this, SLOT(on_loadGroupButton_clicked()));
-
-	connect(actionGroupUpdate, SIGNAL(triggered()), this, SLOT(on_updateGroupButton_clicked()));
-	connect(actionGroupModify, SIGNAL(triggered()), this, SLOT(on_editGroupButton_clicked()));
-
-	connect(actionGroupDelete, SIGNAL(triggered()), this, SLOT(on_deleteGroupButton_clicked()));
-
     // [File action]
     connect(actionFileEditExternal, SIGNAL(triggered()), this, SLOT(on_fileEditExternalPressed()));
     connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_fileEditPressed()));
@@ -534,7 +500,6 @@ void CMainWindow::createActions()
 	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
 
     connect(CProjectManager::getInstance(), &CProjectManager::projectMapUpdated, this, &CMainWindow::loadProjectList);
-	connect(CProjectManager::getInstance(), &CProjectManager::groupMapUpdated, this, &CMainWindow::loadGroupList);
 	connect(CProjectManager::getInstance(), &CProjectManager::newProjectAdded, this, &CMainWindow::projectRebuildTag);
 
     connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
@@ -547,11 +512,8 @@ void CMainWindow::createActions()
 
 	connect(&projectLoadThread_, &CProjectLoadThread::projectLoadPercentageCompleted, this, &CMainWindow::updateProjectLoadProgress);
 
-	connect(&groupLoadThread_, SIGNAL(groupLoadPercentageCompleted(int)), this, SLOT(updateGroupLoadProgress(int)), Qt::DirectConnection);
-
     // connecting shortcut action
 	connect(projectPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_projectPatternLineEditShortcutPressed()));
-	connect(groupPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_groupPatternLineEditShortcutPressed()));
 
     connect(fileSearchShortcut, SIGNAL(activated()), this, SLOT(on_filePatternLineEditShortcutPressed()));
 	connect(tagSearchShortcut, SIGNAL(activated()), this, SLOT(on_searchLineEditShortcutPressed()));
@@ -561,8 +523,6 @@ void CMainWindow::createActions()
 
 	connect(projectPattern_lineEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(projectFilterRegExpChanged()));
-	connect(groupPattern_lineEdit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(groupFilterRegExpChanged()));
 
     connect(actionProjectAndGroupCaseSensitive, SIGNAL(toggled(bool)),
             this, SLOT(projectFilterRegExpChanged()));
@@ -583,7 +543,7 @@ void CMainWindow::createActions()
     connect(actionSymbolRegularExpression, SIGNAL(toggled(bool)),
             this, SLOT(searchLineEditChanged()));
 
-	connect(search_lineEdit, SIGNAL(textChanged(const QString &)),
+	connect(search_lineEdit, SIGNAL(textEdited(const QString &)),
             this, SLOT(searchLineEditChanged()));
 
 	connect(&completer_, SIGNAL(activated(const QString &)),
@@ -627,7 +587,11 @@ void CMainWindow::createActions()
 	//symbol_textBrowser->setUndoRedoEnabled(false);
 
 	QTextCharFormat charFormat;
-	charFormat.setFontFamily("Consolas");
+
+	QStringList fontFamilies;
+	fontFamilies.push_back("Consolas");
+
+	charFormat.setFontFamilies(fontFamilies);
 	charFormat.setFontPointSize(7);
 
 	symbol_textBrowser->setCurrentCharFormat(charFormat);
@@ -638,7 +602,26 @@ void CMainWindow::createActions()
 	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
 
 	// connect for lauching editor from symbol panel
-	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::launchEditorWithLineNum);
+	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::showInCodeBrowser);
+
+	// code browser
+	connect(actionNew, &QAction::triggered, this, &newFile);
+	connect(actionOpen, &QAction::triggered, this, &openFile);
+	connect(actionSave, &QAction::triggered, this, &saveFile);
+	connect(actionClose, &QAction::triggered, this, &closeFile);
+	connect(actionSaveAs, &QAction::triggered, this, &saveFileAs);
+	connect(actionFind, &QAction::triggered, this, &showFindDialog);
+
+	connect(&findDlg_, &CEditorFindDlg::findText, this, &findText);
+
+	connect(actionCut, &QAction::triggered, &codeBrowser_, &QsciScintilla::cut);
+	connect(actionCopy, &QAction::triggered, &codeBrowser_, &QsciScintilla::copy);
+	connect(actionPaste, &QAction::triggered, &codeBrowser_, &QsciScintilla::paste);
+
+	connect(actionUndo, &QAction::triggered, &codeBrowser_, &QsciScintilla::undo);
+	connect(actionRedo, &QAction::triggered, &codeBrowser_, &QsciScintilla::redo);
+
+	connect(&codeBrowser_, &QsciScintilla::textChanged, this, &codeBrowserModified);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -700,7 +683,7 @@ void CMainWindow::on_loadProjectButton_clicked()
 
 			// only load project if source directory exists
 			if (currentDir.exists(projectItem.srcDir_)) {
-				statusBar()->showMessage("Loading project " + projectItem.name_ + "...");
+				m_statusLeft->setText("Loading project " + projectItem.name_ + "...");
 
                 filePattern_lineEdit->clear();
 
@@ -748,7 +731,7 @@ void CMainWindow::on_updateProjectButton_clicked()
 				// tag last update date time updated so need update in project manager
 				CProjectManager::getInstance()->updateProjectItem(false, projectItemName, projectItem);
 
-				statusBar()->showMessage("Updating tag for " + projectItem.name_ + "...");
+				m_statusLeft->setText("Updating tag for " + projectItem.name_ + "...");
 
 				projectUpdateThread_.setRebuildTag(false);
 				projectUpdateThread_.setCurrentProjectItem(projectItem);
@@ -777,7 +760,7 @@ void CMainWindow::projectRebuildTag(const QString projectItemName)
 		// tag last update date time updated so need update in project manager
 		CProjectManager::getInstance()->updateProjectItem(false, projectItemName, projectItem);
 
-		statusBar()->showMessage("Rebuilding tag for " + projectItem.name_ + "...");
+		m_statusLeft->setText("Rebuilding tag for " + projectItem.name_ + "...");
 
 		projectUpdateThread_.setRebuildTag(true);
 		projectUpdateThread_.setCurrentProjectItem(projectItem);
@@ -839,42 +822,6 @@ QStringList CMainWindow::getSelectedProjectItemNameList()
 	}
 
     return projectItemNameList;
-}
-
-// get the group name of the selected list item
-QStringList CMainWindow::getSelectedGroupItemNameList()
-{
-    QModelIndexList indexSelectedList;
-	QModelIndex mappedIndex;
-	int rowSelected;
-	QStandardItem* itemSelected;
-
-    QString groupItemName;
-	QStringList groupItemNameList;
-
-    // get selected items index list
-    indexSelectedList = groupListSelectionModel_->selectedIndexes();
-
-	foreach (const QModelIndex& indexSelected, indexSelectedList) {
-		// map back from proxy model
-		mappedIndex = groupListProxyModel_->mapToSource(indexSelected);
-		rowSelected = mappedIndex.row();
-
-		if (indexSelected.isValid()) {
-			itemSelected = groupListModel_->item(rowSelected, 0);
-			if (itemSelected != 0) {
-				groupItemName = itemSelected->text();
-			}
-		}
-
-		// as all items in the same row with differnt columns will also be returned in selectedIndexes
-		if (!groupItemNameList.contains(groupItemName)) {
-			// not add group name to the list if already added
-			groupItemNameList += groupItemName;
-		}
-	}
-
-    return groupItemNameList;
 }
 
 // get the project name of the selected list item
@@ -1052,110 +999,6 @@ void CMainWindow::on_consoleProjectButton_clicked()
 	}
 }
 
-void CMainWindow::on_newGroupButton_clicked()
-{
-    QDialog* dialog = new CGroupDlg();
-    dialog->exec();
-}
-
-void CMainWindow::on_loadGroupButton_clicked()
-{
-    QStringList groupItemNameList = getSelectedGroupItemNameList();
-	int groupSelected = groupItemNameList.size();
-
-	QString groupItemName;
-    CGroupItem groupItem;
-
-	if (groupSelected != 0) {
-		if (groupSelected > 1) {
-			QMessageBox::information(this, "Load", "Only one group can be loaded each time", QMessageBox::Ok);
-		} else {
-
-			groupItemName = groupItemNameList.at(0);
-			groupItem = CProjectManager::getInstance()->getGroupItem(groupItemName);
-
-			currentGroupItem_ = groupItem;
-
-			QDir currentDir(QDir::currentPath());
-
-			// only load group if source directory exists
-//			if (currentDir.exists(groupItem.srcDir_)) {
-				statusBar()->showMessage("Loading group " + groupItem.name_ + "...");
-
-                filePattern_lineEdit->clear();
-
-				groupLoadThread_.setCurrentGroupItem(groupItem);
-				groupLoadThread_.setTaggerPtr(&tagger_);
-				groupLoadThread_.setFileItemListPtr(&fileItemList_);
-
-				groupLoadThread_.start();
-
-/*
-			} else {
-				QMessageBox::warning(this, "Load", "Cannot load group. Source directory doesn't exists.", QMessageBox::Ok);
-			}
-*/
-		}
-	}
-}
-
-void CMainWindow::on_updateGroupButton_clicked()
-{
-
-}
-
-void CMainWindow::on_editGroupButton_clicked()
-{
-    CGroupItem groupItem;
-
-	QStringList groupItemNameList = getSelectedGroupItemNameList();
-	int groupSelected = groupItemNameList.size();
-
-    QString groupItemName;
-
-	if (groupSelected != 0) { // only do processing when a item is selected
-		if (groupSelected > 1) {
-			QMessageBox::information(this, "Edit", "Only one group can be edited each time", QMessageBox::Ok);
-		} else {
-
-			groupItemName = groupItemNameList.at(0);
-
-			groupItem = CProjectManager::getInstance()->getGroupItem(groupItemName);
-
-			QDialog* dialog = new CGroupDlg(groupItemName, groupItem);
-
-			dialog->exec();
-		}
-	}
-}
-
-void CMainWindow::on_deleteGroupButton_clicked()
-{
-	QStringList groupItemNameList = getSelectedGroupItemNameList();
-	int groupSelected = groupItemNameList.size();
-
-    int ret;
-
-    if (groupSelected != 0) { // only do processing when a item is selected
-
-		if (groupSelected > 1) {
-			ret = QMessageBox::question(this, "Confirm multiple delete", "Delete " + QString::number(groupSelected) + " selected groups?", QMessageBox::Yes, QMessageBox::No);
-			if (ret == QMessageBox::Yes) {
-
-				foreach (const QString& groupItemName, groupItemNameList) {
-					CProjectManager::getInstance()->removeGroupItem(groupItemName);
-				}
-			}
-		} else {
-			QString groupItemName = groupItemNameList.at(0);
-			ret = QMessageBox::question(this, "Confirm delete", "Delete the selected group?", QMessageBox::Yes, QMessageBox::No);
-			if (ret == QMessageBox::Yes) {
-				CProjectManager::getInstance()->removeGroupItem(groupItemName);
-			}
-		}
-    }
-}
-
 void CMainWindow::on_aboutButton_clicked()
 {
     QDialog* dialog = new CAboutDlg();
@@ -1291,7 +1134,6 @@ void CMainWindow::on_actionSetting_triggered()
 		QFont updatedProjectFont = static_cast<CConfigDlg*> (dialog)->getProjectDefaultFont();
 
 		project_listView->updateProjectFont(updatedProjectFont);
-		group_listView->updateGroupFont(updatedProjectFont);
 		file_listView->updateOutputFont(updatedProjectFont);
 
 		editor_.updateAllEditorFont();
@@ -1399,12 +1241,12 @@ void CMainWindow::updateTagBuildProgress(int percentage, QString indexingFileNam
     progressBar_.setValue(percentage);
 
 	if (indexingFileName != "") {
-        statusBar()->showMessage("Indexing " + indexingFileName + "...");
+        m_statusLeft->setText("Indexing " + indexingFileName + "...");
 	}
 
     // hide the progress bar when completed
     if (percentage == 100) {
-        statusBar()->showMessage("Tag update completed.");
+        m_statusLeft->setText("Tag update completed.");
 		bTagBuildInProgress_ = false;
         progressBar_.hide();
     }
@@ -1418,27 +1260,18 @@ void CMainWindow::updateProjectLoadProgress(int percentage)
 		search_lineEdit->clear(); // clear symbol search line edit
 		symbol_textBrowser->clear(); // clear symbol text widget as well
 
+		codeBrowser_.clear();
+		m_statusRight->clear();
+
 		search_lineEdit->setEnabled(true);
 
-        statusBar()->showMessage("Project " + currentProjectItem_.name_ + " loaded.");
+        m_statusLeft->setText("Project " + currentProjectItem_.name_ + " loaded.");
     } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Project " + currentProjectItem_.name_ + ".");
+		m_statusLeft->setText("Failed to load Project " + currentProjectItem_.name_ + ".");
 
 		search_lineEdit->setEnabled(true);
 	}
 }
-
-void CMainWindow::updateGroupLoadProgress(int percentage)
-{
-    if (percentage == 100) {
-		loadFileList();
-
-        statusBar()->showMessage("Group " + currentGroupItem_.name_ + " loaded.");
-    } else if (percentage == 0) {
-		statusBar()->showMessage("Failed to load Group " + currentGroupItem_.name_ + ".");
-	}
-}
-
 
 void CMainWindow::updateCancelledTagBuild()
 {
@@ -1447,7 +1280,7 @@ void CMainWindow::updateCancelledTagBuild()
 	progressBar_.hide();
 	bTagBuildInProgress_ = false;
 
-	statusBar()->showMessage("Tag update cancelled.");
+	m_statusLeft->setText("Tag update cancelled.");
 }
 
 void CMainWindow::on_errorDuringRun(const QString& cmdStr)
@@ -1469,14 +1302,6 @@ void CMainWindow::on_projectPatternLineEditShortcutPressed()
 
     mainTabWidget->setCurrentIndex(projectTabIndex);
 	projectPattern_lineEdit->setFocus();
-}
-
-void CMainWindow::on_groupPatternLineEditShortcutPressed()
-{
-	const int groupTabIndex = mainTabWidget->indexOf(groupTab);
-
-    mainTabWidget->setCurrentIndex(groupTabIndex);
-	groupPattern_lineEdit->setFocus();
 }
 
 void CMainWindow::on_filePatternLineEditShortcutPressed()
@@ -1517,55 +1342,31 @@ void CMainWindow::on_infoTabWidgetToolBn_clicked()
 
 void CMainWindow::projectFilterRegExpChanged()
 {
-	Qt::CaseSensitivity caseSensitivity;
+	QRegularExpression regExp(projectPattern_lineEdit->text());
 
     if (actionProjectAndGroupCaseSensitive->isChecked()) {
-		caseSensitivity = Qt::CaseSensitive;
 		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", true);
     } else {
-        caseSensitivity = Qt::CaseInsensitive;
 		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", false);
+		regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
     }
 
-	QRegExp regExp(projectPattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
-
-    projectListProxyModel_->setFilterRegExp(regExp);
-}
-
-void CMainWindow::groupFilterRegExpChanged()
-{
-	Qt::CaseSensitivity caseSensitivity;
-
-    if (actionProjectAndGroupCaseSensitive->isChecked()) {
-		caseSensitivity = Qt::CaseSensitive;
-		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", true);
-    } else {
-        caseSensitivity = Qt::CaseInsensitive;
-		confManager_->setAppSettingValue("actionProjectAndGroupCaseSensitive", false);
-    }
-
-	QRegExp regExp(groupPattern_lineEdit->text(), caseSensitivity, QRegExp::RegExp);
-
-    groupListProxyModel_->setFilterRegExp(regExp);
+    projectListProxyModel_->setFilterRegularExpression(regExp);
 }
 
 void CMainWindow::fileFilterRegExpChanged()
 {
-	Qt::CaseSensitivity caseSensitivity;
+	QString trimmedFilePattern = filePattern_lineEdit->text().trimmed() ;
+	QRegularExpression regExp(trimmedFilePattern);
 
     if (actionFileCaseSensitive->isChecked()) {
-		caseSensitivity = Qt::CaseSensitive;
 		confManager_->setAppSettingValue("FileFilterCaseSensitive", true);
     } else {
-        caseSensitivity = Qt::CaseInsensitive;
 		confManager_->setAppSettingValue("FileFilterCaseSensitive", false);
+		regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
     }
 
-	QString trimmedFilePattern = filePattern_lineEdit->text().trimmed() ;
-
-	QRegExp regExp(trimmedFilePattern, caseSensitivity, QRegExp::RegExp);
-
-    fileListModel_->getProxyModel()->setFilterRegExp(regExp);
+    fileListModel_->getProxyModel()->setFilterRegularExpression(regExp);
 }
 
 void CMainWindow::searchLineEditChanged()
@@ -1602,17 +1403,7 @@ void CMainWindow::searchLineEditChanged()
 	}
 
 	stringListModel_.setStringList(tagList);
-
 	completer_.setModel(&stringListModel_);
-	completer_.setModelSorting(QCompleter::CaseSensitivelySortedModel);
-	completer_.setCaseSensitivity(caseSensitivity);
-	completer_.setFilterMode(Qt::MatchContains);
-
-	if (bFuzzyAutoComplete) {
-		completer_.setCompletionMode(QCompleter::UnfilteredPopupCompletion);
-	}
-
-	search_lineEdit->setCompleter(&completer_);
 
 	bool bLiveSearch = confManager_->getAppSettingValue("LiveSearch", true).toBool();
 	if (bLiveSearch) {
@@ -1678,7 +1469,7 @@ void CMainWindow::on_cancelTagUpdate()
 
 	ret = QMessageBox::question(this, "Tag update", "Cancel tag update?", QMessageBox::Yes, QMessageBox::No);
 	if (ret == QMessageBox::Yes) {
-		statusBar()->showMessage("Cancelling tag update...");
+		m_statusLeft->setText("Cancelling tag update...");
 		projectUpdateThread_.cancelUpdate();
 	}
 }
@@ -1694,7 +1485,6 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 	// get current active tab
 	const int mainTabIndex = mainTabWidget->currentIndex();
 	const int projectTabIndex = mainTabWidget->indexOf(projectTab);
-	const int groupTabIndex = mainTabWidget->indexOf(groupTab);
 
 	if (mainTabIndex == projectTabIndex) {
 		// in area of project_listView
@@ -1707,7 +1497,6 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 				if (projectSelected > 1) {
 					QMenu menu(this);
 					menu.addAction(actionProjectDelete);
-					menu.addAction(actionProjectGroup);
 
 					menu.exec(event->globalPos());
 				} else {
@@ -1718,7 +1507,6 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 					menu.addAction(actionProjectRebuildTag);
 					menu.addAction(actionProjectModify);
 					menu.addAction(actionProjectDelete);
-					menu.addAction(actionProjectGroup);
 
 					menu.addAction(actionProjectExplore);
 					menu.addAction(actionProjectCopy);
@@ -1726,32 +1514,6 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 #ifdef Q_OS_WIN
 					menu.addAction(actionProjectConsole);
 #endif
-					menu.exec(event->globalPos());
-				}
-			}
-		}
-	} else if (mainTabIndex == groupTabIndex) {
-		// in area of group_listView
-		if (group_listView->rect().contains(p)) {
-			QStringList groupItemNameList = getSelectedGroupItemNameList();
-			int groupSelected = groupItemNameList.size();
-
-			if (groupSelected != 0) { // only show menu if have more than 1 selected group
-				// only show delete menu if more than one group selected
-				if (groupSelected > 1) {
-					QMenu menu(this);
-
-					menu.addAction(actionGroupDelete);
-					menu.exec(event->globalPos());
-				} else {
-					QMenu menu(this);
-
-					menu.addAction(actionGroupNew);
-					menu.addAction(actionGroupLoad);
-					menu.addAction(actionGroupUpdate);
-					menu.addAction(actionGroupModify);
-					menu.addAction(actionGroupDelete);
-
 					menu.exec(event->globalPos());
 				}
 			}
@@ -1858,6 +1620,273 @@ void CMainWindow::launchEditorWithLineNum(const QString &fileName, int lineNum)
 	QApplication::setActiveWindow(static_cast<QMainWindow*> (&editor_));
 }
 
+void CMainWindow::setCodeBrowserFont(QsciLexer* lexer)
+{
+	QFont editorFont;
+
+	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
+	editorFont.fromString(editorFontSettingStr);
+
+	if (editorFontSettingStr == "") {
+		lexer->setFont(QApplication::font()); // using system default font
+	} else {
+		lexer->setFont(editorFont);
+	}
+}
+
+void CMainWindow::showInCodeBrowser(const QString &filePath, int lineNum)
+{
+	QFileInfo fileInfo(filePath);
+	QString filename(fileInfo.fileName());
+
+	codeBrowserFileName_ = filePath;
+
+	QsciLexer* lexer;
+
+	QString suffix = fileInfo.suffix();
+
+	qDebug() << "suffix = " << suffix;
+
+	if (suffix == "cpp") {
+		lexer = new QsciLexerCPP;
+	} else if (suffix == "java") {
+		lexer = new QsciLexerJava;
+	} else if (suffix == "py") {
+		lexer = new QsciLexerPython;
+	} else if (suffix == "js" || suffix == "ts") {
+		lexer = new QsciLexerJavaScript;
+	} else if (suffix == "rb") {
+		lexer = new QsciLexerRuby;
+	} else if (suffix == "sql") {
+		lexer = new QsciLexerSQL;
+	} else if (suffix == "html") {
+		lexer = new QsciLexerHTML;
+	} else if (suffix == "xml") {
+		lexer = new QsciLexerXML;
+	} else if (suffix == "css") {
+		lexer = new QsciLexerCSS;
+	} else if (suffix == "md") {
+		lexer = new QsciLexerMarkdown;
+	} else if (suffix == "yaml") {
+		lexer = new QsciLexerYAML;
+	} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
+		lexer = new QsciLexerVerilog;
+	} else {
+		lexer = new QsciLexerCPP;
+	}
+
+	if (filename == "Makefile") {
+		lexer = new QsciLexerMakefile;
+	}
+
+	setCodeBrowserFont(lexer);
+
+	QFile file(filePath);
+	if (!file.open(QFile::ReadOnly)) {
+		QMessageBox::warning(this, tr("Editor"),
+				tr("Cannot read file %1:\n%2.")
+				.arg(filePath)
+				.arg(file.errorString()));
+		return;
+	}
+
+	QTextStream in(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+
+	codeBrowser_.setText(in.readAll());
+	QApplication::restoreOverrideCursor();
+
+	codeBrowser_.setAutoIndent(true);
+	codeBrowser_.setLexer(lexer);
+
+	codeBrowser_.setAutoCompletionThreshold(1);
+    codeBrowser_.setAutoCompletionSource(QsciScintilla::AcsDocument);
+
+	codeBrowser_.setFolding(QsciScintilla::PlainFoldStyle);
+
+	if (lineNum > 4) {
+		codeBrowser_.setFirstVisibleLine(lineNum - 4);
+	}
+	codeBrowser_.setCursorPosition(lineNum, 0);
+	codeBrowser_.setFocus();
+
+	m_statusRight->setText(filePath);
+}
+
+void CMainWindow::codeBrowserModified() {
+	QString fileNameModified = QString("* ") + codeBrowserFileName_;
+    m_statusRight->setText(fileNameModified);
+
+	codeBrowser_.setModified(true);
+	setWindowModified(true);
+}
+
+void CMainWindow::findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+{
+	codeBrowser_.findFirst(text, bRegularExpression, bCaseSensitive, bMatchWholeWord, true, true);
+}
+
+void CMainWindow::newFile()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, tr("New File"),
+			QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + "/untitled.txt");
+
+	if (!fileName.isEmpty()) {
+		codeBrowserFileName_ = fileName;
+		m_statusRight->setText(fileName);
+	}
+}
+
+void CMainWindow::openFile()
+{
+	QString fileName = QFileDialog::getOpenFileName(this);
+	if (!fileName.isEmpty()) {
+		loadFile(fileName);
+
+		codeBrowserFileName_ = fileName;
+		m_statusRight->setText(fileName);
+	}
+}
+
+void CMainWindow::saveFile()
+{
+	if (codeBrowserFileName_ != "") {
+		saveFileImpl(codeBrowserFileName_);
+	}
+}
+
+void CMainWindow::closeFile()
+{
+	codeBrowserFileName_ = "";
+	m_statusRight->setText("");
+	codeBrowser_.clear();
+}
+
+void CMainWindow::saveFileAs()
+{
+	QString fileName = QFileDialog::getSaveFileName(this, "Save File", codeBrowserFileName_);
+	if (fileName.isEmpty()) {
+		return;
+	}
+
+	saveFileImpl(fileName);
+}
+
+void CMainWindow::saveFileImpl(const QString &fileName)
+{
+	QFile file(fileName);
+	if (!file.open(QFile::WriteOnly)) {
+		QMessageBox::warning(this, tr("Save file"),
+				tr("Failed to write to file %1:\n%2.")
+				.arg(fileName)
+				.arg(file.errorString()));
+		return;
+	}
+
+	QTextStream fileOutput(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+
+	fileOutput << codeBrowser_.text();
+
+	QApplication::restoreOverrideCursor();
+
+	m_statusLeft->setText("File saved");
+
+	codeBrowser_.setModified(false);
+	setWindowModified(false);
+
+    m_statusRight->setText(codeBrowserFileName_);
+}
+
+void CMainWindow::loadFile(const QString& filePath)
+{
+	QFileInfo fileInfo(filePath);
+	QString filename(fileInfo.fileName());
+
+	QsciLexer* lexer;
+
+	QString suffix = fileInfo.suffix();
+
+	qDebug() << "suffix = " << suffix;
+
+	if (suffix == "cpp") {
+		lexer = new QsciLexerCPP;
+	} else if (suffix == "java") {
+		lexer = new QsciLexerJava;
+	} else if (suffix == "py") {
+		lexer = new QsciLexerPython;
+	} else if (suffix == "js" || suffix == "ts") {
+		lexer = new QsciLexerJavaScript;
+	} else if (suffix == "rb") {
+		lexer = new QsciLexerRuby;
+	} else if (suffix == "sql") {
+		lexer = new QsciLexerSQL;
+	} else if (suffix == "html") {
+		lexer = new QsciLexerHTML;
+	} else if (suffix == "xml") {
+		lexer = new QsciLexerXML;
+	} else if (suffix == "css") {
+		lexer = new QsciLexerCSS;
+	} else if (suffix == "md") {
+		lexer = new QsciLexerMarkdown;
+	} else if (suffix == "yaml") {
+		lexer = new QsciLexerYAML;
+	} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
+		lexer = new QsciLexerVerilog;
+	} else {
+		lexer = new QsciLexerCPP;
+	}
+
+	if (filename == "Makefile") {
+		lexer = new QsciLexerMakefile;
+	}
+
+	setEditorFont(lexer);
+
+	QFile file(filePath);
+	if (!file.open(QFile::ReadOnly)) {
+		QMessageBox::warning(this, tr("Editor"),
+				tr("Cannot read file %1:\n%2.")
+				.arg(filePath)
+				.arg(file.errorString()));
+		return;
+	}
+
+	QTextStream in(&file);
+	QApplication::setOverrideCursor(Qt::WaitCursor);
+
+	codeBrowser_.setText(in.readAll());
+	QApplication::restoreOverrideCursor();
+
+	codeBrowser_.setAutoIndent(true);
+	codeBrowser_.setLexer(lexer);
+
+	m_statusLeft->setText("File loaded");
+
+	codeBrowserModified();
+}
+
+void CMainWindow::setEditorFont(QsciLexer* lexer)
+{
+	QFont editorFont;
+
+	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
+	editorFont.fromString(editorFontSettingStr);
+
+	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << Qt::endl;
+
+	if (editorFontSettingStr == "") {
+		lexer->setFont(QApplication::font()); // using system default font
+	} else {
+		lexer->setFont(editorFont);
+	}
+}
+
+void CMainWindow::showFindDialog()
+{
+	findDlg_.show();
+}
+
 void CMainWindow::launchEditor(const QString &fileName)
 {
 	editor_.loadFile(fileName);
@@ -1869,9 +1898,9 @@ void CMainWindow::on_fileListItemDoubleClicked()
 {
 	if (confManager_->getAppSettingValue("UseExternalEditor").toBool()) {
         on_fileEditExternalPressed();
-	} else {
-		on_fileEditPressed();
 	}
+
+	on_fileEditPressed();
 }
 
 void CMainWindow::on_fileEditPressed()
@@ -1885,7 +1914,7 @@ void CMainWindow::on_fileEditPressed()
 		if (itemSelected > 1) {
 			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
 		} else {
-            launchEditor(selectedItemList.at(0));
+            showInCodeBrowser(selectedItemList.at(0), 0);
 		}
 	}
 }
@@ -2043,8 +2072,8 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 
 	if (!currentProjectItem_.name_.isEmpty()) {
 
-		tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
-		inputFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + currentProjectItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
+		tagDbFileName = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + currentProjectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+		inputFileName = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + currentProjectItem_.name_ + "/" + QString(CSourceFileList::kFILE_LIST);
 
 		QElapsedTimer timer;
 		timer.start();
@@ -2144,12 +2173,12 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 						resultItemSrcLine +
 						lineSrcAfterToPrint + "<div><spacesize>&nbsp;</spacesize></div>";
 
-			//qDebug() << "resultHtml = " << resultHtml << endl;
+			//qDebug() << "resultHtml = " << resultHtml << Qt::endl;
 
             findReplaceFileList_.insert(resultItem.filePath_, 0);
 		}
 
-		statusBar()->showMessage("Found " + QString::number(resultList.size()) + " symbols in " + QString::number(findReplaceFileList_.size()) + " files.");
+		m_statusLeft->setText("Found " + QString::number(resultList.size()) + " symbols in " + QString::number(findReplaceFileList_.size()) + " files.");
 
 		resultHtml += "</pre>";
 		resultHtml += "</body></html>";
@@ -2158,7 +2187,7 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 		QString resultHtmlFileName = "result.html";
 		QFile resultHtmlFile(resultHtmlFileName);
 		if (!resultHtmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			qDebug() << "Cannot open result html file (" << resultHtmlFileName << ") for writing!" << endl;
+			qDebug() << "Cannot open result html file (" << resultHtmlFileName << ") for writing!" << Qt::endl;
 			return;
 		}
 
@@ -2225,18 +2254,18 @@ void CMainWindow::on_searchButton_clicked()
 
 void CMainWindow::wheelEvent(QWheelEvent *e)
 {
+	/* YCH modified (begin), commented temporary */
+	/*
 	QPoint p;
 
-	p = project_listView->mapFromGlobal(e->globalPos());
+	p = project_listView->mapFromGlobal(e->globalPosition());
 
     if (e->modifiers() == Qt::ControlModifier) {
         e->accept();
-        if (e->delta() > 0) {
-            // no action
-		} else {
-			// no action
-		}
 	}
+	*/
+	/* YCH modified (end), commented temporary */
+
 	QMainWindow::wheelEvent(e);
 }
 

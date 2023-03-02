@@ -9,7 +9,7 @@ class CFileItem
 public:
 
     CFileItem();
-	CFileItem(long fileId, const QString& fileName, const QString& fileLastModified, long fileSize);
+	CFileItem(long fileId, const QString& fileName, const QString& fileLastModified, qint64 fileSize);
 
     virtual ~CFileItem() {};
 
@@ -17,7 +17,7 @@ public:
 	QString fileName_;
 	QString fileLastModified_;
 
-	long fileSize_;
+	qint64 fileSize_;
 };
 
 #endif // CFILE_ITEM_H

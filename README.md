@@ -24,7 +24,6 @@ Drag and drop of filenames to your favourite editor.
 
 Windows and Linux binaries are available at 
 * https://sourceforge.net/projects/blink-code-search/files/
-* https://github.com/ychclone/blink/releases
 
 # Code search
 ![Code search](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png)
@@ -73,33 +72,57 @@ could be set in configuration. The filename could be dropped to
 other editor.
 Option->Setting->Main->Default Editor
 
-# Compilation (CMake Linux) 
+# Compilation (QMake Windows) 
 
-## Build
-```
-sudo apt-get install -y cmake
-sudo apt-get install -y qtbase5-dev
-sudo apt-get install -y libqscintilla2-qt5-dev
-cmake .
-make
-```
+1. Download Qt Open Source installer:
+https://www.qt.io/download-open-source
 
-## Runtime
+2. Install Qt 6.4.2 (Mingw 64 bit and its tool)
+
+3. Set Qt and mingw 64 binaries path
+
 ```
-sudo apt-get install -y qt5-default
-sudo apt-get install -y libqscintilla2-qt5-13
+set QTDIR=C:\Qt6\6.4.2\mingw_64
+set PATH=%PATH%;%QTDIR%\bin;C:\Qt6\Tools\mingw1120_64\bin
 ```
 
-# Compilation (QMake Linux) 
-
-1. Download Qt Open Source offline installer:
-https://download.qt.io/archive/qt/5.14/5.14.2/
-
-2. Install Qt
-
-3. Download QScintilla and install
+4. Download QScintilla 2.13.3 and install
 https://riverbankcomputing.com/software/qscintilla/download
 
+```
+cd QScintilla_src-2.13.3/src
+qmake qscintilla.pro
+make
+make install
+```
+
+5. cd blink
+6. qmake blink.pro
+7. mingw32-make
+
+# Compilation (CMake Linux) 
+
+1. Download Qt Open Source installer:
+https://www.qt.io/download-open-source
+
+2. Install Qt 6.4.2 and its shipped CMake
+
+3. Link qmake to /usr/bin/qmake
+```
+sudo ln -s /home/ychclone/Qt6/6.4.2/gcc_64/bin/qmake /usr/bin/qmake
+```
+
+3. Download QScintilla 2.13.0 and install
+https://riverbankcomputing.com/software/qscintilla/download
+
+Set to static library for qscintilla
+```
+qscintilla.pro:
+  CONFIG += staticlib
+
+```
+
+Compile and install QScintilla 
 ```
 cd QScintilla_src-2.13.0/src
 qmake qscintilla.pro
@@ -107,9 +130,17 @@ make
 make install
 ```
 
-4. cd blink
-5. qmake blink.pro
-6. make
+4. Build in CMake
+
+```
+/home/ychclone/Qt6/Tools/CMake/bin/cmake .
+```
+
+or
+
+```
+cmake -DCMAKE_PREFIX_PATH="/home/ychclone/Qt6/6.4.2/gcc_64/lib/cmake" . 
+```
 
 # AppImage
 

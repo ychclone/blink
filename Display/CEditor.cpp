@@ -253,7 +253,7 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
 	editorFont.fromString(editorFontSettingStr);
 
-	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << endl;
+	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << Qt::endl;
 
 	if (editorFontSettingStr == "") {
 		lexer->setFont(QApplication::font()); // using system default font

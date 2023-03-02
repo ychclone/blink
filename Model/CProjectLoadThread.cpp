@@ -59,24 +59,21 @@ bool CProjectLoadThread::runCommand(const QString& program, const QString& workD
 
 void CProjectLoadThread::run()
 {
-	CConfigManager* confManager;
-	confManager	= CConfigManager::getInstance();
-
 	QDir currentDir(QDir::currentPath());
 
 	// using absolutePath so relative and absolute path also possible
-	QString tagDir = currentDir.absoluteFilePath(confManager->getAppSettingValue("TagDir").toString() + "/" + projectItem_.name_);
+	QString tagDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/tags/" + projectItem_.name_;
 
 	// write output to qtag config file
 	QFile qTagConfigFile(QTagger::kQTAG_CONFIG_FILE);
 
 	qTagConfigFile.open(QIODevice::WriteOnly | QIODevice::Text);
 	QTextStream qTagConfigFileOut(&qTagConfigFile);
-	qTagConfigFileOut << "projectLoad=" << projectItem_.name_ << endl;
+	qTagConfigFileOut << "projectLoad=" << projectItem_.name_ << Qt::endl;
 
 	qTagConfigFile.close();
 
-	QString tagDbFileName = QString(QTagger::kQTAG_TAGS_DIR) + "/" + projectItem_.name_ + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
+	QString tagDbFileName = tagDir  + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
 	if (taggerPtr_ != NULL) {
 		taggerPtr_->loadTagList(tagDbFileName);
@@ -92,7 +89,7 @@ void CProjectLoadThread::run()
 		bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *fileItemListPtr_);
 	}
 
-	qDebug() << "outputFile = " << outputFile << endl;
+	qDebug() << "outputFile = " << outputFile << Qt::endl;
 
 	if (bListFileOpenResult == 0) {
 		emit projectLoadPercentageCompleted(100);

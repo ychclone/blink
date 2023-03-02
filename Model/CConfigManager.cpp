@@ -12,7 +12,8 @@ CConfigManager* CConfigManager::getInstance()
 
 CConfigManager::CConfigManager()
 {
-	confSetting = new QSettings("blink.ini", QSettings::IniFormat);
+	confSetting = new QSettings(QSettings::IniFormat, QSettings::UserScope,
+                       "blink", "blink");
 }
 
 QVariant CConfigManager::getAppSettingValue(const QString& key) const

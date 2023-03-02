@@ -40,7 +40,6 @@ void CConfigDlg::loadSetting()
 	confManager	= CConfigManager::getInstance();
 
 	defaultEditor_lineEdit->setText(confManager->getAppSettingValue("DefaultEditor").toString());
-	tagDir_lineEdit->setText(confManager->getAppSettingValue("TagDir").toString());
     tmpDir_lineEdit->setText(confManager->getAppSettingValue("TmpDir").toString());
 
 	timeoutRunExtProgram_lineEdit->setText(confManager->getAppSettingValue("TimeoutRunExtProgram").toString());
@@ -119,7 +118,6 @@ void CConfigDlg::saveSetting()
 	confManager	= CConfigManager::getInstance();
 
 	confManager->setAppSettingValue("DefaultEditor", defaultEditor_lineEdit->text());
-	confManager->setAppSettingValue("TagDir", tagDir_lineEdit->text());
     confManager->setAppSettingValue("TmpDir", tmpDir_lineEdit->text());
 
 	confManager->setAppSettingValue("TimeoutRunExtProgram", timeoutRunExtProgram_lineEdit->text());
@@ -145,7 +143,6 @@ void CConfigDlg::createActions()
 
     // when setting change
 	QObject::connect(defaultEditor_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
-	QObject::connect(tagDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(tmpDir_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(timeoutRunExtProgram_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
 	QObject::connect(projectFont_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(configContentChanged()));
@@ -277,23 +274,6 @@ void CConfigDlg::on_editorFont_toolBn_clicked()
 		// update symbol font setting display
 		QString fontTextToDisplay = editorDefaultFont_.family() + ", " + QString::number(editorDefaultFont_.pointSize());
 		editorFont_lineEdit->setText(fontTextToDisplay);
-	}
-}
-
-void CConfigDlg::on_tagDir_toolBn_clicked()
-{
-	QString tagDir;
-
-	if (tagDir_lineEdit->text() != "") {
-		tagDir = tagDir_lineEdit->text();
-	} else {
-		tagDir = QDir::currentPath();
-	}
-
-	QString directory = QFileDialog::getExistingDirectory(this,
-			tr("Tag directory"), tagDir);
-	if (directory != "") {
-		tagDir_lineEdit->setText(directory);
 	}
 }
 

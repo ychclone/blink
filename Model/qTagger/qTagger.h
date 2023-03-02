@@ -30,9 +30,6 @@ public:
 	int initKeywordFileTokenMap();
 
 	int createTag(const T_FileItemList& inputFileList);
-	int updateTag(const QMap<long, CFileItem>& inputFileList, const QString& tagDbFileName,
-		const QMap<long, long>& fileIdCreatedMap, const QMap<long, long>& fileIdModifiedMap, const QMap<long, long>& fileIdDeletedMap);
-
 	int writeTagDb(const QString& tagDbFileName);
 
 	int loadTagList(const QString& tagDbFileName);
@@ -63,11 +60,11 @@ public:
 
 	static const char* kDB_FIELD_RESULT_SEPERATOR;
 
-	static const char* kQTAG_TAGS_DIR;
-
 	static const char* kQTAG_DEFAULT_TAGDBNAME;
 
 	static const char* kQTAG_DEFAULT_INPUTLIST_FILE;
+
+	static const long kTAG_LENGTH_LIMIT = 20000;
 
 private:
 

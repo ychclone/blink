@@ -13,11 +13,13 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
     set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
 
-find_package(Qt5 COMPONENTS Widgets Xml Network REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Xml Network REQUIRED)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS Resources/Forms)
 
 include_directories(. Utils)
+
+link_directories (/usr/src/QScintilla_src-2.13.0/src)
 
 add_executable(blink
     Resources/Forms/mainWindow.ui
@@ -71,6 +73,6 @@ add_executable(blink
 
 )
 
-target_link_libraries(blink Qt5::Widgets Qt5::Xml Qt5::Network qscintilla2_qt5)
+target_link_libraries(blink Qt6::Widgets Qt6::Xml Qt6::Network qscintilla2_qt6)
 
 

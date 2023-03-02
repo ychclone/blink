@@ -23,19 +23,19 @@ long QFindReplacer::replaceInFile(const QString& findStr, const QString& replace
 	long totalMatchCount = 0;
 	long matchCount = 0;
 
-	qDebug() << "Find and replace file: " << filePath << endl;
+	qDebug() << "Find and replace file: " << filePath << Qt::endl;
 
 	QFile inputFile(filePath);
 	QString outputFileName = filePath + ".tmp";
 	QFile outputFile(outputFileName);
 
 	if (!inputFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		qDebug() << "Cannot open inputFile file (" << filePath << ") for reading!" << endl;
+		qDebug() << "Cannot open inputFile file (" << filePath << ") for reading!" << Qt::endl;
 		return -1;
 	}
 
 	if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		qDebug() << "Cannot open outputFile file (" << outputFileName << ") for writing!" << endl;
+		qDebug() << "Cannot open outputFile file (" << outputFileName << ") for writing!" << Qt::endl;
 		return -1;
 	}
 
@@ -66,10 +66,10 @@ long QFindReplacer::replaceInFile(const QString& findStr, const QString& replace
 
 			if (matchCount > 0) {
 				replacedLine = inputLine.replace(regExp, replaceStr);
-				outputFileStream << replacedLine << endl;
+				outputFileStream << replacedLine << Qt::endl;
 				totalMatchCount += matchCount;
 			} else {
-                outputFileStream << inputLine << endl;
+                outputFileStream << inputLine << Qt::endl;
 			}
 		}
 	} else {
@@ -79,10 +79,10 @@ long QFindReplacer::replaceInFile(const QString& findStr, const QString& replace
 			matchCount = inputLine.count(findStr, caseSensitive);
 			if (matchCount > 0) {
 				replacedLine = inputLine.replace(findStr, replaceStr, caseSensitive);
-				outputFileStream << replacedLine << endl;
+				outputFileStream << replacedLine << Qt::endl;
 				totalMatchCount += matchCount;
 			} else {
-                outputFileStream << inputLine << endl;
+                outputFileStream << inputLine << Qt::endl;
 			}
 
 		}

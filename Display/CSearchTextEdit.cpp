@@ -133,9 +133,9 @@ void CSearchTextEdit::mouseReleaseEvent(QMouseEvent *e)
 
 			if (confManager_->getAppSettingValue("UseExternalEditor").toBool()) {
 				editFileExternal(sourceFileName);
-			} else {
-				editFile(sourceFileName, lineNumber);
 			}
+
+			editFile(sourceFileName, lineNumber);
 		}
 	}
 

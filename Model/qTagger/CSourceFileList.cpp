@@ -23,7 +23,7 @@ int CSourceFileList::loadFileList(const QString& fileListFilename, T_FileItemLis
 	bListFileOpenResult = currentListFile.open(QIODevice::ReadOnly | QIODevice::Text);
 
 	if (!bListFileOpenResult) {
-		qDebug() << "Cannot open list file (" << fileListFilename << ") for reading!" << endl;
+		qDebug() << "Cannot open list file (" << fileListFilename << ") for reading!" << Qt::endl;
 		return -1;
 	}
 
@@ -55,7 +55,7 @@ int CSourceFileList::loadFileList(const QString& fileListFilename, T_FileItemLis
 			}
 
             fileItem.fileLastModified_ = lineItem.section('\t', 2, 2);
-			fileItem.fileSize_ = lineItem.section('\t', 3, 3).toLong();
+			fileItem.fileSize_ = lineItem.section('\t', 3, 3).toULongLong();
 
 			resultFileList << fileItem;
         }
@@ -70,7 +70,7 @@ int CSourceFileList::saveFileList(const QString& fileListFilename, const QMap<lo
 	QFile currentListFile(fileListFilename);
 
 	if (!currentListFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-		qDebug() << "Cannot open list file (" << fileListFilename << ") for writing!" << endl;
+		qDebug() << "Cannot open list file (" << fileListFilename << ") for writing!" << Qt::endl;
 	}
 
 	QTextStream listFileStream(&currentListFile);
@@ -126,7 +126,7 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 
 	if (bSaveToFile) {
 		if (!currentListFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-			qDebug() << "Cannot open list file (" << resultFilename << ") for writing!" << endl;
+			qDebug() << "Cannot open list file (" << resultFilename << ") for writing!" << Qt::endl;
 		}
 
 		listFileStream.setDevice(&currentListFile);

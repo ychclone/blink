@@ -31,7 +31,6 @@ private slots:
 
 	void on_editorFont_toolBn_clicked();
 
-	void on_tagDir_toolBn_clicked();
 	void on_tmpDir_toolBn_clicked();
 
 	void configContentChanged();
