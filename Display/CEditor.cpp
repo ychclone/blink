@@ -4,6 +4,7 @@
 #include <QMessageBox>
 
 #include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexercsharp.h>
 #include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerjava.h>
 #include <Qsci/qscilexerjavascript.h>
@@ -161,6 +162,8 @@ void CEditor::loadFile(const QString& filePath)
 			lexer = new QsciLexerMarkdown;
 		} else if (suffix == "yaml") {
 			lexer = new QsciLexerYAML;
+		} else if (suffix == "cs") {
+			lexer = new QsciLexerCSharp;
 		} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
 			lexer = new QsciLexerVerilog;
 		} else {

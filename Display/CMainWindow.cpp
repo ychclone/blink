@@ -24,6 +24,7 @@
 // qsciscintilla
 #include <QTextStream>
 #include <Qsci/qscilexercpp.h>
+#include <Qsci/qscilexercsharp.h>
 #include <Qsci/qscilexerpython.h>
 #include <Qsci/qscilexerjava.h>
 #include <Qsci/qscilexerjavascript.h>
@@ -223,6 +224,8 @@ findDlg_(this)
 	bool bLiveSearch;
 	bool bFuzzyAutoComplete;
 
+	Qt::CaseSensitivity symbolCaseSensitivity;
+
 	bProjectAndGroupFilterCaseSensitive = confManager_->getAppSettingValue("ProjectAndGroupFilterCaseSensitive", false).toBool();
 	if (bProjectAndGroupFilterCaseSensitive) {
 		actionProjectAndGroupCaseSensitive->setChecked(true);
@@ -288,8 +291,10 @@ findDlg_(this)
     bSymbolSearchCaseSensitive = confManager_->getAppSettingValue("SymbolSearchCaseSensitive", false).toBool();
 	if (bSymbolSearchCaseSensitive) {
 		actionSymbolCaseSensitive->setChecked(true);
+		symbolCaseSensitivity = Qt::CaseSensitive;
 	} else {
 		actionSymbolCaseSensitive->setChecked(false);
+		symbolCaseSensitivity = Qt::CaseInsensitive;
 	}
 
 	// symbol regular expression
@@ -318,21 +323,15 @@ findDlg_(this)
 
     createActions();
 
-	Qt::CaseSensitivity caseSensitivity;
-
-    if (actionSymbolCaseSensitive->isChecked()) {
-		caseSensitivity = Qt::CaseSensitive;
-		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", true);
-    } else {
-        caseSensitivity = Qt::CaseInsensitive;
-		confManager_->setAppSettingValue("SymbolSearchCaseSensitive", false);
-    }
-
 	completer_.setModelSorting(QCompleter::CaseSensitivelySortedModel);
-	completer_.setCaseSensitivity(caseSensitivity);
+	completer_.setCaseSensitivity(symbolCaseSensitivity);
 	completer_.setFilterMode(Qt::MatchContains);
 
-	completer_.setCompletionMode(QCompleter::PopupCompletion);
+	if (bFuzzyAutoComplete) {
+		completer_.setCompletionMode(QCompleter::UnfilteredPopupCompletion);
+	} else {
+		completer_.setCompletionMode(QCompleter::PopupCompletion);
+	}
 
 	search_lineEdit->setCompleter(&completer_);
 }
@@ -646,7 +645,7 @@ void CMainWindow::on_projectAddDirectoryButton_clicked()
 		QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
 
 		if (defaultMaskForNewProject == "") {
-			projectItem.srcMask_ = "*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
+			projectItem.srcMask_ = "*.cpp *.cs *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
 		} else {
 			projectItem.srcMask_ =  defaultMaskForNewProject;
 		}
@@ -1393,8 +1392,10 @@ void CMainWindow::searchLineEditChanged()
     bool bFuzzyAutoComplete = confManager_->getAppSettingValue("FuzzyAutoComplete", true).toBool();
 
 	if (bFuzzyAutoComplete) {
+		completer_.setCompletionMode(QCompleter::UnfilteredPopupCompletion);
 		tagger_.getFuzzyMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
 	} else {
+		completer_.setCompletionMode(QCompleter::PopupCompletion);
 		tagger_.getMatchedTags(search_lineEdit->text(), tagMap, caseSensitivity);
 	}
 
@@ -1669,6 +1670,8 @@ void CMainWindow::showInCodeBrowser(const QString &filePath, int lineNum)
 		lexer = new QsciLexerMarkdown;
 	} else if (suffix == "yaml") {
 		lexer = new QsciLexerYAML;
+	} else if (suffix == "cs") {
+		lexer = new QsciLexerCSharp;
 	} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
 		lexer = new QsciLexerVerilog;
 	} else {
@@ -1885,6 +1888,8 @@ void CMainWindow::setEditorFont(QsciLexer* lexer)
 void CMainWindow::showFindDialog()
 {
 	findDlg_.show();
+	findDlg_.setFocus();
+	findDlg_.setLineEditFocus();
 }
 
 void CMainWindow::launchEditor(const QString &fileName)
@@ -2021,6 +2026,15 @@ void CMainWindow::on_filePropertiesPressed()
 	}
 }
 
+QString CMainWindow::findStringCaseInsensitive(const QString& str, const QString& searchStr)
+{
+	const int index = str.indexOf(searchStr, 0, Qt::CaseInsensitive);
+	if (index != -1) {
+		return str.mid(index, searchStr.length());
+	}
+	return QString();
+}
+
 void CMainWindow::queryTag(const QString& tag)
 {
 	unsigned int limitSearchRow = confManager_->getAppSettingValue("limitSearchRow").toUInt();
@@ -2094,6 +2108,8 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 
 		findReplaceFileList_.clear();
 
+		QString matchedStr = "";
+
 		foreach (const CTagResultItem& resultItem, resultList) {
 			// drive letter colon for first field
 
@@ -2101,7 +2117,13 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 
 			resultItemSrcLine = resultItem.fileLineSrc_;
 			resultItemSrcLine = resultItemSrcLine.toHtmlEscaped();
-			resultItemSrcLine.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+
+			if (caseSensitivity) {
+				resultItemSrcLine.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+			} else {
+				matchedStr = findStringCaseInsensitive(resultItemSrcLine, tagToQuery);
+				resultItemSrcLine.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
+			}
 
 			lineSrcBeforeToPrint = "";
 			lineSrcAfterToPrint = "";
@@ -2135,7 +2157,13 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					lineNumStr = "<linenum>" + QString::number(resultItem.fileLineNum_ - lineSrcSize + i) + "</linenum> ";
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
-					modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+
+					if (caseSensitivity) {
+						modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+					} else {
+						matchedStr = findStringCaseInsensitive(modifiedLineSrc, tagToQuery);
+						modifiedLineSrc.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
+					}
 
 					for (j = 0; j < resultItem.beforeIndentLevelList_.at(i) - minIndent; j++) {
 						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;
@@ -2154,7 +2182,13 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					lineNumStr = "<linenum>" + QString::number(resultItem.fileLineNum_  + i + 1) + "</linenum> ";
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
-					modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+
+					if (caseSensitivity) {
+						modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+					} else {
+						matchedStr = findStringCaseInsensitive(modifiedLineSrc, tagToQuery);
+						modifiedLineSrc.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
+					}
 
 					for (j = 0; j < resultItem.afterIndentLevelList_.at(i) - minIndent; j++) {
 						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;

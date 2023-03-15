@@ -13,6 +13,8 @@ class CEditorFindDlg : public QDialog, private Ui::editorFindDialog
 public:
     CEditorFindDlg(QWidget* parent);
 	virtual ~CEditorFindDlg() {};
+	
+	void setLineEditFocus();
 
 signals:
     void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);

@@ -153,6 +153,7 @@ private slots:
 	void appendLogList(TRACE_LEVEL level, const QString& msg);
 	void keyPressEvent(QKeyEvent *event);
 
+	QString findStringCaseInsensitive(const QString& str, const QString& searchStr);
 	void queryTag(const QString& tag);
 	void queryTagRowLimit(const QString& tag, unsigned int limitSearchRow);
 	void queryTagTop1000(const QString& tag);

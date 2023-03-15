@@ -74,7 +74,7 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 			QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
 
 			if (defaultMaskForNewProject == "") {
-				droppedItem.srcMask_ = "*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
+				droppedItem.srcMask_ = "*.cpp *.cs *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
 			} else {
 				droppedItem.srcMask_ =  defaultMaskForNewProject;
 			}

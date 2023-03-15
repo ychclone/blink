@@ -100,7 +100,7 @@ void CConfigDlg::loadSetting()
 	if (defaultMaskForNewProject != "") { // load from setting
         defaultMaskForNewProject_lineEdit->setText(defaultMaskForNewProject);
 	} else {
-        defaultMaskForNewProject_lineEdit->setText("*.cpp *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml");
+        defaultMaskForNewProject_lineEdit->setText("*.cpp *.cs *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml");
 	}
 
     unsigned int limitSearchRow = confManager->getAppSettingValue("limitSearchRow").toUInt();

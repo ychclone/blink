@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Blink"
-#define MyAppVersion "1.8.0"
+#define MyAppVersion "1.8.1"
 #define MyAppPublisher "ychclone"
 #define MyAppURL "https://github.com/ychclone/blink"
 #define MyAppExeName "blink.exe"

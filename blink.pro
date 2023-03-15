@@ -12,8 +12,8 @@ RESOURCES   = Resources/app.qrc
 
 INCLUDEPATH += "Utils"
 
-LIBS += -LC:/QScintilla_src-2.13.3/src/release -llibqscintilla2_qt6
-#LIBS += -LC:/QScintilla_src-2.13.3/src/debug -llibqscintilla2_qt6d
+LIBS += -LC:/QScintilla_src-2.13.4/src/release -llibqscintilla2_qt6
+#LIBS += -LC:/QScintilla_src-2.13.4/src/debug -llibqscintilla2_qt6d
 
 FORMS       = Resources/Forms/mainWindow.ui \
               Resources/Forms/editor.ui \

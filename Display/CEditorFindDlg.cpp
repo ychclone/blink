@@ -23,6 +23,11 @@ CEditorFindDlg::CEditorFindDlg(QWidget* parent)
 	createActions();
 }
 
+void CEditorFindDlg::setLineEditFocus()
+{
+	find_lineEdit->setFocus();
+}
+
 void CEditorFindDlg::createActions()
 {
 	connect(find_lineEdit, &QLineEdit::textChanged, this, &CEditorFindDlg::on_findButton_clicked);

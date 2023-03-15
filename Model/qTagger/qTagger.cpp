@@ -591,7 +591,7 @@ int QTagger::queryTagLoadedSymbol(const T_FileItemList& inputFileItemList, const
 					bSymbolMatch = true;
 				}
 			} else {
-                if (tagField == tagToQueryStr) { // exact match
+                if (QString::compare(tagField, tagToQueryStr, caseSensitivity) == 0) { // exact match
                     bSymbolMatch = true;
 				}
 			}
