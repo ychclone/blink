@@ -82,10 +82,13 @@ void CConfigDlg::loadSetting()
 
 	// Editor font
 	QString editorFontStr = confManager->getAppSettingValue("EditorFont").toString();
+	
+	QFont consolasFont("Consolas", QApplication::font().pointSize());
+	
 	if (editorFontStr != "") { // load from setting
 		editorDefaultFont_.fromString(editorFontStr);
 	} else {
-		editorDefaultFont_ = QApplication::font(); // using application font as default font
+		editorDefaultFont_ = consolasFont;
 	}
 
 	// update editor font in setting display

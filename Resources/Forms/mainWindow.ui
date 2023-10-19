@@ -680,6 +680,8 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="separator"/>
     <addaction name="actionFind"/>
     <addaction name="actionFindReplaceDialog"/>
+    <addaction name="separator"/>
+    <addaction name="actionGoTo"/>
    </widget>
    <widget class="QMenu" name="menuFIle">
     <property name="title">
@@ -1194,6 +1196,14 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionGoTo">
+   <property name="text">
+    <string>Go to ...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+G</string>
    </property>
   </action>
  </widget>

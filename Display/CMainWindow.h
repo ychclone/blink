@@ -94,6 +94,8 @@ private slots:
 	void setCodeBrowserFont(QsciLexer* lexer);
 	void showInCodeBrowser(const QString &filePath, int lineNum);
 	void codeBrowserModified();
+	void showCurrentCursorPosition(int line, int index);
+
 	void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
 	void newFile();
 	void openFile();
@@ -102,6 +104,7 @@ private slots:
 	void saveFileAs();
 	void saveFileImpl(const QString &fileName);
 	void showFindDialog();
+	void showGoToDialog();
 	void loadFile(const QString& filePath);
 	void setEditorFont(QsciLexer* lexer);
 
@@ -241,6 +244,7 @@ private:
 	CEditorFindDlg findDlg_;
 
     QLabel* m_statusLeft;
+	QLabel* m_statusMiddle;
     QLabel* m_statusRight;
 };
 #endif // CMAINWINDOW_H

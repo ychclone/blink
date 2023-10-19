@@ -257,9 +257,11 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 	editorFont.fromString(editorFontSettingStr);
 
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << Qt::endl;
+	
+	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
 	if (editorFontSettingStr == "") {
-		lexer->setFont(QApplication::font()); // using system default font
+		lexer->setFont(consolasFont);
 	} else {
 		lexer->setFont(editorFont);
 	}

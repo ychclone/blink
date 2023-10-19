@@ -21,6 +21,8 @@
 
 #include <QTextDocument>
 
+#include <QInputDialog>
+
 // qsciscintilla
 #include <QTextStream>
 #include <Qsci/qscilexercpp.h>
@@ -150,7 +152,7 @@ findDlg_(this)
 	file_listView->setModel(fileListModel_->getProxyModel());
 
 	file_listView->setSelectionModel(fileListModel_->getSelectionModel());
-	file_listView->setSortingEnabled(true);
+	file_listView->setSortingEnabled(false);
 
 	file_listView->setDragEnabled(true);
 	file_listView->setAcceptDrops(false);
@@ -161,8 +163,10 @@ findDlg_(this)
 	codeBrowser_.setCaretLineVisible(true);
 
 	m_statusLeft = new QLabel("", this);
+	m_statusMiddle = new QLabel("", this);
 	m_statusRight = new QLabel("", this);
 	statusBar()->addPermanentWidget(m_statusLeft, 1);
+	statusBar()->addPermanentWidget(m_statusMiddle, 1);
 	statusBar()->addPermanentWidget(m_statusRight, 1);
 
     // add progressbar for status bar
@@ -610,6 +614,7 @@ void CMainWindow::createActions()
 	connect(actionClose, &QAction::triggered, this, &closeFile);
 	connect(actionSaveAs, &QAction::triggered, this, &saveFileAs);
 	connect(actionFind, &QAction::triggered, this, &showFindDialog);
+	connect(actionGoTo, &QAction::triggered, this, &showGoToDialog);
 
 	connect(&findDlg_, &CEditorFindDlg::findText, this, &findText);
 
@@ -621,6 +626,7 @@ void CMainWindow::createActions()
 	connect(actionRedo, &QAction::triggered, &codeBrowser_, &QsciScintilla::redo);
 
 	connect(&codeBrowser_, &QsciScintilla::textChanged, this, &codeBrowserModified);
+	connect(&codeBrowser_, &QsciScintilla::cursorPositionChanged, this, &showCurrentCursorPosition);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -1627,9 +1633,11 @@ void CMainWindow::setCodeBrowserFont(QsciLexer* lexer)
 
 	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
 	editorFont.fromString(editorFontSettingStr);
+	
+	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
 	if (editorFontSettingStr == "") {
-		lexer->setFont(QApplication::font()); // using system default font
+		lexer->setFont(consolasFont);
 	} else {
 		lexer->setFont(editorFont);
 	}
@@ -1706,6 +1714,7 @@ void CMainWindow::showInCodeBrowser(const QString &filePath, int lineNum)
     codeBrowser_.setAutoCompletionSource(QsciScintilla::AcsDocument);
 
 	codeBrowser_.setFolding(QsciScintilla::PlainFoldStyle);
+	codeBrowser_.setTabWidth(4);
 
 	if (lineNum > 4) {
 		codeBrowser_.setFirstVisibleLine(lineNum - 4);
@@ -1722,6 +1731,11 @@ void CMainWindow::codeBrowserModified() {
 
 	codeBrowser_.setModified(true);
 	setWindowModified(true);
+}
+
+void CMainWindow::showCurrentCursorPosition(int line, int index)
+{
+	m_statusMiddle->setText("Ln: " + QString::number(line) + ", Col: " +  QString::number(index));
 }
 
 void CMainWindow::findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
@@ -1877,9 +1891,11 @@ void CMainWindow::setEditorFont(QsciLexer* lexer)
 	editorFont.fromString(editorFontSettingStr);
 
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << Qt::endl;
+	
+	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
 	if (editorFontSettingStr == "") {
-		lexer->setFont(QApplication::font()); // using system default font
+		lexer->setFont(consolasFont);
 	} else {
 		lexer->setFont(editorFont);
 	}
@@ -1890,6 +1906,19 @@ void CMainWindow::showFindDialog()
 	findDlg_.show();
 	findDlg_.setFocus();
 	findDlg_.setLineEditFocus();
+}
+
+void CMainWindow::showGoToDialog()
+{
+	bool ok;
+    int line = QInputDialog::getInt(this, tr("Go to Line"),
+                                         tr("Line:"),
+                                         0,  -2147483647, 2147483647, 1, &ok);
+  
+	if (ok) {
+		codeBrowser_.setCursorPosition(line, 0);
+	}
+
 }
 
 void CMainWindow::launchEditor(const QString &fileName)
