@@ -319,21 +319,10 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 	int lineFieldIndex = 0;
 	QString lineNumListStr = "";
 	QStringList lineNumStrList;
-	
-	//qDebug() << "tagDb readAll() IN ";
-	//QString wholeContent = tagDb.readAll();
-	//qDebug() << "tagDb readAll() OUT ";
-	
-	//qDebug() << "wholeContent.Split IN ";
-	//QStringList lineList = wholeContent.split('\n');
-	//qDebug() << "wholeContent.Split OUT ";
-	
-	int printCounter = 0;
 
 	while (!tagDb.atEnd()) {
 		line = tagDb.readLine();
 	
-	//for (const auto& line : lineList) {	
 		tagFieldIndex = line.indexOf(kDB_TAG_RECORD_SEPERATOR);
 
 		if (tagFieldIndex != -1) {
@@ -363,12 +352,6 @@ int QTagger::loadTagList(const QString& tagDbFileName)
 		}
 
 		tagList_.append(tagItem);
-		
-		printCounter++;
-		if (printCounter % 1000 == 0) {
-			qDebug() << "tagList_.append() OUT, tagItem.tag_ = " << tagItem.tag_;
-			printCounter = 0;
-		}
 	}
 
 	tagDbFile.close();
