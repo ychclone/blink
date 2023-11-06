@@ -24,6 +24,10 @@ QMenuBar {
 	border: 1px solid lightgrey;
 } 
 
+QTabWidget::pane {
+	background: white;
+} 
+
 QTabBar::tab {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
                                 stop: 0 #E1E1E1, stop: 0.4 #DDDDDD,
@@ -48,6 +52,10 @@ QTabBar::tab:!selected {
 	padding: 5px;
 	padding-left: 8px;
 	padding-right: 8px;
+}
+
+QSplitter {
+	background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f6f9fe, stop:1 #e1eaf9);
 }
 
 QSplitter::handle {
@@ -1066,7 +1074,19 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>Edit</string>
    </property>
    <property name="toolTip">
-    <string>&amp;View</string>
+    <string>&amp;Edit</string>
+   </property>
+  </action>
+    <action name="actionFileEditNewTab">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-4.png</normaloff>:/Icons/22x22/edit-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Edit in New Tab</string>
+   </property>
+   <property name="toolTip">
+    <string>&amp;Edit in New Tab</string>
    </property>
   </action>
   <action name="actionLiveSearch">

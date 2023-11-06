@@ -31,9 +31,6 @@ Windows and Linux binaries are available at
 # File listing
 ![File listing](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_filelisting.png)
 
-# Replace in files
-<img src="https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_replaceinfiles.png" width="680">
-
 # Usage
 
 1. Drop the folder (e.g. from file explorer, nautilus) into the window below
@@ -46,8 +43,6 @@ project tab.
 5. Double click the project name to make it the active project.
 Or right click and select "Load"
 6. Start file filtering and code search on the file and symbol tab
-7. After symbol search in symbol tab or select files in file tab, 
-it can show replace in files tool in menu->tool
 
 # Advanced Usage
 
@@ -71,84 +66,6 @@ The text editor when double clicking the filename in file tab
 could be set in configuration. The filename could be dropped to
 other editor.
 Option->Setting->Main->Default Editor
-
-# Compilation (QMake Windows) 
-
-1. Download Qt Open Source installer:
-https://www.qt.io/download-open-source
-
-2. Install Qt 6.4.2 (Mingw 64 bit and its tool)
-
-3. Set Qt and mingw 64 binaries path
-
-```
-set QTDIR=C:\Qt6\6.4.2\mingw_64
-set PATH=%PATH%;%QTDIR%\bin;C:\Qt6\Tools\mingw1120_64\bin
-```
-
-4. Download QScintilla 2.13.3 and install
-https://riverbankcomputing.com/software/qscintilla/download
-
-```
-cd QScintilla_src-2.13.3/src
-qmake qscintilla.pro
-make
-make install
-```
-
-5. cd blink
-6. qmake blink.pro
-7. mingw32-make
-
-# Compilation (CMake Linux) 
-
-1. Download Qt Open Source installer:
-https://www.qt.io/download-open-source
-
-2. Install Qt 6.4.2 and its shipped CMake
-
-3. Link qmake to /usr/bin/qmake
-```
-sudo ln -s /home/ychclone/Qt6/6.4.2/gcc_64/bin/qmake /usr/bin/qmake
-```
-
-3. Download QScintilla 2.13.0 and install
-https://riverbankcomputing.com/software/qscintilla/download
-
-Set to static library for qscintilla
-```
-qscintilla.pro:
-  CONFIG += staticlib
-
-```
-
-Compile and install QScintilla 
-```
-cd QScintilla_src-2.13.0/src
-qmake qscintilla.pro
-make
-make install
-```
-
-4. Build in CMake
-
-```
-/home/ychclone/Qt6/Tools/CMake/bin/cmake .
-```
-
-or
-
-```
-cmake -DCMAKE_PREFIX_PATH="/home/ychclone/Qt6/6.4.2/gcc_64/lib/cmake" . 
-```
-
-# AppImage
-
-1. Download linuxdeployqt-7-x86_64.AppImage:
-https://github.com/probonopd/linuxdeployqt/releases
-
-2. chmod u+x linuxdeployqt-7-x86_64.AppImage
-3. ./linuxdeployqt-7-x86_64.AppImage blinkAppImage/usr/share/applications/blink.desktop -verbose=2 -appimage -extra-plugins=iconengines,platformthemes/libqgtk3.so
 
 # Tips
 

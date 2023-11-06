@@ -22,7 +22,7 @@
 typedef QHash<QString, QString> T_TokenMapType;
 
 class QTagger
-{
+{	
 public:
 	QTagger();
 	virtual ~QTagger();

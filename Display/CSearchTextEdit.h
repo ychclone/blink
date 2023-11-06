@@ -26,10 +26,12 @@ public:
 
 signals:
     void linkActivated(QString, int);
+	void linkActivatedNewTab(QString, int);
 
 private:
-    void editFileExternal(const QString& sourceFileName);
     void editFile(const QString& sourceFileName, int lineNumber);
+	void editFileNewTab(const QString& sourceFileName, int lineNumber);
+	void editFileExternal(const QString& sourceFileName);
 
     void exploreDir(const QString& executeDir);
     void consoleDir(const QString& executeDir);

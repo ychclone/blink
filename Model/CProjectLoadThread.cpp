@@ -76,7 +76,9 @@ void CProjectLoadThread::run()
 	QString tagDbFileName = tagDir  + "/" + QString(QTagger::kQTAG_DEFAULT_TAGDBNAME);
 
 	if (taggerPtr_ != NULL) {
+		qDebug() << "loadTagList() for " << tagDbFileName << " IN";
 		taggerPtr_->loadTagList(tagDbFileName);
+		qDebug() << "loadTagList() for " << tagDbFileName << " OUT";
 	}
 
 	QString outputFile;
@@ -86,7 +88,9 @@ void CProjectLoadThread::run()
 
 	if (fileItemListPtr_ != NULL) {
 		fileItemListPtr_->clear();
+		qDebug() << "loadFileList() for " << outputFile << " IN";
 		bListFileOpenResult = CSourceFileList::loadFileList(outputFile, *fileItemListPtr_);
+		qDebug() << "loadFileList() for " << outputFile << " OUT";
 	}
 
 	qDebug() << "outputFile = " << outputFile << Qt::endl;

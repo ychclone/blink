@@ -3,14 +3,15 @@
 
 #include <QMainWindow>
 #include <QMap>
-#include <Qsci/qsciscintilla.h>
-#include <Qsci/qscilexer.h>
+#include <QGridLayout>
 
 #include "ui_editor.h"
 
-#include "CEditorFindDlg.h"
+#include <Qsci/qsciscintilla.h>
+#include <Qsci/qscilexer.h>
 
 class QsciScintilla;
+class CMainWindow;
 
 struct EditorTab
 {
@@ -18,19 +19,48 @@ struct EditorTab
     QsciLexer* lexer;
 };
 
-class CEditor : public QMainWindow, private Ui::editor
+class CEditor : public QWidget, private Ui::editor
 {
 	Q_OBJECT
 
 public:
-    CEditor(QWidget* parent = 0);
+    CEditor(CMainWindow* parent);
 
 	virtual ~CEditor() {};
+	
+	void newFile();
+	void closeFile();
+	void save();
+	void saveAs();
+	void openFile();
+	
 	void loadFileWithLineNum(const QString& filePath, int lineNumber);
-	void loadFile(const QString& filePath);
+	void loadFileWithLineNumNewTab(const QString& filePath, int lineNumber);
+	
+	QsciLexer* getLexer(const QString& fileName);
+	void setTextEdit(QsciScintilla* textEdit);
+	
+	int loadFile(const QString& filePath);
+	void loadFileNewTab(const QString& filePath);
 
 	void updateAllEditorFont();
+	
+	void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void replaceText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void replaceAllText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	
+	void goToLine(int line);
+	void cut();
+	void copy();
+	void paste();
+	void undo();
+	void redo();
 
+signals:
+    void statusLeft(const QString& status);
+	void statusMiddle(const QString& status);
+	void statusRight(const QString& status);
+	
 private slots:
 
 private:
@@ -44,23 +74,19 @@ private:
 
 	void setEditorFont(QsciLexer* lexer);
 
-	void save();
-	void saveAs();
-	void saveFile(const QString &fileName);
-	void showFindDialog();
-	void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void saveFile(const QString &fileName);	
 
-	QString filePathInTab(int tabIndex);
-
-	void openFile();
+	QString filePathInTab(int tabIndex);	
 
 	void tabChanged(int tabIndex);
 	void closeCurrentTab();
 	void closeTab(int tabIndex);
 
 	QMap<QString, EditorTab> editorTabMap_; // key: source filepath
+	CMainWindow* parent_;
 
-	CEditorFindDlg findDlg_;
+	int currentNewFileNumber_;
+	
 };
 
 #endif // CEDITOR_H

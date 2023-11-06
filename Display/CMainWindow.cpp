@@ -1,5 +1,5 @@
 #include <QDir>
-#include <QDirIterator>
+#include <QDirIterator> 
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -57,7 +57,8 @@
 CMainWindow::CMainWindow(QWidget* parent)
 : QMainWindow(parent),
 bTagBuildInProgress_(false),
-findDlg_(this)
+findDlg_(this),
+editor_(this)
 {
 	bool bAutoHideMenu;
 
@@ -97,8 +98,8 @@ findDlg_(this)
 	projectLoadShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_L), this);
 	projectUpdateShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_U), this);
 
-	symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_B), this);
-	symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
+	//symbolSearchFrameShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_B), this);
+	//symbolSearchFrameShortcut->setContext(Qt::ApplicationShortcut);
 
 	nextSymbolSearchShortcut = new QShortcut(QKeySequence::FindNext, this);
 	nextSymbolSearchShortcut->setContext(Qt::ApplicationShortcut);
@@ -157,7 +158,10 @@ findDlg_(this)
 	file_listView->setDragEnabled(true);
 	file_listView->setAcceptDrops(false);
 
-	verticalSplitter->addWidget(&codeBrowser_);
+	//verticalSplitter->addWidget(&codeBrowser_);
+	verticalSplitter->addWidget(&editor_);
+	
+	editor_.newFile();
 
     codeBrowser_.setCaretLineBackgroundColor(QColor("#FFFF66"));
 	codeBrowser_.setCaretLineVisible(true);
@@ -345,6 +349,11 @@ void CMainWindow::setSplitterSizes(const QList<int>& splitterSizeList)
 	splitter->setSizes(splitterSizeList);
 }
 
+void CMainWindow::setVerticalSplitterSizes(const QList<int>& splitterSizeList)
+{
+	verticalSplitter->setSizes(splitterSizeList);
+}
+
 void CMainWindow::restoreTabWidgetPos()
 {
     // tab widget
@@ -484,8 +493,9 @@ void CMainWindow::createActions()
 	connect(actionProjectConsole, SIGNAL(triggered()), this, SLOT(on_consoleProjectButton_clicked()));
 
     // [File action]
-    connect(actionFileEditExternal, SIGNAL(triggered()), this, SLOT(on_fileEditExternalPressed()));
-    connect(actionFileEdit, SIGNAL(triggered()), this, SLOT(on_fileEditPressed()));
+    connect(actionFileEditExternal, &QAction::triggered, this, &CMainWindow::on_fileEditExternalPressed);
+    connect(actionFileEdit, &QAction::triggered, this, &CMainWindow::on_fileEditPressed);
+	connect(actionFileEditNewTab, &QAction::triggered, this, &CMainWindow::on_fileEditNewTabPressed);
 
     // default double click, enter action for file list item
 	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_fileListItemDoubleClicked()));
@@ -556,7 +566,7 @@ void CMainWindow::createActions()
             this, SLOT(queryTagTop1000(const QString&)));
 
     // symbol search frame
-	connect(symbolSearchFrameShortcut, SIGNAL(activated()), this, SLOT(on_symbolSearchFrameShortcutPressed()));
+	//connect(symbolSearchFrameShortcut, SIGNAL(activated()), this, SLOT(on_symbolSearchFrameShortcutPressed()));
 	connect(frameSymbol_lineEdit, SIGNAL(textChanged(const QString &)),
             this, SLOT(frameSymbolLineEditChanged()));
 
@@ -605,28 +615,38 @@ void CMainWindow::createActions()
 	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
 
 	// connect for lauching editor from symbol panel
-	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, this, &CMainWindow::showInCodeBrowser);
+	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, &editor_, &CEditor::loadFileWithLineNum);
+	connect(symbol_textBrowser, &CSearchTextEdit::linkActivatedNewTab, &editor_, &CEditor::loadFileWithLineNumNewTab);
 
 	// code browser
-	connect(actionNew, &QAction::triggered, this, &newFile);
-	connect(actionOpen, &QAction::triggered, this, &openFile);
-	connect(actionSave, &QAction::triggered, this, &saveFile);
-	connect(actionClose, &QAction::triggered, this, &closeFile);
-	connect(actionSaveAs, &QAction::triggered, this, &saveFileAs);
+	//connect(actionNew, &QAction::triggered, this, &newFile);
+	//connect(actionOpen, &QAction::triggered, this, &openFile);
+	//connect(actionSave, &QAction::triggered, this, &saveFile);
+	//connect(actionClose, &QAction::triggered, this, &closeFile);
+	//connect(actionSaveAs, &QAction::triggered, this, &saveFileAs);
+	
+	connect(actionNew, &QAction::triggered, &editor_, &CEditor::newFile);
+	connect(actionOpen, &QAction::triggered, &editor_, &CEditor::openFile);
+	connect(actionSave, &QAction::triggered, &editor_, &CEditor::save);
+	connect(actionSaveAs, &QAction::triggered, &editor_, &CEditor::saveAs);
+	
+	connect(&editor_, &CEditor::statusLeft, this, &CMainWindow::setStatusLeft);
+	connect(&editor_, &CEditor::statusMiddle, this, &CMainWindow::setStatusMiddle);
+	connect(&editor_, &CEditor::statusRight, this, &CMainWindow::setStatusRight);
+	
 	connect(actionFind, &QAction::triggered, this, &showFindDialog);
 	connect(actionGoTo, &QAction::triggered, this, &showGoToDialog);
 
 	connect(&findDlg_, &CEditorFindDlg::findText, this, &findText);
+	connect(&findDlg_, &CEditorFindDlg::replaceText, this, &replaceText);
+	connect(&findDlg_, &CEditorFindDlg::replaceAllText, this, &replaceAllText);
 
-	connect(actionCut, &QAction::triggered, &codeBrowser_, &QsciScintilla::cut);
-	connect(actionCopy, &QAction::triggered, &codeBrowser_, &QsciScintilla::copy);
-	connect(actionPaste, &QAction::triggered, &codeBrowser_, &QsciScintilla::paste);
+	connect(actionCut, &QAction::triggered, &editor_, &CEditor::cut);
+	connect(actionCopy, &QAction::triggered, &editor_, &CEditor::copy);
+	connect(actionPaste, &QAction::triggered, &editor_, &CEditor::paste);
 
-	connect(actionUndo, &QAction::triggered, &codeBrowser_, &QsciScintilla::undo);
-	connect(actionRedo, &QAction::triggered, &codeBrowser_, &QsciScintilla::redo);
-
-	connect(&codeBrowser_, &QsciScintilla::textChanged, this, &codeBrowserModified);
-	connect(&codeBrowser_, &QsciScintilla::cursorPositionChanged, this, &showCurrentCursorPosition);
+	connect(actionUndo, &QAction::triggered, &editor_, &CEditor::undo);
+	connect(actionRedo, &QAction::triggered, &editor_, &CEditor::redo);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -1210,6 +1230,9 @@ void CMainWindow::saveWidgetPosition()
 {
 	QList<int> splitterSizeList;
 	QString splitterSizeListStr = "";
+	
+	QList<int> vsplitterSizeList;
+	QString vsplitterSizeListStr = "";
 
 	confManager_->setValue("Window", "geometry", saveGeometry());
 
@@ -1219,6 +1242,13 @@ void CMainWindow::saveWidgetPosition()
 	}
 
 	confManager_->setValue("Window", "splitter", splitterSizeListStr);
+	
+	vsplitterSizeList = verticalSplitter->sizes();
+	foreach (const int& splitterSize, vsplitterSizeList) {
+		vsplitterSizeListStr += QString::number(splitterSize) + " ";
+	}
+
+	confManager_->setValue("Window", "vsplitter", vsplitterSizeListStr);
 
 	int projectTabIndex = mainTabWidget->indexOf(projectTab);
 	int fileTabIndex = infoTabWidget->indexOf(fileTab);
@@ -1549,8 +1579,10 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 			} else {
 				QMenu menu(this);
 
+				menu.addAction(actionFileEdit);
+				menu.addAction(actionFileEditNewTab);
 				menu.addAction(actionFileEditExternal);
-                menu.addAction(actionFileEdit);
+                
 				menu.addAction(actionFileExplore);
 
 				menu.addAction(actionFileCopy);
@@ -1618,13 +1650,6 @@ void CMainWindow::on_fileEditExternalPressed()
 #endif
 		}
 	}
-}
-
-void CMainWindow::launchEditorWithLineNum(const QString &fileName, int lineNum)
-{
-	editor_.loadFileWithLineNum(fileName, lineNum);
-	editor_.show();
-	QApplication::setActiveWindow(static_cast<QMainWindow*> (&editor_));
 }
 
 void CMainWindow::setCodeBrowserFont(QsciLexer* lexer)
@@ -1735,12 +1760,22 @@ void CMainWindow::codeBrowserModified() {
 
 void CMainWindow::showCurrentCursorPosition(int line, int index)
 {
-	m_statusMiddle->setText("Ln: " + QString::number(line) + ", Col: " +  QString::number(index));
+	m_statusMiddle->setText("Ln: " + QString::number(line + 1) + ", Col: " +  QString::number(index));
 }
 
 void CMainWindow::findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
 {
-	codeBrowser_.findFirst(text, bRegularExpression, bCaseSensitive, bMatchWholeWord, true, true);
+	editor_.findText(text, bMatchWholeWord, bCaseSensitive, bRegularExpression);
+}
+
+void CMainWindow::replaceText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+{
+	editor_.replaceText(findText, replaceText, bMatchWholeWord, bCaseSensitive, bRegularExpression);
+}
+
+void CMainWindow::replaceAllText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+{
+	editor_.replaceAllText(findText, replaceText, bRegularExpression, bCaseSensitive, bMatchWholeWord);
 }
 
 void CMainWindow::newFile()
@@ -1770,13 +1805,6 @@ void CMainWindow::saveFile()
 	if (codeBrowserFileName_ != "") {
 		saveFileImpl(codeBrowserFileName_);
 	}
-}
-
-void CMainWindow::closeFile()
-{
-	codeBrowserFileName_ = "";
-	m_statusRight->setText("");
-	codeBrowser_.clear();
 }
 
 void CMainWindow::saveFileAs()
@@ -1916,16 +1944,9 @@ void CMainWindow::showGoToDialog()
                                          0,  -2147483647, 2147483647, 1, &ok);
   
 	if (ok) {
-		codeBrowser_.setCursorPosition(line, 0);
+		editor_.goToLine(line);
 	}
 
-}
-
-void CMainWindow::launchEditor(const QString &fileName)
-{
-	editor_.loadFile(fileName);
-	editor_.show();
-	QApplication::setActiveWindow(static_cast<QMainWindow*> (&editor_));
 }
 
 void CMainWindow::on_fileListItemDoubleClicked()
@@ -1947,8 +1968,26 @@ void CMainWindow::on_fileEditPressed()
 	if (itemSelected > 0) {
 		if (itemSelected > 1) {
 			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
-		} else {
-            showInCodeBrowser(selectedItemList.at(0), 0);
+		} else {            
+			editor_.loadFile(selectedItemList.at(0));
+			m_statusRight->setText(selectedItemList.at(0));
+		}
+	}
+}
+
+void CMainWindow::on_fileEditNewTabPressed()
+{
+	QStringList selectedItemList = getSelectedFileItemNameList();
+	int itemSelected = selectedItemList.size();
+
+	QString executeDir;
+
+	if (itemSelected > 0) {
+		if (itemSelected > 1) {
+			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
+		} else {            
+			editor_.loadFileNewTab(selectedItemList.at(0));
+			m_statusRight->setText(selectedItemList.at(0));
 		}
 	}
 }
@@ -2371,6 +2410,17 @@ void CMainWindow::keyPressEvent(QKeyEvent *event)
 	QMainWindow::keyPressEvent(event);
 }
 
+void CMainWindow::setStatusLeft(const QString& status)
+{
+	m_statusLeft->setText(status);
+}
 
+void CMainWindow::setStatusMiddle(const QString& status)
+{
+	m_statusMiddle->setText(status);
+}
 
-
+void CMainWindow::setStatusRight(const QString& status)
+{
+	m_statusRight->setText(status);
+}

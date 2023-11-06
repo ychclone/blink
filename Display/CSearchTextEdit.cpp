@@ -123,6 +123,11 @@ void CSearchTextEdit::editFile(const QString& sourceFileName, int lineNumber)
 	emit linkActivated(sourceFileName, lineNumber - 1);
 }
 
+void CSearchTextEdit::editFileNewTab(const QString& sourceFileName, int lineNumber)
+{
+	emit linkActivatedNewTab(sourceFileName, lineNumber - 1);
+}
+
 void CSearchTextEdit::mouseReleaseEvent(QMouseEvent *e)
 {
 	if (!clickedAnchor.isEmpty() && anchorAt(e->pos()) == clickedAnchor) {
@@ -177,8 +182,10 @@ void CSearchTextEdit::contextMenuEvent(QContextMenuEvent *event)
 		QString sourceFileName = clickedAnchor.left(lineFieldPos);
 		int lineNumber = clickedAnchor.mid(lineFieldPos + 1, -1).toInt();
 
-		QAction actionEditExternal("Edit (External)", this);
 		QAction actionEdit("Edit", this);
+		QAction actionEditNewTab("Edit in New Tab", this);
+		QAction actionEditExternal("Edit (External)", this);
+		
 		QAction actionExplore("Explore", this);
 		QAction actionCopy("Copy Pathnames", this);
 		QAction actionConsole("Console", this);
@@ -192,21 +199,28 @@ void CSearchTextEdit::contextMenuEvent(QContextMenuEvent *event)
         QIcon iconConsole;
         iconConsole.addFile(QString::fromUtf8(":/Icons/22x22/xconsole-2.png"), QSize(), QIcon::Normal, QIcon::Off);
 
-		actionEditExternal.setIcon(iconEdit);
 		actionEdit.setIcon(iconEdit);
+		actionEditNewTab.setIcon(iconEdit);
+		
+		actionEditExternal.setIcon(iconEdit);
+		
 		actionExplore.setIcon(iconExplore);
 		actionCopy.setIcon(iconCopy);
 		actionConsole.setIcon(iconConsole);
 
 		QFileInfo fileInfo(sourceFileName);
 		QString executeDir = fileInfo.absoluteDir().absolutePath();
+		
+		connect(&actionEdit, &QAction::triggered, this, [&]{
+				this->editFile(sourceFileName, lineNumber);
+		});
+		
+		connect(&actionEditNewTab, &QAction::triggered, this, [&]{
+				this->editFileNewTab(sourceFileName, lineNumber);
+		});
 
 		connect(&actionEditExternal, &QAction::triggered, this, [&]{
 				this->editFileExternal(sourceFileName);
-		});
-
-		connect(&actionEdit, &QAction::triggered, this, [&]{
-				this->editFile(sourceFileName, lineNumber);
 		});
 
 		connect(&actionExplore, &QAction::triggered, this, [&]{
@@ -222,8 +236,9 @@ void CSearchTextEdit::contextMenuEvent(QContextMenuEvent *event)
 				this->consoleDir(executeDir);
 		});
 
-		menu->addAction(&actionEditExternal);
 		menu->addAction(&actionEdit);
+		menu->addAction(&actionEditNewTab);
+		menu->addAction(&actionEditExternal);	
 		menu->addAction(&actionExplore);
 		menu->addAction(&actionCopy);
 		menu->addAction(&actionConsole);

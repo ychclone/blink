@@ -31,6 +31,10 @@ int main(int argc, char *argv[])
 	QString splitterSizeStr;
 	QStringList splitterSizeStrList;
 	QList<int> splitterSizeList;
+	
+	QString vsplitterSizeStr;
+	QStringList vsplitterSizeStrList;
+	QList<int> vsplitterSizeList;
 
     // tab widget
     window->restoreTabWidgetPos();
@@ -38,14 +42,29 @@ int main(int argc, char *argv[])
 	// splitter
     splitterSizeStr = confManager->getValue("Window", "splitter").toString();
     splitterSizeStr = splitterSizeStr.trimmed();
+	if (splitterSizeStr != "") {
+		splitterSizeStrList = splitterSizeStr.split(" ", Qt::SkipEmptyParts);
 
-	splitterSizeStrList = splitterSizeStr.split(" ", Qt::SkipEmptyParts);
+		foreach (const QString& splitterSize, splitterSizeStrList) {
+			splitterSizeList.append(splitterSize.toInt());
+		}
 
-    foreach (const QString& splitterSize, splitterSizeStrList) {
-		splitterSizeList.append(splitterSize.toInt());
+		window->setSplitterSizes(splitterSizeList);
 	}
+	
+	// vertical splitter
+    vsplitterSizeStr = confManager->getValue("Window", "vsplitter").toString();
+    vsplitterSizeStr = vsplitterSizeStr.trimmed();
+	
+	if (vsplitterSizeStr != "") {
+		vsplitterSizeStrList = vsplitterSizeStr.split(" ", Qt::SkipEmptyParts);
 
-	window->setSplitterSizes(splitterSizeList);
+		foreach (const QString& splitterSize, vsplitterSizeStrList) {
+			vsplitterSizeList.append(splitterSize.toInt());
+		}
+
+		window->setVerticalSplitterSizes(vsplitterSizeList);
+	}
 
     qDebug() << window->geometry();
     qDebug() << window->frameGeometry();

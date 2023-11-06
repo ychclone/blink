@@ -38,6 +38,8 @@
 
 #include "Model/CConfigManager.h"
 
+#include "Display/CEditor.h"
+
 #include "ui_mainWindow.h"
 
 #include "CEditorFindDlg.h"
@@ -53,11 +55,17 @@ public:
     virtual ~CMainWindow() {}
 
 	void setSplitterSizes(const QList<int>& splitterSizeList);
+	void setVerticalSplitterSizes(const QList<int>& splitterSizeList);
     void restoreTabWidgetPos();
+	
+	QLabel* m_statusLeft;
+	QLabel* m_statusMiddle;
+    QLabel* m_statusRight;
 
 public slots:
     void loadProjectList();
 	void loadFileList();
+	void showCurrentCursorPosition(int line, int index);
 
 private slots:
 	void on_projectAddDirectoryButton_clicked();
@@ -89,18 +97,17 @@ private slots:
 	void on_actionSetting_triggered();
 	void on_actionFindReplaceDialog_triggered();
 
-	void launchEditorWithLineNum(const QString &fileName, int lineNum);
-
 	void setCodeBrowserFont(QsciLexer* lexer);
 	void showInCodeBrowser(const QString &filePath, int lineNum);
 	void codeBrowserModified();
-	void showCurrentCursorPosition(int line, int index);
 
 	void findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void replaceText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	void replaceAllText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
+	
 	void newFile();
 	void openFile();
-	void saveFile();
-	void closeFile();
+	void saveFile();	
 	void saveFileAs();
 	void saveFileImpl(const QString &fileName);
 	void showFindDialog();
@@ -108,10 +115,10 @@ private slots:
 	void loadFile(const QString& filePath);
 	void setEditorFont(QsciLexer* lexer);
 
-	void launchEditor(const QString &fileName);
 	void on_fileListItemDoubleClicked();
 	void on_fileEditExternalPressed();
     void on_fileEditPressed();
+	void on_fileEditNewTabPressed();
 	void on_fileCopyPressed();
 	void on_fileExplorePressed();
 	void on_fileConsolePressed();
@@ -160,6 +167,11 @@ private slots:
 	void queryTag(const QString& tag);
 	void queryTagRowLimit(const QString& tag, unsigned int limitSearchRow);
 	void queryTagTop1000(const QString& tag);
+	
+	
+	void setStatusLeft(const QString& status);
+	void setStatusMiddle(const QString& status);
+	void setStatusRight(const QString& status);
 
 private:
 	void updateProjectListWidget();
@@ -235,17 +247,13 @@ private:
 	QTextDocument textDocument_;
 	QPlainTextDocumentLayout* textLayout_;
 
-	CEditor editor_;
-
 	QMap<QString, unsigned char> findReplaceFileList_; // unsigned char value not used
 
     QsciScintilla codeBrowser_;
-	QString codeBrowserFileName_;
 	CEditorFindDlg findDlg_;
-
-    QLabel* m_statusLeft;
-	QLabel* m_statusMiddle;
-    QLabel* m_statusRight;
+	CEditor editor_;
+	
+	QString codeBrowserFileName_;
 };
 #endif // CMAINWINDOW_H
 
