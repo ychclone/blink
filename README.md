@@ -42,6 +42,7 @@ project tab.
 4. Click "Rebuild Symbol"
 5. Double click the project name to make it the active project.
 Or right click and select "Load"
+![Load project](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_load_project.png)
 6. Start file filtering and code search on the file and symbol tab
 
 # Advanced Usage
