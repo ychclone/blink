@@ -36,13 +36,16 @@ Windows and Linux binaries are available at
 1. Drop the folder (e.g. from file explorer, nautilus) into the window below
 project tab.
 ![Drop folder](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_drop_folder.png)
+
 2. A new project dialog will appears. Type the file extensions that you want to index.
 <img src="https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_new_project.png" width="512">
 3. Right click on the project name
 4. Click "Rebuild Symbol"
 5. Double click the project name to make it the active project.
 Or right click and select "Load"
+
 ![Load project](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/usage_load_project.png)
+
 6. Start file filtering and code search on the file and symbol tab
 
 # Advanced Usage
