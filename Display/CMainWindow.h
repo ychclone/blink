@@ -172,6 +172,8 @@ private slots:
 	void setStatusLeft(const QString& status);
 	void setStatusMiddle(const QString& status);
 	void setStatusRight(const QString& status);
+	
+	void fileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
 	void updateProjectListWidget();

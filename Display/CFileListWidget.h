@@ -31,6 +31,8 @@ public:
 
 	QPoint dragStartPosition_;
 
+	QStringList getSelectedItemNameList();
+
 signals:
 	void fileItemTriggered();
 
@@ -38,8 +40,6 @@ private:
 	void updateFileListWidget();
 	void fileZoomIn();
 	void fileZoomOut();
-
-	QStringList getSelectedItemNameList();
 
 	CFileListModel* fileListModel_;
 

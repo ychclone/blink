@@ -153,7 +153,7 @@ editor_(this)
 	file_listView->setModel(fileListModel_->getProxyModel());
 
 	file_listView->setSelectionModel(fileListModel_->getSelectionModel());
-	file_listView->setSortingEnabled(false);
+	file_listView->setSortingEnabled(true);
 
 	file_listView->setDragEnabled(true);
 	file_listView->setAcceptDrops(false);
@@ -647,6 +647,8 @@ void CMainWindow::createActions()
 
 	connect(actionUndo, &QAction::triggered, &editor_, &CEditor::undo);
 	connect(actionRedo, &QAction::triggered, &editor_, &CEditor::redo);
+	
+	connect(fileListModel_->getSelectionModel(), &QItemSelectionModel::selectionChanged, this, &CMainWindow::fileSelectionChanged);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -1966,9 +1968,7 @@ void CMainWindow::on_fileEditPressed()
 	QString executeDir;
 
 	if (itemSelected > 0) {
-		if (itemSelected > 1) {
-			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
-		} else {            
+		if (itemSelected == 1) {         
 			editor_.loadFile(selectedItemList.at(0));
 			m_statusRight->setText(selectedItemList.at(0));
 		}
@@ -2424,3 +2424,16 @@ void CMainWindow::setStatusRight(const QString& status)
 {
 	m_statusRight->setText(status);
 }
+
+void CMainWindow::fileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+	QStringList fileSelected = getSelectedFileItemNameList();
+	
+	if (fileSelected.size() == 1) {
+		setStatusLeft(QString::number(fileSelected.size()) + " file selected.");
+	} else if (fileSelected.size() > 1) {
+		setStatusLeft(QString::number(fileSelected.size()) + " files selected.");
+	}
+	
+}
+

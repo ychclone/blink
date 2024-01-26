@@ -67,7 +67,7 @@
        <item>
         <widget class="QLabel" name="label_5">
          <property name="text">
-          <string>Blink v1.9.0</string>
+          <string>Blink v1.9.1</string>
          </property>
         </widget>
        </item>
@@ -84,7 +84,7 @@
        <item>
         <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>(c) 2023</string>
+          <string>(c) 2024</string>
          </property>
         </widget>
        </item>
