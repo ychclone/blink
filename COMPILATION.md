@@ -31,14 +31,14 @@ make install
 1. Download Qt Open Source installer:
 https://www.qt.io/download-open-source
 
-2. Install Qt 6.4.2 and its shipped CMake
+2. Install Qt 6.6.1
 
 3. Link qmake to /usr/bin/qmake
 ```
 sudo ln -s /home/ychclone/Qt/6.6.1/gcc_64/bin/qmake /usr/bin/qmake
 ```
 
-3. Download QScintilla 2.14.1 and install
+4. Download QScintilla 2.14.1 and install
 https://riverbankcomputing.com/software/qscintilla/download
 
 Set to static library for qscintilla
@@ -56,7 +56,13 @@ make
 make install
 ```
 
-4. Build in CMake
+5. Install dependencies
+```
+sudo apt install libgl1-mesa-dev
+sudo apt-get install libxcb-cursor0
+```
+
+6. Build in QMake
 
 ```
 qmake blink.pro
