@@ -1,5 +1,5 @@
 #include <QDir>
-#include <QDirIterator> 
+#include <QDirIterator>
 
 #include <QFileDialog>
 #include <QMessageBox>
@@ -160,7 +160,7 @@ editor_(this)
 
 	//verticalSplitter->addWidget(&codeBrowser_);
 	verticalSplitter->addWidget(&editor_);
-	
+
 	editor_.newFile();
 
     codeBrowser_.setCaretLineBackgroundColor(QColor("#FFFF66"));
@@ -624,22 +624,22 @@ void CMainWindow::createActions()
 	//connect(actionSave, &QAction::triggered, this, &saveFile);
 	//connect(actionClose, &QAction::triggered, this, &closeFile);
 	//connect(actionSaveAs, &QAction::triggered, this, &saveFileAs);
-	
+
 	connect(actionNew, &QAction::triggered, &editor_, &CEditor::newFile);
 	connect(actionOpen, &QAction::triggered, &editor_, &CEditor::openFile);
 	connect(actionSave, &QAction::triggered, &editor_, &CEditor::save);
 	connect(actionSaveAs, &QAction::triggered, &editor_, &CEditor::saveAs);
-	
+
 	connect(&editor_, &CEditor::statusLeft, this, &CMainWindow::setStatusLeft);
 	connect(&editor_, &CEditor::statusMiddle, this, &CMainWindow::setStatusMiddle);
 	connect(&editor_, &CEditor::statusRight, this, &CMainWindow::setStatusRight);
-	
-	connect(actionFind, &QAction::triggered, this, &showFindDialog);
-	connect(actionGoTo, &QAction::triggered, this, &showGoToDialog);
 
-	connect(&findDlg_, &CEditorFindDlg::findText, this, &findText);
-	connect(&findDlg_, &CEditorFindDlg::replaceText, this, &replaceText);
-	connect(&findDlg_, &CEditorFindDlg::replaceAllText, this, &replaceAllText);
+	connect(actionFind, &QAction::triggered, this, &CMainWindow::showFindDialog);
+	connect(actionGoTo, &QAction::triggered, this, &CMainWindow::showGoToDialog);
+
+	connect(&findDlg_, &CEditorFindDlg::findText, this, &CMainWindow::findText);
+	connect(&findDlg_, &CEditorFindDlg::replaceText, this, &CMainWindow::replaceText);
+	connect(&findDlg_, &CEditorFindDlg::replaceAllText, this, &CMainWindow::replaceAllText);
 
 	connect(actionCut, &QAction::triggered, &editor_, &CEditor::cut);
 	connect(actionCopy, &QAction::triggered, &editor_, &CEditor::copy);
@@ -647,7 +647,7 @@ void CMainWindow::createActions()
 
 	connect(actionUndo, &QAction::triggered, &editor_, &CEditor::undo);
 	connect(actionRedo, &QAction::triggered, &editor_, &CEditor::redo);
-	
+
 	connect(fileListModel_->getSelectionModel(), &QItemSelectionModel::selectionChanged, this, &CMainWindow::fileSelectionChanged);
 }
 
@@ -1232,7 +1232,7 @@ void CMainWindow::saveWidgetPosition()
 {
 	QList<int> splitterSizeList;
 	QString splitterSizeListStr = "";
-	
+
 	QList<int> vsplitterSizeList;
 	QString vsplitterSizeListStr = "";
 
@@ -1244,7 +1244,7 @@ void CMainWindow::saveWidgetPosition()
 	}
 
 	confManager_->setValue("Window", "splitter", splitterSizeListStr);
-	
+
 	vsplitterSizeList = verticalSplitter->sizes();
 	foreach (const int& splitterSize, vsplitterSizeList) {
 		vsplitterSizeListStr += QString::number(splitterSize) + " ";
@@ -1584,7 +1584,7 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 				menu.addAction(actionFileEdit);
 				menu.addAction(actionFileEditNewTab);
 				menu.addAction(actionFileEditExternal);
-                
+
 				menu.addAction(actionFileExplore);
 
 				menu.addAction(actionFileCopy);
@@ -1660,7 +1660,7 @@ void CMainWindow::setCodeBrowserFont(QsciLexer* lexer)
 
 	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
 	editorFont.fromString(editorFontSettingStr);
-	
+
 	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
 	if (editorFontSettingStr == "") {
@@ -1921,7 +1921,7 @@ void CMainWindow::setEditorFont(QsciLexer* lexer)
 	editorFont.fromString(editorFontSettingStr);
 
 	qDebug() << "editorFontSettingStr = " << editorFontSettingStr << Qt::endl;
-	
+
 	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
 	if (editorFontSettingStr == "") {
@@ -1944,7 +1944,7 @@ void CMainWindow::showGoToDialog()
     int line = QInputDialog::getInt(this, tr("Go to Line"),
                                          tr("Line:"),
                                          0,  -2147483647, 2147483647, 1, &ok);
-  
+
 	if (ok) {
 		editor_.goToLine(line);
 	}
@@ -1968,7 +1968,7 @@ void CMainWindow::on_fileEditPressed()
 	QString executeDir;
 
 	if (itemSelected > 0) {
-		if (itemSelected == 1) {         
+		if (itemSelected == 1) {
 			editor_.loadFile(selectedItemList.at(0));
 			m_statusRight->setText(selectedItemList.at(0));
 		}
@@ -1985,7 +1985,7 @@ void CMainWindow::on_fileEditNewTabPressed()
 	if (itemSelected > 0) {
 		if (itemSelected > 1) {
 			QMessageBox::information(this, "Edit", "Can only edit one file", QMessageBox::Ok);
-		} else {            
+		} else {
 			editor_.loadFileNewTab(selectedItemList.at(0));
 			m_statusRight->setText(selectedItemList.at(0));
 		}
@@ -2428,12 +2428,12 @@ void CMainWindow::setStatusRight(const QString& status)
 void CMainWindow::fileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
 	QStringList fileSelected = getSelectedFileItemNameList();
-	
+
 	if (fileSelected.size() == 1) {
 		setStatusLeft(QString::number(fileSelected.size()) + " file selected.");
 	} else if (fileSelected.size() > 1) {
 		setStatusLeft(QString::number(fileSelected.size()) + " files selected.");
 	}
-	
+
 }
 
