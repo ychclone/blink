@@ -1,4 +1,4 @@
-id: com.github.blink_code_search
+id: io.github.ychclone.blink
 runtime: org.kde.Platform
 runtime-version: '6.6'
 sdk: org.kde.Sdk
@@ -18,7 +18,7 @@ modules:
       - type: patch
         path: qscintilla-lib-paths.patch
   - name: blink
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     builddir: true
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
@@ -26,5 +26,5 @@ modules:
     sources:
       - type: archive
         url: https://github.com/ychclone/blink/archive/refs/tags/1.9.1.tar.gz
-        sha256: 9965d457397a37f371975d51277155e148bddc1733bc868ca84cdc8990c8bf96
+        sha256: 97dc127aa7ad4e55ed6ad6073bc5e0794a0a871ef321a9b1c1426749d9f0b1e0
 command: /app/blink/blink
