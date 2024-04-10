@@ -27,4 +27,4 @@ modules:
       - type: archive
         url: https://github.com/ychclone/blink/archive/refs/tags/1.9.1.tar.gz
         sha256: 8e3502ac1f37b519ca76494509a5a5189ddfc210c0e75722a93db18acb1ca829
-command: /app/blink
+command: blink

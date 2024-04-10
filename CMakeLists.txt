@@ -69,7 +69,7 @@ add_executable(blink
 
 target_link_libraries(blink Qt6::Widgets Qt6::Xml Qt6::Network qscintilla2_qt6)
 
-set(CMAKE_INSTALL_PREFIX /app)
+set(CMAKE_INSTALL_PREFIX /app/bin)
 
 install(TARGETS blink
     DESTINATION ${CMAKE_INSTALL_PREFIX}
