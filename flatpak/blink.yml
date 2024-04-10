@@ -1,4 +1,4 @@
-id: org.flatpak.blink
+id: com.github.blink_code_search
 runtime: org.kde.Platform
 runtime-version: '6.6'
 sdk: org.kde.Sdk
@@ -24,6 +24,7 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DCMAKE_INSTALL_LIBDIR:PATH=/app/lib
     sources:
-      - type: dir
-        path: /opt/blink
+      - type: archive
+        url: https://github.com/ychclone/blink/archive/refs/tags/1.9.1.tar.gz
+        sha256: 9965d457397a37f371975d51277155e148bddc1733bc868ca84cdc8990c8bf96
 command: /app/blink/blink

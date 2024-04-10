@@ -25,7 +25,6 @@ add_executable(blink
     Resources/Forms/mainWindow.ui
     Resources/Forms/editor.ui
     Resources/Forms/projectDialog.ui
-    Resources/Forms/groupDialog.ui
     Resources/Forms/aboutDialog.ui
     Resources/Forms/configDialog.ui
     Resources/Forms/findReplaceDialog.ui
