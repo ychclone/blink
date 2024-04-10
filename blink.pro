@@ -11,9 +11,17 @@ RESOURCES   = Resources/app.qrc
 #RESOURCES   += Resources/webview.qrc 
 
 INCLUDEPATH += "Utils"
+INCLUDEPATH += "/opt/QScintilla_src-2.14.1/src"
 
-LIBS += -LC:/QScintilla_src-2.14.1/src/release -llibqscintilla2_qt6
+#LIBS += -LC:/QScintilla_src-2.14.1/src/release -llibqscintilla2_qt6
 #LIBS += -LC:/QScintilla_src-2.14.1/src/debug -llibqscintilla2_qt6d
+
+unix {
+LIBS += -L/opt/QScintilla_src-2.14.1/src -lqscintilla2_qt6
+}
+win32 {
+LIBS += -LC:/QScintilla_src-2.14.1/src/release -llibqscintilla2_qt6
+}
 
 FORMS       = Resources/Forms/mainWindow.ui \
               Resources/Forms/editor.ui \

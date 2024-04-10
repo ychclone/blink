@@ -17,9 +17,9 @@ find_package(Qt6 COMPONENTS Widgets Xml Network REQUIRED)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS Resources/Forms)
 
-include_directories(. Utils)
+include_directories(. Utils /opt/QScintilla_src-2.14.1/src)
 
-link_directories (/usr/src/QScintilla_src-2.13.0/src)
+link_directories (/opt/QScintilla_src-2.14.1/src)
 
 add_executable(blink
     Resources/Forms/mainWindow.ui
@@ -40,10 +40,8 @@ add_executable(blink
     Display/CEditor.cpp
     Display/CEditorFindDlg.cpp
     Display/CProjectDlg.cpp
-    Display/CGroupDlg.cpp
     Display/CAboutDlg.cpp
     Display/CProjectListWidget.cpp
-    Display/CGroupListWidget.cpp
     Display/CFileListWidget.cpp
     Display/CConfigDlg.cpp
     Display/CEventFilterObj.cpp
@@ -57,14 +55,11 @@ add_executable(blink
     Model/qTagger/CSourceFileList.cpp
     Model/qFindReplacer/qFindReplacer.cpp
     Model/CProjectListModel.cpp
-    Model/CGroupListModel.cpp
     Model/CFileListModel.cpp
     Model/CProjectManager.cpp
     Model/CProjectUpdateThread.cpp
     Model/CProjectLoadThread.cpp
-    Model/CGroupLoadThread.cpp
     Model/CConfigManager.cpp
-    Model/CGroupItem.cpp
     Model/CProjectItem.cpp
     Model/CFileItem.cpp
     Model/CRunCommand.cpp
@@ -74,5 +69,11 @@ add_executable(blink
 )
 
 target_link_libraries(blink Qt6::Widgets Qt6::Xml Qt6::Network qscintilla2_qt6)
+
+set(CMAKE_INSTALL_PREFIX /app/blink)
+
+install(TARGETS blink
+    DESTINATION ${CMAKE_INSTALL_PREFIX}
+    )
 
 
