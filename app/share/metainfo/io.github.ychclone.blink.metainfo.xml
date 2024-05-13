@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+ <id>io.github.ychclone.blink</id>
+ <name>Blink code search</name>
+ <summary>GUI of live indexed grep for source code. Fuzzy suggestion in autocomplete. Files locator, search and replace. Switch different projects and start searching.</summary>
+ <description>
+    <![CDATA[
+        GUI of live indexed grep for source code. Fuzzy suggestion in autocomplete. Files locator, search and replace. Switch different projects and start searching.
+    ]]>
+ </description>
+ <license>GPL-3.0-or-later</license>
+ <project_license>GPL-3.0-or-later</project_license>
+ <url type="homepage">https://github.com/ychclone/blink</url>
+ <screenshots>
+    <screenshot type="default">
+       <image>https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png</image>
+       <caption>Code search</caption>
+    </screenshot>
+    <screenshot>
+       <image>https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_filelisting.png</image>
+       <caption>File Listing</caption>
+    </screenshot>
+ </screenshots>
+
+ <icon name="io.github.ychclone.blink">
+    <filename>io.github.ychclone.blink.png</filename>
+    <size>128</size>
+    <attribution>
+      <![CDATA[
+        Blink code search Icon
+      ]]>
+    </attribution>
+ </icon>
+ <categories>
+    <category>Utility</category>
+ </categories>
+ <keywords>
+    <keyword>code search</keyword>
+    <keyword>blink code search</keyword>
+    <keyword>app</keyword>
+ </keywords>
+ <provides>
+    <provide type="mime">application/x-example</provide>
+ </provides>
+ <launchable type="desktop-id">io.github.ychclone.blink.desktop</launchable>
+ <release version="1.9.1" date="2024-04-10">
+    <description>
+      <![CDATA[
+        V1.9.1 of Blink code search.
+      ]]>
+    </description>
+ </release>
+ <developer_name>ychclone</developer_name>
+ <developer_id>ychclone@gmail.com</developer_id>
+ <project_group>KDE</project_group>
+ <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+    <content_attribute id="language-profanity">mild</content_attribute>
+    <content_attribute id="content-discrimination">none</content_attribute>
+    <content_attribute id="sex-nudity">none</content_attribute>
+    <content_attribute id="sex-themes">none</content_attribute>
+    <content_attribute id="drugs-alcohol">none</content_attribute>
+    <content_attribute id="drugs-tobacco">none</content_attribute>
+ </content_rating>
+ <translations>
+    <translation lang="en">
+      <name>Blink code search</name>
+      <summary>GUI of live indexed grep for source code. Fuzzy suggestion in autocomplete. Files locator, search and replace. Switch different projects and start searching.</summary>
+      <description>
+        <![CDATA[
+          GUI of live indexed grep for source code. Fuzzy suggestion in autocomplete. Files locator, search and replace. Switch different projects and start searching.
+        ]]>
+      </description>
+    </translation>
+ </translations>
+</component>
