@@ -32,8 +32,8 @@ Source code is avaliable in
  
 ## version [1.9.2]
   
-- can now use *.* as source file mask to process all text file. Binary files will be skipped.
-- default source file mask set to *.*
+- can now use \*.\* as source file mask to process all text file. Binary files will be skipped.
+- default source file mask set to \*.\*
 
 # Code search
 ![Code search](https://raw.githubusercontent.com/ychclone/blink/master/Screenshot/blink_codesearch.png)
