@@ -118,6 +118,34 @@ int CSourceFileList::saveFileList(const QString& fileListFilename, const QMap<lo
 	return 0;
 }
 
+bool isBinaryFile(const QString& filePath) {
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        qDebug() << "Cannot open file (" << filePath << ") for reading!" << Qt::endl;
+        return false;
+    }
+
+    QByteArray fileData = file.read(1024); // Read the first 1024 bytes
+    file.close();
+
+    // Check for Unicode BOM header
+    if (fileData.startsWith("\xEF\xBB\xBF") || // UTF-8 BOM
+        fileData.startsWith("\xFF\xFE") ||     // UTF-16 (LE) BOM
+        fileData.startsWith("\xFE\xFF")) {     // UTF-16 (BE) BOM
+        return false;
+    }
+
+    // Check for binary content
+    for (char byte : fileData) {
+        if (byte == '\0') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+
 int CSourceFileList::generateFileList(const QString& resultFilename, const QString& srcDir, const QStringList& nameFilters, T_FileItemList& resultFileList, bool bSaveToFile)
 {
 	QFile currentListFile(resultFilename);
@@ -151,6 +179,11 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 	}
 
 	for (const QString& filePath : fileList) {
+		if (isBinaryFile(filePath)) {	// skip binary file
+			qDebug() << "Binary file: " << filePath;
+			continue;
+		}
+
 		QFileInfo fileInfo = QFileInfo(filePath);
 		fileItem.fileName_ = filePath;
 

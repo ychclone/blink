@@ -673,7 +673,7 @@ void CMainWindow::on_projectAddDirectoryButton_clicked()
 		QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
 
 		if (defaultMaskForNewProject == "") {
-			projectItem.srcMask_ = "*.cpp *.cs *.c *.h *.hpp *.go *.java *.js *.py *.scala *.ts *.v *.vh *.sv *.svh *.yaml *.xml";
+			projectItem.srcMask_ = "*.*";
 		} else {
 			projectItem.srcMask_ =  defaultMaskForNewProject;
 		}
