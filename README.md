@@ -18,7 +18,7 @@ Drag and drop of filenames to your favourite editor.
 * Switch between multiple projects
 * Very small index size compared to trigram
 * Replaces in files for searched symbol
-* Cross platform and requires no installation
+* Cross platform
 
 # Download, Install
 
