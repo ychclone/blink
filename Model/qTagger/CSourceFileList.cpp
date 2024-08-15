@@ -146,7 +146,7 @@ bool isBinaryFile(const QString& filePath) {
 }
 
 
-int CSourceFileList::generateFileList(const QString& resultFilename, const QString& srcDir, const QStringList& nameFilters, T_FileItemList& resultFileList, bool bSaveToFile)
+int CSourceFileList::generateFileList(const QString& resultFilename, const QString& srcDir, const QStringList& nameFilters, T_FileItemList& resultFileList, const QStringList& defaultDirsToExclude, const QStringList& defaultFileMasksToExclude, bool bSaveToFile)
 {
 	QFile currentListFile(resultFilename);
 
@@ -169,13 +169,43 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 
 	QString lastFilePath = "";
 
-	QString currentPath;
+	QString filePath;
+	QString currentFilePath;
 	QString currentFileName;
 
 	QStringList fileList;
 
 	while (iter.hasNext()) {
-		fileList << iter.next();
+		filePath = iter.next();
+	
+		currentFilePath = QFileInfo(filePath).path();
+		currentFileName = QFileInfo(filePath).fileName();
+
+		bool excludeDir = false, excludeFile = false;
+
+		for (const QString& dirToExclude : defaultDirsToExclude) {
+			if (currentFilePath == srcDir + "/" + dirToExclude) {
+				excludeDir = true;
+				break;
+			}
+		}
+
+		if (!excludeDir) {
+			for (const QString& fileMaskToExclude : defaultFileMasksToExclude) {
+				QRegularExpression regExp(QRegularExpression::wildcardToRegularExpression(fileMaskToExclude), QRegularExpression::CaseInsensitiveOption);
+				if (regExp.match(currentFileName).hasMatch()) {
+					excludeFile = true;
+					break;
+				}
+			}
+		}
+
+		if (excludeFile || excludeDir) {
+			qDebug() << "Excluded file: " << currentFilePath << "/" << currentFileName;
+			continue;
+		}
+
+		fileList << filePath;
 	}
 
 	for (const QString& filePath : fileList) {

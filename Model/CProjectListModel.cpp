@@ -79,6 +79,20 @@ bool CProjectListModel::dropMimeData(const QMimeData *data, Qt::DropAction actio
 				droppedItem.srcMask_ =  defaultMaskForNewProject;
 			}
 
+            QString defaultDirToExclude = confManager_->getAppSettingValue("defaultDirToExclude").toString();
+            if (defaultDirToExclude == "") {
+                droppedItem.dirToExclude_ = ".git";
+            } else {
+                droppedItem.dirToExclude_ = defaultDirToExclude;
+            }
+
+            QString defaultFileMaskToExclude = confManager_->getAppSettingValue("defaultFileMaskToExclude").toString();
+            if (defaultFileMaskToExclude == "") {
+                droppedItem.fileMaskToExclude_ = "*.tmp";
+            } else {
+                droppedItem.fileMaskToExclude_ = defaultFileMaskToExclude;
+            }
+
             droppedItem.headerMask_ = "";
             droppedItem.labels_ = "";
 

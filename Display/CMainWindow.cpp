@@ -678,6 +678,21 @@ void CMainWindow::on_projectAddDirectoryButton_clicked()
 			projectItem.srcMask_ =  defaultMaskForNewProject;
 		}
 
+		QString defaultDirToExclude = confManager_->getAppSettingValue("defaultDirToExclude").toString();
+		QString defaultFileMaskToExclude = confManager_->getAppSettingValue("defaultFileMaskToExclude").toString();
+
+		if (defaultDirToExclude != "") {
+			projectItem.dirToExclude_ = defaultDirToExclude;
+		} else {
+			projectItem.dirToExclude_ = ".git";
+		}
+
+		if (defaultFileMaskToExclude != "") {
+			projectItem.fileMaskToExclude_ = defaultFileMaskToExclude;
+		} else {
+			projectItem.fileMaskToExclude_ = "*.tmp";
+		}
+
 		projectItem.headerMask_ = "";
 		projectItem.labels_ = "";
 

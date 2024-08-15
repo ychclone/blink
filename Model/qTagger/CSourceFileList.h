@@ -9,6 +9,8 @@
 #include <QDebug>
 #include <QDateTime>
 
+#include <QRegularExpression>
+
 #include "../CFileItem.h"
 
 typedef QList<CFileItem> T_FileItemList;
@@ -22,7 +24,7 @@ public:
 	static int loadFileList(const QString& fileListFilename, T_FileItemList& resultFileList);
 	static int saveFileList(const QString& fileListFilename, const QMap<long, CFileItem>& resultFileList); 
 
-	static int generateFileList(const QString& resultFilename, const QString& srcDir, const QStringList& nameFilters, T_FileItemList& resultFileList, bool bSaveToFile = true);
+	static int generateFileList(const QString& resultFilename, const QString& srcDir, const QStringList& nameFilters, T_FileItemList& resultFileList, const QStringList& defaultDirsToExclude, const QStringList& defaultFileMasksToExclude, bool bSaveToFile = true);
 
 	static const char* kFILE_LIST;
 };

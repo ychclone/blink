@@ -106,6 +106,20 @@ void CConfigDlg::loadSetting()
         defaultMaskForNewProject_lineEdit->setText("*.*");
 	}
 
+    QString defaultDirToExclude = confManager->getAppSettingValue("defaultDirToExclude").toString();
+    if (defaultDirToExclude != "") { // load from setting
+        defaultDirToExclude_lineEdit->setText(defaultDirToExclude);
+    } else {
+        defaultDirToExclude_lineEdit->setText(".git");
+    }
+
+    QString defaultFileMaskToExclude = confManager->getAppSettingValue("defaultFileMaskToExclude").toString();
+    if (defaultFileMaskToExclude != "") { // load from setting
+        defaultFileMaskToExclude_lineEdit->setText(defaultFileMaskToExclude);
+    } else {
+        defaultFileMaskToExclude_lineEdit->setText("*.tmp");
+    }
+
     unsigned int limitSearchRow = confManager->getAppSettingValue("limitSearchRow").toUInt();
 	if (limitSearchRow == 0) { // default setting
 		limitSearchRow_lineEdit->setText("30000");
@@ -134,6 +148,8 @@ void CConfigDlg::saveSetting()
     confManager->setAppSettingValue("UseExternalEditor", useExternalEditor_checkBox->isChecked());
 	confManager->setAppSettingValue("defaultMaskForNewProject", defaultMaskForNewProject_lineEdit->text());
 
+	confManager->setAppSettingValue("defaultDirToExclude", defaultDirToExclude_lineEdit->text());
+	confManager->setAppSettingValue("defaultFileMaskToExclude", defaultFileMaskToExclude_lineEdit->text());
 	confManager->setAppSettingValue("limitSearchRow", limitSearchRow_lineEdit->text());
 }
 

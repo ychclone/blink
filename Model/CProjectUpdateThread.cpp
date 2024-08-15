@@ -186,6 +186,9 @@ void CProjectUpdateThread::run()
 
 	nameFilters = srcMaskList + headerMaskList;
 
+	QStringList dirToExcludeList = projectItem_.dirToExclude_.split(" ");
+	QStringList fileMaskToExcludeList = projectItem_.fileMaskToExclude_.split(" ");
+
 	// create tag
 	QTagger tagger;
 
@@ -194,7 +197,7 @@ void CProjectUpdateThread::run()
 	QElapsedTimer timer;
 	timer.start();
 
-	CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList);
+	CSourceFileList::generateFileList(fileListFilename, projectItem_.srcDir_, nameFilters, resultFileList, dirToExcludeList, fileMaskToExcludeList);
 
 	createTag(tagger, resultFileList);
 

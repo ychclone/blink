@@ -26,6 +26,8 @@ CProjectDlg::CProjectDlg(const QString& projectName, const CProjectItem& project
     srcFileMask_lineEdit->setText(projectItem.srcMask_);
     headerfileMask_lineEdit->setText(projectItem.headerMask_);
     labels_lineEdit->setText(projectItem.labels_);
+    dirToExclude_lineEdit->setText(projectItem.dirToExclude_);
+    fileMaskToExclude_lineEdit->setText(projectItem.fileMaskToExclude_);
 
     // connect slot only after when CProjectDlg has already been loaded and initial content filled in
     QObject::connect(projectName_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
@@ -33,6 +35,8 @@ CProjectDlg::CProjectDlg(const QString& projectName, const CProjectItem& project
     QObject::connect(headerfileMask_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
     QObject::connect(srcFileMask_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
     QObject::connect(labels_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
+    QObject::connect(dirToExclude_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
+    QObject::connect(fileMaskToExclude_lineEdit, SIGNAL(textChanged(QString)), this, SLOT(projectContentChanged()));
 
 }
 
@@ -71,6 +75,8 @@ void CProjectDlg::on_applyButton_clicked()
     modifiedItem.srcDir_ = srcDir_lineEdit->text();
     modifiedItem.srcMask_ = srcFileMask_lineEdit->text();
     modifiedItem.headerMask_ = headerfileMask_lineEdit->text();
+    modifiedItem.dirToExclude_ = dirToExclude_lineEdit->text();
+    modifiedItem.fileMaskToExclude_ = fileMaskToExclude_lineEdit->text();
 
 	currDateTime = QDateTime::currentDateTime();
 

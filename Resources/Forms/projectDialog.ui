@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="contextMenuPolicy">
-   <enum>Qt::DefaultContextMenu</enum>
+   <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
   </property>
   <property name="windowTitle">
    <string>Project [*]</string>
@@ -80,8 +80,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="projectName_lineEdit">
-           </widget>
+           <widget class="QLineEdit" name="projectName_lineEdit"/>
           </item>
           <item row="1" column="0">
            <widget class="QLabel" name="label_11">
@@ -93,39 +92,10 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_12">
-            <property name="text">
-             <string>&amp;Header file mask:</string>
-            </property>
-            <property name="buddy">
-             <cstring>headerfileMask_lineEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLineEdit" name="headerfileMask_lineEdit">
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_9">
-            <property name="text">
-             <string>&amp;Source file mask:</string>
-            </property>
-            <property name="buddy">
-             <cstring>srcFileMask_lineEdit</cstring>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QLineEdit" name="srcFileMask_lineEdit">
-           </widget>
-          </item>
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QLineEdit" name="srcDir_lineEdit">
-             </widget>
+             <widget class="QLineEdit" name="srcDir_lineEdit"/>
             </item>
             <item>
              <widget class="QToolButton" name="srcDir_toolBn">
@@ -139,11 +109,33 @@
             </item>
            </layout>
           </item>
-          <item row="5" column="1">
-           <widget class="QLineEdit" name="labels_lineEdit">
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>&amp;Header file mask:</string>
+            </property>
+            <property name="buddy">
+             <cstring>headerfileMask_lineEdit</cstring>
+            </property>
            </widget>
           </item>
-          <item row="5" column="0">
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="headerfileMask_lineEdit"/>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>&amp;Source file mask:</string>
+            </property>
+            <property name="buddy">
+             <cstring>srcFileMask_lineEdit</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="srcFileMask_lineEdit"/>
+          </item>
+          <item row="4" column="0">
            <widget class="QLabel" name="label">
             <property name="text">
              <string>&amp;Labels:</string>
@@ -152,6 +144,29 @@
              <cstring>labels_lineEdit</cstring>
             </property>
            </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="labels_lineEdit"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Directories to exclude</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="dirToExclude_lineEdit"/>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>File mask to exclude</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="fileMaskToExclude_lineEdit"/>
           </item>
          </layout>
         </item>
@@ -180,7 +195,7 @@
      <item>
       <spacer>
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -234,7 +249,7 @@
      <item>
       <spacer>
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -250,8 +265,6 @@
  </widget>
  <tabstops>
   <tabstop>projectName_lineEdit</tabstop>
-  <tabstop>headerfileMask_lineEdit</tabstop>
-  <tabstop>srcFileMask_lineEdit</tabstop>
  </tabstops>
  <resources>
   <include location="../app.qrc"/>

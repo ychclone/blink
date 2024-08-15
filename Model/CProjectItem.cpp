@@ -9,10 +9,13 @@ CProjectItem::CProjectItem()
     tagUpdateDateTime_ = "";
     projectCreateDateTime_ = "";
     labels_ = ""; 
+    dirToExclude_ = "";
+    fileMaskToExclude_ = "";
 }
 
 CProjectItem::CProjectItem(const QString& name, const QString& srcDir, const QString& srcMask, const QString& headerMask, 
-						   const QString& tagUpdateDateTime, const QString& projectCreateDateTime, const QString& labels)
+						   const QString& tagUpdateDateTime, const QString& projectCreateDateTime, const QString& labels,
+						   const QString& dirToExclude, const QString& fileMaskToExclude)
 {
     name_ = name;
     srcDir_ = srcDir;
@@ -22,6 +25,8 @@ CProjectItem::CProjectItem(const QString& name, const QString& srcDir, const QSt
 	tagUpdateDateTime_ = tagUpdateDateTime;
 	projectCreateDateTime_ = projectCreateDateTime;
     labels_ = labels;
+    dirToExclude_ = dirToExclude;
+    fileMaskToExclude_ = fileMaskToExclude;
 }
 
 

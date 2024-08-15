@@ -70,6 +70,8 @@ QDomElement CXmlStorageHandler::createXMLNode(QDomDocument &document, const CPro
 	element.setAttribute("tagUpdateDateTime", projectItem.tagUpdateDateTime_);
 	element.setAttribute("projectCreateDateTime", projectItem.projectCreateDateTime_);
     element.setAttribute("labels", projectItem.labels_);
+    element.setAttribute("dirToExclude", projectItem.dirToExclude_);
+    element.setAttribute("fileMaskToExclude", projectItem.fileMaskToExclude_);
 
     return element;
 }
@@ -78,20 +80,21 @@ void CXmlStorageHandler::fillProjectItem(CProjectItem& projectItemToBeFill, cons
 {
 	QString name, srcDir, srcMask, headerMask;
 	QString tagUpdateDateTime, projectCreateDateTime;
-
-    QString labels;
+    QString labels, dirToExclude, fileMaskToExclude;
 
     name = element.attribute("name", "");
     srcDir = element.attribute("srcDir", "");
     srcMask = element.attribute("srcMask", "");
     headerMask = element.attribute("headerMask", "");
     labels = element.attribute("labels", "");
+    dirToExclude = element.attribute("dirToExclude", "");
+    fileMaskToExclude = element.attribute("fileMaskToExclude", "");
 
 	tagUpdateDateTime = element.attribute("tagUpdateDateTime", "");
 	projectCreateDateTime = element.attribute("projectCreateDateTime", "");
 
 	CProjectItem projectItem(name, srcDir, srcMask, headerMask,
-		tagUpdateDateTime, projectCreateDateTime, labels);
+		tagUpdateDateTime, projectCreateDateTime, labels, dirToExclude, fileMaskToExclude);
 
 	projectItemToBeFill = projectItem;
 }
