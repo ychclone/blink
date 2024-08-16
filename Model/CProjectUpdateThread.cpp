@@ -181,13 +181,13 @@ void CProjectUpdateThread::run()
 
 	/* first step, recursively list the source and header files to currentListFile */
 	QStringList nameFilters;
-	QStringList srcMaskList = projectItem_.srcMask_.split(" ");
-	QStringList headerMaskList = projectItem_.headerMask_.split(" ");
+	QStringList srcMaskList = projectItem_.srcMask_.isEmpty() ? QStringList() : projectItem_.srcMask_.split(" ");
+	QStringList headerMaskList = projectItem_.headerMask_.isEmpty() ? QStringList() : projectItem_.headerMask_.split(" ");
 
 	nameFilters = srcMaskList + headerMaskList;
 
-	QStringList dirToExcludeList = projectItem_.dirToExclude_.split(" ");
-	QStringList fileMaskToExcludeList = projectItem_.fileMaskToExclude_.split(" ");
+	QStringList dirToExcludeList = projectItem_.dirToExclude_.isEmpty() ? QStringList() : projectItem_.dirToExclude_.split(" ");
+	QStringList fileMaskToExcludeList = projectItem_.fileMaskToExclude_.isEmpty() ? QStringList() : projectItem_.fileMaskToExclude_.split(" ");
 
 	// create tag
 	QTagger tagger;

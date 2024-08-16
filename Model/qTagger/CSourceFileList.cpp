@@ -184,7 +184,7 @@ int CSourceFileList::generateFileList(const QString& resultFilename, const QStri
 		bool excludeDir = false, excludeFile = false;
 
 		for (const QString& dirToExclude : defaultDirsToExclude) {
-			if (currentFilePath == srcDir + "/" + dirToExclude) {
+			if (currentFilePath.startsWith(srcDir + "/" + dirToExclude)) {
 				excludeDir = true;
 				break;
 			}
