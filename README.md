@@ -1,9 +1,9 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
-An indexed search tool for source code. Good for small to medium size code base. It supports fuzzy matching, auto complete,
+A source code indexing tool and near instant code search tool and navigation. Good for small to medium size code base. It supports fuzzy matching, auto complete,
 and live grep for real time query.
-Switch different projects and start searching.
+Manage different projects and switch for different projects
 Drag and drop of filenames to your favourite editor.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/afn8q3ai3e7wphrf?svg=true)](https://ci.appveyor.com/project/ychclone/blink)
