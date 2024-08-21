@@ -1,7 +1,7 @@
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
-GUI of indexed grep. A source code indexing tool, near instant grep like search tool and navigation. Good for small to medium size code base. It supports fuzzy matching, auto complete,
+GUI of indexed grep. A source code indexing tool, near instant code search tool and navigation. Good for small to medium size code base. It supports fuzzy matching, auto complete,
 and live grep for real time query.
 Manage different projects and switch for different projects
 Drag and drop of filenames to your favourite editor.
