@@ -673,7 +673,7 @@ void CMainWindow::on_projectAddDirectoryButton_clicked()
 		QString defaultMaskForNewProject = confManager_->getAppSettingValue("defaultMaskForNewProject").toString();
 
 		if (defaultMaskForNewProject == "") {
-			projectItem.srcMask_ = "*.*";
+			projectItem.srcMask_ = "*";
 		} else {
 			projectItem.srcMask_ =  defaultMaskForNewProject;
 		}

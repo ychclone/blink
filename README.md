@@ -31,6 +31,10 @@ Source code is avaliable in
 
 # Change Log
 
+## version [1.9.4]
+
+- Change default source mask from \*.\* to \* to include file without extension
+
 ## version [1.9.3]
 
 - Support directory to exclude and file mask to exclude

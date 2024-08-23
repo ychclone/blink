@@ -103,7 +103,7 @@ void CConfigDlg::loadSetting()
 	if (defaultMaskForNewProject != "") { // load from setting
         defaultMaskForNewProject_lineEdit->setText(defaultMaskForNewProject);
 	} else {
-        defaultMaskForNewProject_lineEdit->setText("*.*");
+        defaultMaskForNewProject_lineEdit->setText("*");
 	}
 
     QString defaultDirToExclude = confManager->getAppSettingValue("defaultDirToExclude").toString();
