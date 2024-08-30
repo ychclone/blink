@@ -474,23 +474,23 @@ void CMainWindow::loadFileList()
 
 void CMainWindow::createActions()
 {
-    connect(actionAbout, SIGNAL(triggered()), this, SLOT(on_aboutButton_clicked()));
+    connect(actionAbout, &QAction::triggered, this, &CMainWindow::on_aboutButton_clicked);
 
 	// [Project action]
 	connect(actionProjectAddDirectory, &QAction::triggered, this, &CMainWindow::on_projectAddDirectoryButton_clicked);
 
-	connect(actionProjectLoad, SIGNAL(triggered()), this, SLOT(on_loadProjectButton_clicked()));
+	connect(actionProjectLoad, &QAction::triggered, this, &CMainWindow::on_loadProjectButton_clicked);
 
 	// default double click, enter action for project list item
-	connect(project_listView, SIGNAL(projectItemTriggered()), this, SLOT(on_loadProjectButton_clicked()));
-	connect(actionProjectRebuildTag, SIGNAL(triggered()), this, SLOT(on_rebuildTagProjectButton_clicked()));
-	connect(actionProjectModify, SIGNAL(triggered()), this, SLOT(on_editProjectButton_clicked()));
-	connect(actionProjectDelete, SIGNAL(triggered()), this, SLOT(on_deleteProjectButton_clicked()));
+	connect(project_listView, &CProjectListWidget::projectItemTriggered, this, &CMainWindow::on_loadProjectButton_clicked);
+	connect(actionProjectRebuildTag, &QAction::triggered, this, &CMainWindow::on_rebuildTagProjectButton_clicked);
+	connect(actionProjectModify, &QAction::triggered, this, &CMainWindow::on_editProjectButton_clicked);
+	connect(actionProjectDelete, &QAction::triggered, this, &CMainWindow::on_deleteProjectButton_clicked);
 
-	connect(actionProjectCopy, SIGNAL(triggered()), this, SLOT(on_projectCopyPressed()));
+	connect(actionProjectCopy, &QAction::triggered, this, &CMainWindow::on_projectCopyPressed);
 
-	connect(actionProjectExplore, SIGNAL(triggered()), this, SLOT(on_exploreProjectButton_clicked()));
-	connect(actionProjectConsole, SIGNAL(triggered()), this, SLOT(on_consoleProjectButton_clicked()));
+	connect(actionProjectExplore, &QAction::triggered, this, &CMainWindow::on_exploreProjectButton_clicked);
+	connect(actionProjectConsole, &QAction::triggered, this, &CMainWindow::on_consoleProjectButton_clicked);
 
     // [File action]
     connect(actionFileEditExternal, &QAction::triggered, this, &CMainWindow::on_fileEditExternalPressed);
@@ -498,83 +498,69 @@ void CMainWindow::createActions()
 	connect(actionFileEditNewTab, &QAction::triggered, this, &CMainWindow::on_fileEditNewTabPressed);
 
     // default double click, enter action for file list item
-	connect(file_listView, SIGNAL(fileItemTriggered()), this, SLOT(on_fileListItemDoubleClicked()));
+	connect(file_listView, &CFileListWidget::fileItemTriggered, this, &CMainWindow::on_fileListItemDoubleClicked);
 
-	connect(actionFileCopy, SIGNAL(triggered()), this, SLOT(on_fileCopyPressed()));
-	connect(actionFileExplore, SIGNAL(triggered()), this, SLOT(on_fileExplorePressed()));
-	connect(actionFileConsole, SIGNAL(triggered()), this, SLOT(on_fileConsolePressed()));
-    connect(actionFileProperties, SIGNAL(triggered()), this, SLOT(on_filePropertiesPressed()));
+	connect(actionFileCopy, &QAction::triggered, this, &CMainWindow::on_fileCopyPressed);
+	connect(actionFileExplore, &QAction::triggered, this, &CMainWindow::on_fileExplorePressed);
+	connect(actionFileConsole, &QAction::triggered, this, &CMainWindow::on_fileConsolePressed);
+    connect(actionFileProperties, &QAction::triggered, this, &CMainWindow::on_filePropertiesPressed);
 
-	connect(actionSearch, SIGNAL(triggered()), this, SLOT(on_searchButton_clicked()));
+	connect(actionSearch, &QAction::triggered, this, &CMainWindow::on_searchButton_clicked);
 
-	connect(actionNextSymbolSearch, SIGNAL(triggered()), this, SLOT(on_nextSymbolButton_clicked()));
-	connect(actionPreviousSymbolSearch, SIGNAL(triggered()), this, SLOT(on_previousSymbolButton_clicked()));
+	connect(actionNextSymbolSearch, &QAction::triggered, this, &CMainWindow::on_nextSymbolButton_clicked);
+	connect(actionPreviousSymbolSearch, &QAction::triggered, this, &CMainWindow::on_previousSymbolButton_clicked);
 
-	connect(search_lineEdit, SIGNAL(returnPressed()), this, SLOT(on_searchButton_clicked()));
+	connect(search_lineEdit, &QLineEdit::returnPressed, this, &CMainWindow::on_searchButton_clicked);
 
     connect(CProjectManager::getInstance(), &CProjectManager::projectMapUpdated, this, &CMainWindow::loadProjectList);
 	connect(CProjectManager::getInstance(), &CProjectManager::newProjectAdded, this, &CMainWindow::projectRebuildTag);
 
-    connect(&timeLine_, SIGNAL(frameChanged(int)), &progressBar_, SLOT(setValue(int)));
+    connect(&timeLine_, &QTimeLine::frameChanged, &progressBar_, &QProgressBar::setValue);
     connect(&projectUpdateThread_, &CProjectUpdateThread::percentageCompleted, this, &CMainWindow::updateTagBuildProgress);
 
 	// update progress bar for cancelled tag build
-	connect(&projectUpdateThread_, SIGNAL(cancelledTagBuild()), this, SLOT(updateCancelledTagBuild()));
+	connect(&projectUpdateThread_, &CProjectUpdateThread::cancelledTagBuild, this, &CMainWindow::updateCancelledTagBuild);
 	// error occurs during run command
-	connect(&projectUpdateThread_, SIGNAL(errorDuringRun(const QString&)), this, SLOT(on_errorDuringRun(const QString&)));
+	connect(&projectUpdateThread_, &CProjectUpdateThread::errorDuringRun, this, &CMainWindow::on_errorDuringRun);
 
 	connect(&projectLoadThread_, &CProjectLoadThread::projectLoadPercentageCompleted, this, &CMainWindow::updateProjectLoadProgress);
 
     // connecting shortcut action
-	connect(projectPatternLineEditShortcut, SIGNAL(activated()), this, SLOT(on_projectPatternLineEditShortcutPressed()));
+	connect(projectPatternLineEditShortcut, &QShortcut::activated, this, &CMainWindow::on_projectPatternLineEditShortcutPressed);
 
-    connect(fileSearchShortcut, SIGNAL(activated()), this, SLOT(on_filePatternLineEditShortcutPressed()));
-	connect(tagSearchShortcut, SIGNAL(activated()), this, SLOT(on_searchLineEditShortcutPressed()));
+    connect(fileSearchShortcut, &QShortcut::activated, this, &CMainWindow::on_filePatternLineEditShortcutPressed);
+	connect(tagSearchShortcut, &QShortcut::activated, this, &CMainWindow::on_searchLineEditShortcutPressed);
 
-    connect(outputExploreShortcut, SIGNAL(activated()), this, SLOT(on_fileExplorePressed()));
-	connect(outputConsoleShortcut, SIGNAL(activated()), this, SLOT(on_fileConsolePressed()));
+    connect(outputExploreShortcut, &QShortcut::activated, this, &CMainWindow::on_fileExplorePressed);
+	connect(outputConsoleShortcut, &QShortcut::activated, this, &CMainWindow::on_fileConsolePressed);
 
-	connect(projectPattern_lineEdit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(projectFilterRegExpChanged()));
+	connect(projectPattern_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::projectFilterRegExpChanged);
 
-    connect(actionProjectAndGroupCaseSensitive, SIGNAL(toggled(bool)),
-            this, SLOT(projectFilterRegExpChanged()));
-
-    connect(actionProjectAndGroupCaseSensitive, SIGNAL(toggled(bool)),
-            this, SLOT(groupFilterRegExpChanged()));
+    connect(actionProjectAndGroupCaseSensitive, &QAction::toggled, this, &CMainWindow::projectFilterRegExpChanged);
 
     // for cancel update tag
-	connect(actionCancelTagUpdate, SIGNAL(triggered()), this, SLOT(on_cancelTagUpdate()));
+	connect(actionCancelTagUpdate, &QAction::triggered, this, &CMainWindow::on_cancelTagUpdate);
 	// for info tab widget tool button
 
-	connect(filePattern_lineEdit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(fileFilterRegExpChanged()));
-    connect(actionFileCaseSensitive, SIGNAL(toggled(bool)),
-            this, SLOT(fileFilterRegExpChanged()));
-    connect(actionSymbolCaseSensitive, SIGNAL(toggled(bool)),
-            this, SLOT(searchLineEditChanged()));
-    connect(actionSymbolRegularExpression, SIGNAL(toggled(bool)),
-            this, SLOT(searchLineEditChanged()));
+	connect(filePattern_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::fileFilterRegExpChanged);
+    connect(actionFileCaseSensitive, &QAction::toggled, this, &CMainWindow::fileFilterRegExpChanged);
+    connect(actionSymbolCaseSensitive, &QAction::toggled, this, &CMainWindow::searchLineEditChanged);
+    connect(actionSymbolRegularExpression, &QAction::toggled, this, &CMainWindow::searchLineEditChanged);
 
-	connect(search_lineEdit, SIGNAL(textEdited(const QString &)),
-            this, SLOT(searchLineEditChanged()));
+	connect(search_lineEdit, &QLineEdit::textEdited, this, &CMainWindow::searchLineEditChanged);
 
-	connect(&completer_, SIGNAL(activated(const QString &)),
-            this, SLOT(queryTag(const QString&)));
-
-	connect(&completer_, SIGNAL(highlighted(const QString &)),
-            this, SLOT(queryTagTop1000(const QString&)));
+	connect(&completer_, static_cast<void(QCompleter::*)(const QString&)>(&QCompleter::activated), this, &CMainWindow::queryTag);
+	connect(&completer_, static_cast<void(QCompleter::*)(const QString&)>(&QCompleter::highlighted), this, &CMainWindow::queryTagTop1000);
 
     // symbol search frame
-	//connect(symbolSearchFrameShortcut, SIGNAL(activated()), this, SLOT(on_symbolSearchFrameShortcutPressed()));
-	connect(frameSymbol_lineEdit, SIGNAL(textChanged(const QString &)),
-            this, SLOT(frameSymbolLineEditChanged()));
+	//connect(symbolSearchFrameShortcut, &QShortcut::activated, this, &CMainWindow::on_symbolSearchFrameShortcutPressed);
+	connect(frameSymbol_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::frameSymbolLineEditChanged);
 
-	connect(nextSymbolSearchShortcut, SIGNAL(activated()), this, SLOT(on_nextSymbolButton_clicked()));
-	connect(previousSymbolSearchShortcut, SIGNAL(activated()), this, SLOT(on_previousSymbolButton_clicked()));
+	connect(nextSymbolSearchShortcut, &QShortcut::activated, this, &CMainWindow::on_nextSymbolButton_clicked);
+	connect(previousSymbolSearchShortcut, &QShortcut::activated, this, &CMainWindow::on_previousSymbolButton_clicked);
 
 #ifdef Q_OS_WIN
-	connect(previousSymbolSearchShortcut_win, SIGNAL(activated()), this, SLOT(on_previousSymbolButton_clicked()));
+	connect(previousSymbolSearchShortcut_win, &QShortcut::activated, this, &CMainWindow::on_previousSymbolButton_clicked);
 #endif
 
 	// zoom in, zoom out
@@ -609,10 +595,6 @@ void CMainWindow::createActions()
 
 	symbol_textBrowser->setCurrentCharFormat(charFormat);
 #endif
-
-
-	connect(actionWebZoomIn, SIGNAL(triggered()), this, SLOT(webZoomIn()));
-	connect(actionWebZoomOut, SIGNAL(triggered()), this, SLOT(webZoomOut()));
 
 	// connect for lauching editor from symbol panel
 	connect(symbol_textBrowser, &CSearchTextEdit::linkActivated, &editor_, &CEditor::loadFileWithLineNum);
