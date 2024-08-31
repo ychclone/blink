@@ -614,6 +614,12 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
                   </item>
                   <item row="1" column="2">
                    <widget class="QComboBox" name="option_comboBox">
+                    <property name="autoFillBackground">
+                     <bool>false</bool>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">background-color: white;</string>
+                    </property>
                     <property name="placeholderText">
                      <string/>
                     </property>

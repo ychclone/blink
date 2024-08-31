@@ -92,12 +92,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 	long k;
 	int i;
 
-	int closeBracketIndex;
-
 	QStringList lastLines;
-	QList<int> lastManualIndentLevelList;
-
-	QString lastLinesJoined;
 
 	bool bMatchedLineFilterStringList;
 	bool bPassExcludePatternFilter;
@@ -120,13 +115,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 	CTagResultItem pendingResultItem;
 	bool bGotPendingResultItem = false;
 
-	int indentLevel = 0;
-
-	int openBracketIndex = 0;
-
 	resultItem.functionSignature_.clear();
-
-	int manualIndentLevel = 0;
 
 	QVector<QRegularExpression> lineFilterRegExpMatcher;
 	QRegularExpressionMatch lineFilterRegExpMatch;
@@ -143,26 +132,11 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 		currentLineNum++;
 		line = sourceFileStream.readLine();
 
-		manualIndentLevel = getManualIndentLevel(line);
-
 		if (sourceFileStream.atEnd()) {
 			break;
 		}
 
 		lastLines.append(line);
-		lastManualIndentLevelList.append(manualIndentLevel);
-
-		// increment indent level
-		openBracketIndex = line.indexOf("{");
-		if (openBracketIndex != -1) {
-			indentLevel++;
-		}
-
-		// decrement indent level
-		closeBracketIndex = line.indexOf("}");
-		if (closeBracketIndex != -1) {
-			indentLevel--;
-		}
 
 		if ((j < lineNumListTotal) || (linePrintAfter > 0)) {
 			if ((j < lineNumListTotal) && (currentLineNum == lineNumList[j])) {
@@ -207,47 +181,38 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 				// valid only if all matched
 				if (bMatchedLineFilterStringList && bPassExcludePatternFilter) {
 					if ((linePrintBeforeMatch > 0) && (linePrintAfterMatch > 0)) {
-						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
-
 						int lastLineSize = lastLines.size();
 
 						for (k = 0; k < linePrintBeforeMatch; k++) { // not showing current line
 							if ((lastLineSize - linePrintBeforeMatch + k - 1>= 0) && (lastLineSize - linePrintBeforeMatch + k - 1 < lastLines.size())) { // excluding the current line
 								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - linePrintBeforeMatch + k - 1));
-								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - linePrintBeforeMatch + k - 1));
 							}
 						}
 
 						pendingResultItem = resultItem;
 						resultItem.fileLineSrcBeforeList_.clear(); // reuse resultItem
-						resultItem.beforeIndentLevelList_.clear();
 
 						bGotPendingResultItem = true;
 
 						linePrintAfter = linePrintAfterMatch;
 
 					} else if (linePrintBeforeMatch > 0) {
-						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
-
 						int lastLineSize = lastLines.size();
 
 						for (k = 0; k < linePrintBeforeMatch; k++) { // not showing current line
 							if ((lastLineSize - linePrintBeforeMatch + k - 1>= 0) && (lastLineSize - linePrintBeforeMatch + k - 1 < lastLines.size())) { // excluding the current line
 								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - linePrintBeforeMatch + k - 1));
-								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - linePrintBeforeMatch + k - 1));
 							}
 						}
 
 						resultLineList << resultItem;
 						resultItem.fileLineSrcBeforeList_.clear(); // reuse resultItem
-						resultItem.beforeIndentLevelList_.clear();
 
 						if (resultLineList.length() >= limitSearchRow) {
 							sourceFile.close();
 							return 0;
 						}
 					} else if (linePrintAfterMatch > 0) {
-						resultItem.lineSrcIndentLevel_ = manualIndentLevel;
 						pendingResultItem = resultItem;
 						bGotPendingResultItem = true;
 
@@ -266,7 +231,6 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			} else {
 				if (linePrintAfter > 0) {
 					pendingResultItem.fileLineSrcAfterList_.append(line);
-					pendingResultItem.afterIndentLevelList_.append(manualIndentLevel);
 
 					linePrintAfter--;
 
@@ -287,7 +251,6 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 		if (lastLines.size() > 20) {
 			lastLines.removeFirst();
-			lastManualIndentLevelList.removeFirst();
 		}
 	}
 
@@ -871,28 +834,6 @@ int QTagger::queryTag(const QString& inputFileName, const QString& tagDbFileName
 		tagDbFile.close();
 	}
 	return 0;
-}
-
-int QTagger::getManualIndentLevel(QString& line)
-{
-    int indentLevel = 0;
-	int i;
-	int tabCount = 0;
-	int spaceCount = 0;
-
-	for (i = 0; i < line.length(); i++) {
-		if (line.at(i) == '\t') {
-			tabCount++;
-		} else if (line.at(i) == ' ') {
-			spaceCount++;
-		} else {
-			break;
-		}
-	}
-
-	indentLevel = tabCount + spaceCount / 3;
-
-	return indentLevel;
 }
 
 /***

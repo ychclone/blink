@@ -47,8 +47,6 @@ public:
 	int queryTag(const QString& inputFileName, const QString& tagDbFileName, const QString& tagToQuery,
 				QString& tagToQueryFiltered, QList<CTagResultItem>& resultList, const Qt::CaseSensitivity& caseSensitivity, bool symbolRegularExpression);
 
-	int getManualIndentLevel(QString& line);
-
 	bool parseSourceFile(unsigned long fileId, const QString& fileName, T_TokenMapType& tokenMap);
 	bool parseSourceFile(unsigned long fileId, const QString& fileName);
 

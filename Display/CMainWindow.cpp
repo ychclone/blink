@@ -640,6 +640,8 @@ void CMainWindow::createActions()
 
 	connect(fileListModel_->getSelectionModel(), &QItemSelectionModel::selectionChanged, this, &CMainWindow::fileSelectionChanged);
 
+
+	connect(option_comboBox, &QComboBox::textActivated, this, &CMainWindow::on_optionLineEdit_textChanged);
 	connect(option_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::on_optionLineEdit_textChanged);
 }
 
@@ -2152,7 +2154,7 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 	QString lineSrcBeforeToPrint;
 	QString lineSrcAfterToPrint;
 
-	int i, j;
+	int i;
 	int lineSrcSize;
 
 	QString lineNumStr;
@@ -2203,9 +2205,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 		resultHtml += "<body>";
 		resultHtml += "<pre>";
 
-		QList<int>::const_iterator indentIt;
-		int minIndent = 0;
-
 		findReplaceFileList_.clear();
 
 		QString matchedStr = "";
@@ -2228,26 +2227,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 			lineSrcBeforeToPrint = "";
 			lineSrcAfterToPrint = "";
 
-			minIndent = resultItem.lineSrcIndentLevel_;
-
-			if (resultItem.beforeIndentLevelList_.size() > 0) {
-				indentIt = std::min_element(resultItem.beforeIndentLevelList_.begin(), resultItem.beforeIndentLevelList_.end());
-				if (*indentIt < minIndent) {
-					minIndent = *indentIt;
-				}
-			}
-
-			if (resultItem.afterIndentLevelList_.size() > 0) {
-				indentIt = std::min_element(resultItem.afterIndentLevelList_.begin(), resultItem.afterIndentLevelList_.end());
-				if (*indentIt < minIndent) {
-					minIndent = *indentIt;
-				}
-			}
-
-			for (j = 0; j < resultItem.lineSrcIndentLevel_ - minIndent; j++) {
-				resultItemSrcLine = "&nbsp;&nbsp;&nbsp;" + resultItemSrcLine;
-			}
-
 			lineSrcSize = resultItem.fileLineSrcBeforeList_.size();
 			if (lineSrcSize != 0) {
 				i = 0;
@@ -2257,10 +2236,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					lineNumStr = "<linenum>" + QString::number(resultItem.fileLineNum_ - lineSrcSize + i) + "</linenum> ";
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
-
-					for (j = 0; j < resultItem.beforeIndentLevelList_.at(i) - minIndent; j++) {
-						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;
-					}
 
 					lineSrcBeforeToPrint += lineNumStr + modifiedLineSrc + "<br />";
 					i++;
@@ -2275,10 +2250,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					lineNumStr = "<linenum>" + QString::number(resultItem.fileLineNum_  + i + 1) + "</linenum> ";
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
-
-					for (j = 0; j < resultItem.afterIndentLevelList_.at(i) - minIndent; j++) {
-						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;
-					}
 
 					lineSrcAfterToPrint += "<br />" + lineNumStr + modifiedLineSrc;
 					i++;
@@ -2296,7 +2267,8 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
             findReplaceFileList_.insert(resultItem.filePath_, 0);
 		}
 
-		// Output resultHtml to a text file
+		// Output resultHtml to a text file, debug purpose
+		/*
 		QString outputFileName = "resultHtml.txt";
 		QFile outputFile(outputFileName);
 		if (outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -2307,6 +2279,7 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 		} else {
 			qDebug() << "Failed to open" << outputFileName << "for writing";
 		}
+		*/
 
 		m_statusLeft->setText("Found " + QString::number(resultList.size()) + " symbols in " + QString::number(findReplaceFileList_.size()) + " files.");
 
