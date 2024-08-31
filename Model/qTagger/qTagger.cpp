@@ -211,10 +211,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 						int lastLineSize = lastLines.size();
 
-						for (k = 1; k <= linePrintBeforeMatch; k++) {
-							if (lastLineSize - k - 1 >= 0) { // excluding the current line
-								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - k - 1));
-								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - k - 1));
+						for (k = 0; k < linePrintBeforeMatch; k++) { // not showing current line
+							if ((lastLineSize - linePrintBeforeMatch + k - 1>= 0) && (lastLineSize - linePrintBeforeMatch + k - 1 < lastLines.size())) { // excluding the current line
+								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - linePrintBeforeMatch + k - 1));
+								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - linePrintBeforeMatch + k - 1));
 							}
 						}
 
@@ -231,10 +231,10 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 
 						int lastLineSize = lastLines.size();
 
-						for (k = 1; k <= linePrintBeforeMatch; k++) {
-							if (lastLineSize - k - 1 >= 0) { // excluding the current line
-								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - k - 1));
-								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - k - 1));
+						for (k = 0; k < linePrintBeforeMatch; k++) { // not showing current line
+							if ((lastLineSize - linePrintBeforeMatch + k - 1>= 0) && (lastLineSize - linePrintBeforeMatch + k - 1 < lastLines.size())) { // excluding the current line
+								resultItem.fileLineSrcBeforeList_.append(lastLines.at(lastLineSize - linePrintBeforeMatch + k - 1));
+								resultItem.beforeIndentLevelList_.append(lastManualIndentLevelList.at(lastLineSize - linePrintBeforeMatch + k - 1));
 							}
 						}
 
@@ -285,7 +285,7 @@ int QTagger::getFileLineContent(const QString& fileName, const QList<unsigned lo
 			break;
 		}
 
-		if (lastLines.size() > 15) {
+		if (lastLines.size() > 20) {
 			lastLines.removeFirst();
 			lastManualIndentLevelList.removeFirst();
 		}
