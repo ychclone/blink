@@ -342,6 +342,14 @@ editor_(this)
 	}
 
 	search_lineEdit->setCompleter(&completer_);
+
+	option_comboBox->addItem("");
+	option_comboBox->addItem("Before and after line");
+	option_comboBox->addItem("Before line");
+	option_comboBox->addItem("After line");
+	option_comboBox->addItem("Exlude pattern");
+	option_comboBox->addItem("Match filename");
+
 }
 
 void CMainWindow::setSplitterSizes(const QList<int>& splitterSizeList)
@@ -631,6 +639,8 @@ void CMainWindow::createActions()
 	connect(actionRedo, &QAction::triggered, &editor_, &CEditor::redo);
 
 	connect(fileListModel_->getSelectionModel(), &QItemSelectionModel::selectionChanged, this, &CMainWindow::fileSelectionChanged);
+
+	connect(option_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::on_optionLineEdit_textChanged);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -2157,7 +2167,32 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 		QElapsedTimer timer;
 		timer.start();
 
-		tagger_.queryTagLoadedSymbol(fileItemList_, tag, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression, limitSearchRow);
+		QString selectedOption = option_comboBox->currentText();
+		QString optionAppend = "";
+		
+		QString tagWithOption = tag;
+
+		if (selectedOption.isEmpty()) {
+			// Do nothing
+		} else if (selectedOption == "Before and after line") {
+			optionAppend = "/n" + option_lineEdit->text();
+		} else if (selectedOption == "Before line") {
+			optionAppend = "/b" + option_lineEdit->text();
+		} else if (selectedOption == "After line") {
+			optionAppend = "/a" + option_lineEdit->text();
+		} else if (selectedOption == "Exlude pattern") {
+			optionAppend = "/x" + option_lineEdit->text();
+		} else if (selectedOption == "Match filename") {
+			optionAppend = "/f" + option_lineEdit->text();
+		} else {
+			// Handle default case
+		}
+
+		if (optionAppend != "") {
+			tagWithOption = tagWithOption + " " + optionAppend;
+		}
+
+		tagger_.queryTagLoadedSymbol(fileItemList_, tagWithOption, tagToQueryFiltered, resultList, caseSensitivity, bSymbolRegularExpression, limitSearchRow);
 
 		qDebug() << "queryTag took" << timer.elapsed() << "ms";
 
@@ -2223,13 +2258,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
 
-					if (caseSensitivity) {
-						modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
-					} else {
-						matchedStr = findStringCaseInsensitive(modifiedLineSrc, tagToQuery);
-						modifiedLineSrc.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
-					}
-
 					for (j = 0; j < resultItem.beforeIndentLevelList_.at(i) - minIndent; j++) {
 						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;
 					}
@@ -2248,13 +2276,6 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 					modifiedLineSrc = lineSrc;
 					modifiedLineSrc = modifiedLineSrc.toHtmlEscaped();
 
-					if (caseSensitivity) {
-						modifiedLineSrc.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
-					} else {
-						matchedStr = findStringCaseInsensitive(modifiedLineSrc, tagToQuery);
-						modifiedLineSrc.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
-					}
-
 					for (j = 0; j < resultItem.afterIndentLevelList_.at(i) - minIndent; j++) {
 						modifiedLineSrc = "&nbsp;&nbsp;&nbsp;" + modifiedLineSrc;
 					}
@@ -2269,12 +2290,22 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 						lineSrcBeforeToPrint +
 
 						"<linenum>" + QString::number(resultItem.fileLineNum_) + "</linenum> " +
-						resultItemSrcLine +
-						lineSrcAfterToPrint + "<div><spacesize>&nbsp;</spacesize></div>";
-
-			//qDebug() << "resultHtml = " << resultHtml << Qt::endl;
+						resultItemSrcLine
+						+ lineSrcAfterToPrint +"<div><spacesize>&nbsp;</spacesize></div>";
 
             findReplaceFileList_.insert(resultItem.filePath_, 0);
+		}
+
+		// Output resultHtml to a text file
+		QString outputFileName = "resultHtml.txt";
+		QFile outputFile(outputFileName);
+		if (outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+			QTextStream out(&outputFile);
+			out << resultHtml;
+			outputFile.close();
+			qDebug() << "resultHtml written to" << outputFileName;
+		} else {
+			qDebug() << "Failed to open" << outputFileName << "for writing";
 		}
 
 		m_statusLeft->setText("Found " + QString::number(resultList.size()) + " symbols in " + QString::number(findReplaceFileList_.size()) + " files.");
@@ -2433,4 +2464,25 @@ void CMainWindow::fileSelectionChanged(const QItemSelection &selected, const QIt
 	}
 
 }
+
+void CMainWindow::on_optionLineEdit_textChanged(const QString &text)
+{
+    // Log the option line edit text change
+    qDebug() << "on_optionLineEdit_textChanged() IN, text changed: " << text;
+    bool bLiveSearch = confManager_->getAppSettingValue("LiveSearch", true).toBool();
+
+    if (bLiveSearch) {
+        // Get the current search text
+        QString searchText = search_lineEdit->text();
+        
+        // Only perform the search if there's text in the search field
+        if (!searchText.isEmpty()) {
+            QString selectedOption = option_comboBox->currentText();
+            if (!selectedOption.isEmpty() && !text.isEmpty()) {
+            	queryTagRowLimit(searchText, 1000);
+            }
+        }
+    }
+}
+
 

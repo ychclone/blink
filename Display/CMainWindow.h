@@ -175,6 +175,8 @@ private slots:
 	
 	void fileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
+	void on_optionLineEdit_textChanged(const QString& text);
+
 private:
 	void updateProjectListWidget();
 	void updateFileListWidget();
