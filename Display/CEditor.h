@@ -96,6 +96,9 @@ private:
     void endFileModification(const QString& filePath);
 
 	void reloadFile(const QString& filePath);
+	void onEndModificationTimeout();
+
+	void fileChanged(const QString& path);
 
 	QMap<QString, EditorTab> editorTabMap_; // key: source filepath
 	CMainWindow* parent_;
@@ -104,6 +107,8 @@ private:
 
 	QFileSystemWatcher fileWatcher_;
 	QSet<QString> filesBeingModified_;
+
+	QTimer* endModificationTimer_;
 	
 };
 

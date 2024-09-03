@@ -6,5 +6,3 @@ CAboutDlg::CAboutDlg(QWidget* parent)
     setupUi(this);
 }
 
-
-

@@ -51,6 +51,12 @@ CEditor::CEditor(CMainWindow *parent)
 	connect(tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &CEditor::tabContextMenuEvent);
 
 	currentNewFileNumber_ = 1;
+
+	endModificationTimer_ = new QTimer(this);
+	endModificationTimer_->setSingleShot(true);
+	connect(endModificationTimer_, &QTimer::timeout, this, &CEditor::onEndModificationTimeout);
+
+	connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, &CEditor::fileChanged);
 }
 
 void CEditor::openFile()
@@ -142,7 +148,7 @@ void CEditor::saveFile(const QString &fileName)
 
 	emit statusRight(fileName);
 
-	endFileModification(fileName);
+	endModificationTimer_->start(1500);
 }
 
 void CEditor::findText(const QString &text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
@@ -469,7 +475,7 @@ int CEditor::loadFile(const QString &filePath)
 
 						createActions(currentTextEdit);
 
-						//setupFileWatcher(filePath);
+						setupFileWatcher(filePath);
 
 						EditorTab newEditorTab = {.textEdit = currentTextEdit, .lexer = lexer};
 						editorTabMap_[filePath] = newEditorTab;
@@ -536,7 +542,7 @@ void CEditor::loadFileNewTab(const QString &filePath)
 
 		createActions(textEdit);
 
-		//setupFileWatcher(filePath);
+		setupFileWatcher(filePath);
 
 		EditorTab editorTab = {.textEdit = textEdit, .lexer = lexer};
 		editorTabMap_[filePath] = editorTab;
@@ -806,6 +812,8 @@ void CEditor::reloadFile(const QString &filePath)
 		{
 			editorTabMap_[filePath].textEdit->setText(content);
 			editorTabMap_[filePath].textEdit->setModified(false);
+
+			tabWidget->setCurrentWidget(editorTabMap_[filePath].textEdit);
 			emit statusLeft("File reloaded.");
 		}
 	}
@@ -823,16 +831,6 @@ void CEditor::setupFileWatcher(const QString &filePath)
 	if (!fileWatcher_.files().contains(filePath))
 	{
 		fileWatcher_.addPath(filePath);
-		connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, [this, filePath]()
-				{
-			if (!filesBeingModified_.contains(filePath)) {
-				QMessageBox::StandardButton reply = QMessageBox::question(this, "File Changed",
-					filePath + "has been modified by another program. Do you want to reload it and lose the changes in blink code search?",
-					QMessageBox::Yes | QMessageBox::No);
-				if (reply == QMessageBox::Yes) {
-					reloadFile(filePath);				
-				}
-			} });
 	}
 }
 
@@ -845,3 +843,22 @@ void CEditor::endFileModification(const QString &filePath)
 {
 	filesBeingModified_.remove(filePath);
 }
+
+void CEditor::onEndModificationTimeout()
+{
+    QString currentFileName = filePathInTab(tabWidget->currentIndex());
+    endFileModification(currentFileName);
+}
+
+void CEditor::fileChanged(const QString & filePath)
+{
+	if (!filesBeingModified_.contains(filePath)) {
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "File Changed",
+			filePath + " has been modified by another program. Do you want to reload it and lose the changes in blink code search?",
+			QMessageBox::Yes | QMessageBox::No);
+		if (reply == QMessageBox::Yes) {
+			reloadFile(filePath);				
+		}
+	}
+}
+
