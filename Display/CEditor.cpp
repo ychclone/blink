@@ -38,7 +38,7 @@
 
 #include "CMainWindow.h"
 
-CEditor::CEditor(CMainWindow* parent)
+CEditor::CEditor(CMainWindow *parent)
 {
 	setupUi(this);
 	parent_ = parent;
@@ -49,14 +49,15 @@ CEditor::CEditor(CMainWindow* parent)
 
 	tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
 	connect(tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &CEditor::tabContextMenuEvent);
-	
+
 	currentNewFileNumber_ = 1;
 }
 
 void CEditor::openFile()
 {
 	QString fileName = QFileDialog::getOpenFileName(this);
-	if (!fileName.isEmpty()) {
+	if (!fileName.isEmpty())
+	{
 		loadFileNewTab(fileName);
 	}
 }
@@ -69,18 +70,20 @@ void CEditor::save()
 void CEditor::saveAs()
 {
 	QString newFileName = QFileDialog::getSaveFileName(this, "Save File", filePathInTab(tabWidget->currentIndex()));
-	if (newFileName.isEmpty()) {
+	if (newFileName.isEmpty())
+	{
 		return;
 	}
-	
+
 	QString oldFileName = filePathInTab(tabWidget->currentIndex());
 
 	QFile file(newFileName);
-	if (!file.open(QFile::WriteOnly)) {
+	if (!file.open(QFile::WriteOnly))
+	{
 		QMessageBox::warning(this, tr("Save file"),
-				tr("Failed to write to file %1:\n%2.")
-				.arg(newFileName)
-				.arg(file.errorString()));
+							 tr("Failed to write to file %1:\n%2.")
+								 .arg(newFileName)
+								 .arg(file.errorString()));
 		return;
 	}
 
@@ -93,22 +96,22 @@ void CEditor::saveAs()
 
 	emit statusLeft("File saved.");
 
-	editorTabMap_[oldFileName].textEdit->setModified(false);	
-	
+	editorTabMap_[oldFileName].textEdit->setModified(false);
+
 	delete editorTabMap_[oldFileName].textEdit->lexer();
-	
-	QsciLexer* newLexer = getLexer(newFileName);
-	
+
+	QsciLexer *newLexer = getLexer(newFileName);
+
 	editorTabMap_[newFileName].textEdit = editorTabMap_[oldFileName].textEdit;
 	editorTabMap_[newFileName].textEdit->setLexer(newLexer);
 	editorTabMap_[newFileName].textEdit->setModified(false);
-	
+
 	editorTabMap_.remove(oldFileName);
-	
+
 	QFileInfo fileInfo(newFileName);
 	tabWidget->setTabText(tabWidget->currentIndex(), fileInfo.fileName());
-	
-	emit statusRight(newFileName);		
+
+	emit statusRight(newFileName);
 }
 
 void CEditor::saveFile(const QString &fileName)
@@ -116,11 +119,12 @@ void CEditor::saveFile(const QString &fileName)
 	beginFileModification(fileName);
 
 	QFile file(fileName);
-	if (!file.open(QFile::WriteOnly)) {
+	if (!file.open(QFile::WriteOnly))
+	{
 		QMessageBox::warning(this, tr("Save file"),
-				tr("Failed to write to file %1:\n%2.")
-				.arg(fileName)
-				.arg(file.errorString()));
+							 tr("Failed to write to file %1:\n%2.")
+								 .arg(fileName)
+								 .arg(file.errorString()));
 		endFileModification(fileName);
 		return;
 	}
@@ -135,26 +139,27 @@ void CEditor::saveFile(const QString &fileName)
 	emit statusLeft("File saved.");
 
 	editorTabMap_[fileName].textEdit->setModified(false);
-	
-	emit statusRight(fileName);	
 
-	endFileModification(fileName);	
+	emit statusRight(fileName);
+
+	endFileModification(fileName);
 }
 
-void CEditor::findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+void CEditor::findText(const QString &text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
 {
 	QString currentFileName = filePathInTab(tabWidget->currentIndex());
 
 	qDebug() << "findText = " << text;
 
 	editorTabMap_[currentFileName].textEdit->findFirst(text, bRegularExpression, bCaseSensitive, bMatchWholeWord, true, true);
-	
-	if (bRegularExpression) {
+
+	if (bRegularExpression)
+	{
 		editorTabMap_[currentFileName].textEdit->findNext();
 	}
 }
 
-void CEditor::replaceText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+void CEditor::replaceText(const QString &findText, const QString &replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
 {
 	QString currentFileName = filePathInTab(tabWidget->currentIndex());
 
@@ -162,111 +167,128 @@ void CEditor::replaceText(const QString& findText, const QString& replaceText, b
 	editorTabMap_[currentFileName].textEdit->replace(replaceText);
 }
 
-void CEditor::replaceAllText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
+void CEditor::replaceAllText(const QString &findText, const QString &replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
 {
 	QString currentFileName = filePathInTab(tabWidget->currentIndex());
-	
+
 	long totalMatchCount = 0;
 	long matchCount = 0;
-	
+
 	// bRegularExpression, bCaseSensitive, bMatchWholeWord
 	QRegularExpression regExp(findText);
 
 	Qt::CaseSensitivity caseSensitive;
-	
-	if (bCaseSensitive) {
+
+	if (bCaseSensitive)
+	{
 		caseSensitive = Qt::CaseSensitive;
 		// default expression default to case sensitive
-	} else {
+	}
+	else
+	{
 		caseSensitive = Qt::CaseInsensitive;
 		regExp.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 	}
-	
+
 	QString inputContent = editorTabMap_[currentFileName].textEdit->text();
 	QString inputLine, replacedLine, outputFileStream = "";
 	QTextStream inputStream(&inputContent);
-	
-	if (bRegularExpression || bMatchWholeWord) {
+
+	if (bRegularExpression || bMatchWholeWord)
+	{
 		// match whole word take effect only when regular expression is not enabled
-		if (bMatchWholeWord && !bRegularExpression) {
+		if (bMatchWholeWord && !bRegularExpression)
+		{
 			regExp.setPattern("\\b" + findText + "\\b");
 		}
-		while (inputStream.readLineInto(&inputLine)) {
+		while (inputStream.readLineInto(&inputLine))
+		{
 			matchCount = inputLine.count(regExp);
 
-			if (matchCount > 0) {
+			if (matchCount > 0)
+			{
 				replacedLine = inputLine.replace(regExp, replaceText);
 				outputFileStream += replacedLine + "\n";
 				totalMatchCount += matchCount;
-			} else {
+			}
+			else
+			{
 				outputFileStream += inputLine + "\n";
 			}
 		}
-	} else {
-		while (inputStream.readLineInto(&inputLine)) {
+	}
+	else
+	{
+		while (inputStream.readLineInto(&inputLine))
+		{
 			matchCount = inputLine.count(findText, caseSensitive);
-			if (matchCount > 0) {
+			if (matchCount > 0)
+			{
 				replacedLine = inputLine.replace(findText, replaceText, caseSensitive);
 				outputFileStream += replacedLine + "\n";
 				totalMatchCount += matchCount;
-			} else {
-                outputFileStream += inputLine + "\n";
 			}
-
+			else
+			{
+				outputFileStream += inputLine + "\n";
+			}
 		}
 	}
 
-	if (totalMatchCount > 0) {
+	if (totalMatchCount > 0)
+	{
 		editorTabMap_[currentFileName].textEdit->setText(outputFileStream);
-		
+
 		emit statusLeft("Replaced " + QString::number(totalMatchCount) + " strings.");
 	}
-	
 }
 
 // same tab
-void CEditor::loadFileWithLineNum(const QString& filePath, int lineNumber)
+void CEditor::loadFileWithLineNum(const QString &filePath, int lineNumber)
 {
 	qDebug() << "loadFileWithLineNum IN, filePath =  " << filePath;
 	int ret = loadFile(filePath);
-	
-	if (ret == -1) {
+
+	if (ret == -1)
+	{
 		return;
-	}		
-	
+	}
+
 	editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
 	editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
-	
-	if (lineNumber > 4) {
+
+	if (lineNumber > 4)
+	{
 		editorTabMap_[filePath].textEdit->setFirstVisibleLine(lineNumber - 4);
 	}
 	editorTabMap_[filePath].textEdit->setCursorPosition(lineNumber, 0);
 	editorTabMap_[filePath].textEdit->setFocus();
-	
+
 	emit statusRight(filePath);
 	qDebug() << "loadFileWithLineNum OUT, filePath =  " << filePath;
 }
 
-void CEditor::loadFileWithLineNumNewTab(const QString& filePath, int lineNumber)
+void CEditor::loadFileWithLineNumNewTab(const QString &filePath, int lineNumber)
 {
-	loadFileNewTab(filePath);	
-	
+	loadFileNewTab(filePath);
+
 	editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
 	editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
-	
-	if (lineNumber > 4) {
+
+	if (lineNumber > 4)
+	{
 		editorTabMap_[filePath].textEdit->setFirstVisibleLine(lineNumber - 4);
 	}
 	editorTabMap_[filePath].textEdit->setCursorPosition(lineNumber, 0);
 	editorTabMap_[filePath].textEdit->setFocus();
-	
+
 	emit statusRight(filePath);
 }
 
 void CEditor::newFile()
 {
-	QsciScintilla* textEdit = new QsciScintilla;
-	QsciLexer* lexer;
+	QsciScintilla *textEdit = new QsciScintilla;
+	QsciLexer *lexer;
 
 	lexer = new QsciLexerCPP;
 
@@ -275,8 +297,8 @@ void CEditor::newFile()
 	textEdit->setText("");
 	textEdit->setAutoIndent(true);
 	textEdit->setLexer(lexer);
-	
-	textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));	
+
+	textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
 	textEdit->setCaretLineVisible(true);
 
 	createActions(textEdit);
@@ -286,61 +308,89 @@ void CEditor::newFile()
 
 	tabWidget->addTab(textEdit, "new " + QString::number(currentNewFileNumber_));
 	currentNewFileNumber_++;
-	
+
 	textEdit->setModified(false);
 }
 
-QsciLexer* CEditor::getLexer(const QString& fileName)
+QsciLexer *CEditor::getLexer(const QString &fileName)
 {
 	QFileInfo fileInfo(fileName);
-	QsciLexer* lexer;
-	
+	QsciLexer *lexer;
+
 	QString suffix = fileInfo.suffix();
 
 	qDebug() << "suffix = " << suffix;
 
-	if (suffix == "cpp") {
+	if (suffix == "cpp")
+	{
 		lexer = new QsciLexerCPP;
-	} else if (suffix == "java" || suffix == "kt") {
+	}
+	else if (suffix == "java" || suffix == "kt")
+	{
 		lexer = new QsciLexerJava;
-	} else if (suffix == "py") {
+	}
+	else if (suffix == "py")
+	{
 		lexer = new QsciLexerPython;
-	} else if (suffix == "js" || suffix == "ts") {
+	}
+	else if (suffix == "js" || suffix == "ts")
+	{
 		lexer = new QsciLexerJavaScript;
-	} else if (suffix == "rb") {
+	}
+	else if (suffix == "rb")
+	{
 		lexer = new QsciLexerRuby;
-	} else if (suffix == "sql") {
+	}
+	else if (suffix == "sql")
+	{
 		lexer = new QsciLexerSQL;
-	} else if (suffix == "html") {
+	}
+	else if (suffix == "html")
+	{
 		lexer = new QsciLexerHTML;
-	} else if (suffix == "xml") {
+	}
+	else if (suffix == "xml")
+	{
 		lexer = new QsciLexerXML;
-	} else if (suffix == "css") {
+	}
+	else if (suffix == "css")
+	{
 		lexer = new QsciLexerCSS;
-	} else if (suffix == "md") {
+	}
+	else if (suffix == "md")
+	{
 		lexer = new QsciLexerMarkdown;
-	} else if (suffix == "yaml") {
+	}
+	else if (suffix == "yaml")
+	{
 		lexer = new QsciLexerYAML;
-	} else if (suffix == "cs") {
+	}
+	else if (suffix == "cs")
+	{
 		lexer = new QsciLexerCSharp;
-	} else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh") {
+	}
+	else if (suffix == "v" || suffix == "vh" || suffix == "sv" || suffix == "svh")
+	{
 		lexer = new QsciLexerVerilog;
-	} else {
+	}
+	else
+	{
 		lexer = new QsciLexerCPP;
 	}
 
-	if (fileName == "Makefile") {
+	if (fileName == "Makefile")
+	{
 		lexer = new QsciLexerMakefile;
 	}
-	
+
 	setEditorFont(lexer);
-	
+
 	return lexer;
 }
 
-void CEditor::setTextEdit(QsciScintilla* textEdit)
+void CEditor::setTextEdit(QsciScintilla *textEdit)
 {
-	textEdit->setAutoIndent(true);				
+	textEdit->setAutoIndent(true);
 	textEdit->setAutoCompletionThreshold(1);
 	textEdit->setAutoCompletionSource(QsciScintilla::AcsDocument);
 	textEdit->setFolding(QsciScintilla::PlainFoldStyle);
@@ -348,48 +398,60 @@ void CEditor::setTextEdit(QsciScintilla* textEdit)
 	textEdit->setTabWidth(4);
 }
 
-int CEditor::loadFile(const QString& filePath)
+int CEditor::loadFile(const QString &filePath)
 {
-    QMessageBox::StandardButton reply = QMessageBox::Cancel;
-	
-	if (editorTabMap_.contains(filePath)) { // load previous tab for existing file
+	QMessageBox::StandardButton reply = QMessageBox::Cancel;
+
+	if (editorTabMap_.contains(filePath))
+	{ // load previous tab for existing file
 		EditorTab editorTab = editorTabMap_[filePath];
 		tabWidget->setCurrentWidget(editorTab.textEdit);
-	} else {
+	}
+	else
+	{
 		QFileInfo fileInfo(filePath);
 		QString filename(fileInfo.fileName());
 
-		if (tabWidget->currentIndex() != -1) {
+		if (tabWidget->currentIndex() != -1)
+		{
 			QString oldPath = filePathInTab(tabWidget->currentIndex());
-			
-			if (editorTabMap_[oldPath].textEdit->isModified()) {
+
+			if (editorTabMap_[oldPath].textEdit->isModified())
+			{
 				reply = QMessageBox::question(this, "Save", "Save file \"" + oldPath + "\"?",
-										QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-				
-				if (reply == QMessageBox::Yes) {
+											  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+				if (reply == QMessageBox::Yes)
+				{
 					saveFile(oldPath);
-				} else if (reply == QMessageBox::Cancel) {
+				}
+				else if (reply == QMessageBox::Cancel)
+				{
 					qDebug() << "cancel QMessagebox";
 					return -1;
-				}		
+				}
 			}
-			
-			qDebug() << "continue QMessagebox";
-			
-			QsciScintilla* currentTextEdit = static_cast<QsciScintilla*> (tabWidget->currentWidget());
-			if (currentTextEdit != NULL) {
-				for (auto editorTab = editorTabMap_.cbegin(), end = editorTabMap_.cend(); editorTab != end; ++editorTab) {
-					if (editorTab.value().textEdit == currentTextEdit) {
-						QsciLexer* previousLexer = currentTextEdit->lexer();
 
-						QsciLexer* lexer = getLexer(filePath);
+			qDebug() << "continue QMessagebox";
+
+			QsciScintilla *currentTextEdit = static_cast<QsciScintilla *>(tabWidget->currentWidget());
+			if (currentTextEdit != NULL)
+			{
+				for (auto editorTab = editorTabMap_.cbegin(), end = editorTabMap_.cend(); editorTab != end; ++editorTab)
+				{
+					if (editorTab.value().textEdit == currentTextEdit)
+					{
+						QsciLexer *previousLexer = currentTextEdit->lexer();
+
+						QsciLexer *lexer = getLexer(filePath);
 
 						QFile file(filePath);
-						if (!file.open(QFile::ReadOnly)) {
+						if (!file.open(QFile::ReadOnly))
+						{
 							QMessageBox::warning(this, tr("Editor"),
-									tr("Cannot read file %1:\n%2.")
-									.arg(filePath)
-									.arg(file.errorString()));
+												 tr("Cannot read file %1:\n%2.")
+													 .arg(filePath)
+													 .arg(file.errorString()));
 							return -1;
 						}
 
@@ -400,9 +462,9 @@ int CEditor::loadFile(const QString& filePath)
 						QApplication::restoreOverrideCursor();
 
 						currentTextEdit->setLexer(lexer);
-						
+
 						setTextEdit(currentTextEdit);
-											
+
 						delete previousLexer;
 
 						createActions(currentTextEdit);
@@ -411,57 +473,65 @@ int CEditor::loadFile(const QString& filePath)
 
 						EditorTab newEditorTab = {.textEdit = currentTextEdit, .lexer = lexer};
 						editorTabMap_[filePath] = newEditorTab;
-						
+
 						editorTabMap_[filePath].textEdit->setModified(false);
-						
-						if (filePath != editorTab.key()) {
+
+						if (filePath != editorTab.key())
+						{
 							tabWidget->setTabText(tabWidget->currentIndex(), filename);
 							editorTabMap_.remove(editorTab.key());
 						}
-										
+
 						break;
 					}
 				}
-			} else {
+			}
+			else
+			{
 				loadFileNewTab(filePath);
 			}
-		} else {
+		}
+		else
+		{
 			loadFileNewTab(filePath);
 		}
-
 	}
 	return 0;
 }
 
-void CEditor::loadFileNewTab(const QString& filePath)
+void CEditor::loadFileNewTab(const QString &filePath)
 {
-	if (editorTabMap_.contains(filePath)) { // load previous tab for existing file
+	if (editorTabMap_.contains(filePath))
+	{ // load previous tab for existing file
 		EditorTab editorTab = editorTabMap_[filePath];
 		tabWidget->setCurrentWidget(editorTab.textEdit);
-	} else {
+	}
+	else
+	{
 		QFileInfo fileInfo(filePath);
 		QString filename(fileInfo.fileName());
 
-		QsciScintilla* textEdit = new QsciScintilla;	
-		QsciLexer* lexer = getLexer(filePath);
+		QsciScintilla *textEdit = new QsciScintilla;
+		QsciLexer *lexer = getLexer(filePath);
 
 		QFile file(filePath);
-		if (!file.open(QFile::ReadOnly)) {
+		if (!file.open(QFile::ReadOnly))
+		{
 			QMessageBox::warning(this, tr("Editor"),
-					tr("Cannot read file %1:\n%2.")
-					.arg(filePath)
-					.arg(file.errorString()));
+								 tr("Cannot read file %1:\n%2.")
+									 .arg(filePath)
+									 .arg(file.errorString()));
 			return;
 		}
 
 		QTextStream in(&file);
-		//QApplication::setOverrideCursor(Qt::WaitCursor);
+		// QApplication::setOverrideCursor(Qt::WaitCursor);
 
 		textEdit->setText(in.readAll());
-		//QApplication::restoreOverrideCursor();
+		// QApplication::restoreOverrideCursor();
 
 		textEdit->setLexer(lexer);
-		
+
 		setTextEdit(textEdit);
 
 		createActions(textEdit);
@@ -480,14 +550,14 @@ void CEditor::loadFileNewTab(const QString& filePath)
 	}
 }
 
-void CEditor::createActions(QsciScintilla* textEdit)
+void CEditor::createActions(QsciScintilla *textEdit)
 {
-	//connect(actionCut, &QAction::triggered, textEdit, &QsciScintilla::cut);
-	//connect(actionCopy, &QAction::triggered, textEdit, &QsciScintilla::copy);
-	//connect(actionPaste, &QAction::triggered, textEdit, &QsciScintilla::paste);
+	// connect(actionCut, &QAction::triggered, textEdit, &QsciScintilla::cut);
+	// connect(actionCopy, &QAction::triggered, textEdit, &QsciScintilla::copy);
+	// connect(actionPaste, &QAction::triggered, textEdit, &QsciScintilla::paste);
 
-	//connect(actionUndo, &QAction::triggered, textEdit, &QsciScintilla::undo);
-	//connect(actionRedo, &QAction::triggered, textEdit, &QsciScintilla::redo);
+	// connect(actionUndo, &QAction::triggered, textEdit, &QsciScintilla::undo);
+	// connect(actionRedo, &QAction::triggered, textEdit, &QsciScintilla::redo);
 
 	connect(textEdit, &QsciScintilla::textChanged, this, &CEditor::textEditModified);
 	connect(textEdit, &QsciScintilla::cursorPositionChanged, parent_, &CMainWindow::showCurrentCursorPosition);
@@ -498,7 +568,7 @@ void CEditor::textEditModified()
 	QString currentFileName = filePathInTab(tabWidget->currentIndex());
 
 	editorTabMap_[currentFileName].textEdit->setModified(true);
-	
+
 	emit statusRight("* " + currentFileName);
 }
 
@@ -509,16 +579,18 @@ void CEditor::updateAllEditorFont()
 	QString editorFontSettingStr = CConfigManager::getInstance()->getAppSettingValue("EditorFont").toString();
 	editorFont.fromString(editorFontSettingStr);
 
-	if (editorFontSettingStr == "") {
-        editorFont = QApplication::font();
+	if (editorFontSettingStr == "")
+	{
+		editorFont = QApplication::font();
 	}
 
-	for (auto editorTab: editorTabMap_) {
+	for (auto editorTab : editorTabMap_)
+	{
 		editorTab.textEdit->lexer()->setFont(editorFont);
 	}
 }
 
-void CEditor::setEditorFont(QsciLexer* lexer)
+void CEditor::setEditorFont(QsciLexer *lexer)
 {
 	QFont editorFont;
 
@@ -529,9 +601,12 @@ void CEditor::setEditorFont(QsciLexer* lexer)
 
 	QFont consolasFont("Consolas", QApplication::font().pointSize());
 
-	if (editorFontSettingStr == "") {
+	if (editorFontSettingStr == "")
+	{
 		lexer->setFont(consolasFont);
-	} else {
+	}
+	else
+	{
 		lexer->setFont(editorFont);
 	}
 }
@@ -547,31 +622,40 @@ void CEditor::closeEvent(QCloseEvent *event)
 	event->accept();
 }
 
-void CEditor::tabChanged(int tabIndex) {
-	if (tabIndex >= 0) {
+void CEditor::tabChanged(int tabIndex)
+{
+	if (tabIndex >= 0)
+	{
 		QString currentFileName = filePathInTab(tabIndex);
-		
-		if (currentFileName != "") {
-			if (editorTabMap_[currentFileName].textEdit->isModified()) {
+
+		if (currentFileName != "")
+		{
+			if (editorTabMap_[currentFileName].textEdit->isModified())
+			{
 				emit statusRight("* " + currentFileName);
-			} else {
+			}
+			else
+			{
 				emit statusRight(currentFileName);
 			}
 		}
 	}
 }
 
-void CEditor::closeCurrentTab() {
+void CEditor::closeCurrentTab()
+{
 	this->closeTab(tabWidget->currentIndex());
 }
 
 QString CEditor::filePathInTab(int tabIndex)
 {
 	QString filePathReturn = "";
-	QsciScintilla* textEdit = static_cast<QsciScintilla*> (tabWidget->widget(tabIndex));
+	QsciScintilla *textEdit = static_cast<QsciScintilla *>(tabWidget->widget(tabIndex));
 
-	for (const QString& filePath: editorTabMap_.keys()) {
-		if (editorTabMap_[filePath].textEdit == textEdit) {
+	for (const QString &filePath : editorTabMap_.keys())
+	{
+		if (editorTabMap_[filePath].textEdit == textEdit)
+		{
 			filePathReturn = filePath;
 			break;
 		}
@@ -587,19 +671,23 @@ void CEditor::closeTab(int tabIndex)
 	QString filePathRemoveFromMap = filePathInTab(tabIndex);
 
 	qDebug() << "filePathRemoveFromMap = " << filePathRemoveFromMap;
-	
+
 	QMessageBox::StandardButton reply;
 
-	if (editorTabMap_[filePathRemoveFromMap].textEdit->isModified()) {
+	if (editorTabMap_[filePathRemoveFromMap].textEdit->isModified())
+	{
 		reply = QMessageBox::question(this, "Save", "Save file \"" + filePathRemoveFromMap + "\"?",
-                                QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel);
-		
-		if (reply == QMessageBox::Yes) {
+									  QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Yes)
+		{
 			saveFile(filePathRemoveFromMap);
 			fileWatcher_.removePath(filePathRemoveFromMap);
-		} else if (reply == QMessageBox::Cancel) {
+		}
+		else if (reply == QMessageBox::Cancel)
+		{
 			return;
-		}		
+		}
 	}
 
 	tabWidget->removeTab(tabIndex);
@@ -607,119 +695,153 @@ void CEditor::closeTab(int tabIndex)
 	delete editorTabMap_[filePathRemoveFromMap].textEdit;
 	delete editorTabMap_[filePathRemoveFromMap].lexer;
 	editorTabMap_.remove(filePathRemoveFromMap);
-	
-	if (tabWidget->count() == 0) {
+
+	if (tabWidget->count() == 0)
+	{
 		newFile();
 	}
 }
 
-void CEditor::goToLine(int line) {
+void CEditor::goToLine(int line)
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->setCursorPosition(line - 1, 0);
 }
 
-void CEditor::cut() {
+void CEditor::cut()
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->cut();
 }
 
-void CEditor::copy() {
+void CEditor::copy()
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->copy();
 }
 
-void CEditor::paste() {
+void CEditor::paste()
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->paste();
 }
 
-void CEditor::undo() {
+void CEditor::undo()
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->undo();
 }
 
-void CEditor::redo() {
+void CEditor::redo()
+{
 	QString filePath = filePathInTab(tabWidget->currentIndex());
-	
+
 	editorTabMap_[filePath].textEdit->redo();
 }
 
 void CEditor::closeAllTabsButCurrent()
 {
-    int currentIndex = tabWidget->currentIndex();
-    for (int i = tabWidget->count() - 1; i >= 0; --i) {
-        if (i != currentIndex) {
-            closeTab(i);
-        }
-    }
+	int currentIndex = tabWidget->currentIndex();
+	for (int i = tabWidget->count() - 1; i >= 0; --i)
+	{
+		if (i != currentIndex)
+		{
+			closeTab(i);
+		}
+	}
 }
 
 void CEditor::closeAllTabsToLeft()
 {
-    int currentIndex = tabWidget->currentIndex();
-    for (int i = currentIndex - 1; i >= 0; --i) {
-        closeTab(i);
-    }
+	int currentIndex = tabWidget->currentIndex();
+	for (int i = currentIndex - 1; i >= 0; --i)
+	{
+		closeTab(i);
+	}
 }
 
 void CEditor::closeAllTabsToRight()
 {
-    int currentIndex = tabWidget->currentIndex();
-    for (int i = tabWidget->count() - 1; i > currentIndex; --i) {
-        closeTab(i);
-    }
+	int currentIndex = tabWidget->currentIndex();
+	for (int i = tabWidget->count() - 1; i > currentIndex; --i)
+	{
+		closeTab(i);
+	}
 }
 
 void CEditor::tabContextMenuEvent(const QPoint &pos)
 {
-    int tabIndex = tabWidget->tabBar()->tabAt(pos);
-    if (tabIndex != -1) {
-        QMenu menu(this);
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+	if (tabIndex != -1)
+	{
+		QMenu menu(this);
 		QAction *closeCurrentAction = menu.addAction("Close");
-        QAction *closeOthersAction = menu.addAction("Close All But This");
+		QAction *closeOthersAction = menu.addAction("Close All But This");
 		QAction *closeLeftAction = menu.addAction("Close All to the Left");
-        QAction *closeRightAction = menu.addAction("Close All to the Right");
+		QAction *closeRightAction = menu.addAction("Close All to the Right");
 
-        connect(closeCurrentAction, &QAction::triggered, this, &CEditor::closeCurrentTab);
+		connect(closeCurrentAction, &QAction::triggered, this, &CEditor::closeCurrentTab);
 		connect(closeOthersAction, &QAction::triggered, this, &CEditor::closeAllTabsButCurrent);
 		connect(closeLeftAction, &QAction::triggered, this, &CEditor::closeAllTabsToLeft);
-        connect(closeRightAction, &QAction::triggered, this, &CEditor::closeAllTabsToRight);
+		connect(closeRightAction, &QAction::triggered, this, &CEditor::closeAllTabsToRight);
 
-        menu.exec(tabWidget->tabBar()->mapToGlobal(pos));
-    }
+		menu.exec(tabWidget->tabBar()->mapToGlobal(pos));
+	}
 }
 
-void CEditor::setupFileWatcher(const QString& filePath)
+void CEditor::reloadFile(const QString &filePath)
 {
-    if (!fileWatcher_.files().contains(filePath)) {
-        fileWatcher_.addPath(filePath);
-        connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, [this, filePath]() {
+	QFile file(filePath);
+	if (file.open(QFile::ReadOnly))
+	{
+		QTextStream in(&file);
+		QString content = in.readAll();
+		file.close();
+		if (editorTabMap_.contains(filePath))
+		{
+			editorTabMap_[filePath].textEdit->setText(content);
+			editorTabMap_[filePath].textEdit->setModified(false);
+			emit statusLeft("File reloaded.");
+		}
+	}
+	else
+	{
+		QMessageBox::warning(this, tr("Reload File"),
+							 tr("Cannot read file %1:\n%2.")
+								 .arg(filePath)
+								 .arg(file.errorString()));
+	}
+}
+
+void CEditor::setupFileWatcher(const QString &filePath)
+{
+	if (!fileWatcher_.files().contains(filePath))
+	{
+		fileWatcher_.addPath(filePath);
+		connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, [this, filePath]()
+				{
 			if (!filesBeingModified_.contains(filePath)) {
 				QMessageBox::StandardButton reply = QMessageBox::question(this, "File Changed",
 					filePath + "has been modified by another program. Do you want to reload it and lose the changes in blink code search?",
 					QMessageBox::Yes | QMessageBox::No);
 				if (reply == QMessageBox::Yes) {
-					loadFile(filePath);
-				
+					reloadFile(filePath);				
 				}
-			}
-        });
-    }
+			} });
+	}
 }
 
-void CEditor::beginFileModification(const QString& filePath)
+void CEditor::beginFileModification(const QString &filePath)
 {
-    filesBeingModified_.insert(filePath);
+	filesBeingModified_.insert(filePath);
 }
 
-void CEditor::endFileModification(const QString& filePath)
+void CEditor::endFileModification(const QString &filePath)
 {
-    filesBeingModified_.remove(filePath);
+	filesBeingModified_.remove(filePath);
 }
-
-

@@ -95,6 +95,8 @@ private:
 	void beginFileModification(const QString& filePath);
     void endFileModification(const QString& filePath);
 
+	void reloadFile(const QString& filePath);
+
 	QMap<QString, EditorTab> editorTabMap_; // key: source filepath
 	CMainWindow* parent_;
 
