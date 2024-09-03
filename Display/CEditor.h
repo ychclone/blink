@@ -5,6 +5,9 @@
 #include <QMap>
 #include <QGridLayout>
 
+#include <QFileSystemWatcher>
+#include <QMessageBox>
+
 #include "ui_editor.h"
 
 #include <Qsci/qsciscintilla.h>
@@ -62,6 +65,9 @@ signals:
 	void statusRight(const QString& status);
 	
 private slots:
+	void closeAllTabsButCurrent();
+	void closeAllTabsToLeft();
+    void closeAllTabsToRight();
 
 private:
 	void closeEvent(QCloseEvent *event);
@@ -82,10 +88,20 @@ private:
 	void closeCurrentTab();
 	void closeTab(int tabIndex);
 
+	void tabContextMenuEvent(const QPoint &pos);
+
+	void setupFileWatcher(const QString& filePath);
+
+	void beginFileModification(const QString& filePath);
+    void endFileModification(const QString& filePath);
+
 	QMap<QString, EditorTab> editorTabMap_; // key: source filepath
 	CMainWindow* parent_;
 
 	int currentNewFileNumber_;
+
+	QFileSystemWatcher fileWatcher_;
+	QSet<QString> filesBeingModified_;
 	
 };
 

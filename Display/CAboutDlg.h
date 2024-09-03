@@ -13,3 +13,5 @@ public:
     virtual ~CAboutDlg() {}
 };
 #endif // CABOUTDLG_H
+
+//

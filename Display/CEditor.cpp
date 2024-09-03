@@ -6,6 +6,9 @@
 #include <QPlainTextEdit>
 #include <QStandardPaths>
 
+#include <QMenu>
+#include <QAction>
+
 #include <Qsci/qscilexercpp.h>
 #include <Qsci/qscilexercsharp.h>
 #include <Qsci/qscilexerpython.h>
@@ -43,6 +46,9 @@ CEditor::CEditor(CMainWindow* parent)
 	// actions for tab widget
 	connect(tabWidget, &QTabWidget::currentChanged, this, &CEditor::tabChanged);
 	connect(tabWidget, &QTabWidget::tabCloseRequested, this, &CEditor::closeTab);
+
+	tabWidget->tabBar()->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(tabWidget->tabBar(), &QWidget::customContextMenuRequested, this, &CEditor::tabContextMenuEvent);
 	
 	currentNewFileNumber_ = 1;
 }
@@ -107,12 +113,15 @@ void CEditor::saveAs()
 
 void CEditor::saveFile(const QString &fileName)
 {
+	beginFileModification(fileName);
+
 	QFile file(fileName);
 	if (!file.open(QFile::WriteOnly)) {
 		QMessageBox::warning(this, tr("Save file"),
 				tr("Failed to write to file %1:\n%2.")
 				.arg(fileName)
 				.arg(file.errorString()));
+		endFileModification(fileName);
 		return;
 	}
 
@@ -127,7 +136,9 @@ void CEditor::saveFile(const QString &fileName)
 
 	editorTabMap_[fileName].textEdit->setModified(false);
 	
-	emit statusRight(fileName);			
+	emit statusRight(fileName);	
+
+	endFileModification(fileName);	
 }
 
 void CEditor::findText(const QString& text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
@@ -396,6 +407,8 @@ int CEditor::loadFile(const QString& filePath)
 
 						createActions(currentTextEdit);
 
+						//setupFileWatcher(filePath);
+
 						EditorTab newEditorTab = {.textEdit = currentTextEdit, .lexer = lexer};
 						editorTabMap_[filePath] = newEditorTab;
 						
@@ -452,6 +465,8 @@ void CEditor::loadFileNewTab(const QString& filePath)
 		setTextEdit(textEdit);
 
 		createActions(textEdit);
+
+		//setupFileWatcher(filePath);
 
 		EditorTab editorTab = {.textEdit = textEdit, .lexer = lexer};
 		editorTabMap_[filePath] = editorTab;
@@ -581,6 +596,7 @@ void CEditor::closeTab(int tabIndex)
 		
 		if (reply == QMessageBox::Yes) {
 			saveFile(filePathRemoveFromMap);
+			fileWatcher_.removePath(filePathRemoveFromMap);
 		} else if (reply == QMessageBox::Cancel) {
 			return;
 		}		
@@ -631,6 +647,79 @@ void CEditor::redo() {
 	QString filePath = filePathInTab(tabWidget->currentIndex());
 	
 	editorTabMap_[filePath].textEdit->redo();
+}
+
+void CEditor::closeAllTabsButCurrent()
+{
+    int currentIndex = tabWidget->currentIndex();
+    for (int i = tabWidget->count() - 1; i >= 0; --i) {
+        if (i != currentIndex) {
+            closeTab(i);
+        }
+    }
+}
+
+void CEditor::closeAllTabsToLeft()
+{
+    int currentIndex = tabWidget->currentIndex();
+    for (int i = currentIndex - 1; i >= 0; --i) {
+        closeTab(i);
+    }
+}
+
+void CEditor::closeAllTabsToRight()
+{
+    int currentIndex = tabWidget->currentIndex();
+    for (int i = tabWidget->count() - 1; i > currentIndex; --i) {
+        closeTab(i);
+    }
+}
+
+void CEditor::tabContextMenuEvent(const QPoint &pos)
+{
+    int tabIndex = tabWidget->tabBar()->tabAt(pos);
+    if (tabIndex != -1) {
+        QMenu menu(this);
+		QAction *closeCurrentAction = menu.addAction("Close");
+        QAction *closeOthersAction = menu.addAction("Close All But This");
+		QAction *closeLeftAction = menu.addAction("Close All to the Left");
+        QAction *closeRightAction = menu.addAction("Close All to the Right");
+
+        connect(closeCurrentAction, &QAction::triggered, this, &CEditor::closeCurrentTab);
+		connect(closeOthersAction, &QAction::triggered, this, &CEditor::closeAllTabsButCurrent);
+		connect(closeLeftAction, &QAction::triggered, this, &CEditor::closeAllTabsToLeft);
+        connect(closeRightAction, &QAction::triggered, this, &CEditor::closeAllTabsToRight);
+
+        menu.exec(tabWidget->tabBar()->mapToGlobal(pos));
+    }
+}
+
+void CEditor::setupFileWatcher(const QString& filePath)
+{
+    if (!fileWatcher_.files().contains(filePath)) {
+        fileWatcher_.addPath(filePath);
+        connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, [this, filePath]() {
+			if (!filesBeingModified_.contains(filePath)) {
+				QMessageBox::StandardButton reply = QMessageBox::question(this, "File Changed",
+					filePath + "has been modified by another program. Do you want to reload it and lose the changes in blink code search?",
+					QMessageBox::Yes | QMessageBox::No);
+				if (reply == QMessageBox::Yes) {
+					loadFile(filePath);
+				
+				}
+			}
+        });
+    }
+}
+
+void CEditor::beginFileModification(const QString& filePath)
+{
+    filesBeingModified_.insert(filePath);
+}
+
+void CEditor::endFileModification(const QString& filePath)
+{
+    filesBeingModified_.remove(filePath);
 }
 
 
