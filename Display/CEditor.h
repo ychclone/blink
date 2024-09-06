@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <QMap>
 #include <QGridLayout>
-
+#include <QSet>
 #include <QFileSystemWatcher>
 #include <QMessageBox>
 
@@ -53,11 +53,14 @@ public:
 	void replaceAllText(const QString& findText, const QString& replaceText, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression);
 	
 	void goToLine(int line);
+	void textEditGoToLine(QsciScintilla *textEdit, int line);
 	void cut();
 	void copy();
 	void paste();
 	void undo();
 	void redo();
+
+	void resetNavHistory();
 
 signals:
     void statusLeft(const QString& status);
@@ -65,9 +68,12 @@ signals:
 	void statusRight(const QString& status);
 	
 private slots:
-	void closeAllTabsButCurrent();
-	void closeAllTabsToLeft();
-    void closeAllTabsToRight();
+	void closeAllTabsButCurrent(const QPoint &pos);
+	void closeAllTabsToLeft(const QPoint &pos);
+    void closeAllTabsToRight(const QPoint &pos);
+	void copyFilePath(const QPoint &pos);
+	void copyFileName(const QPoint &pos);
+	void copyFile(const QPoint &pos);
 
 private:
 	void closeEvent(QCloseEvent *event);
@@ -77,6 +83,7 @@ private:
 	void createActions(QsciScintilla* textEdit);
 
 	void textEditModified();
+	void handleCursorPositionChanged(int line, int index);
 
 	void setEditorFont(QsciLexer* lexer);
 
@@ -85,7 +92,7 @@ private:
 	QString filePathInTab(int tabIndex);	
 
 	void tabChanged(int tabIndex);
-	void closeCurrentTab();
+	void closeCurrentTab(const QPoint &pos);
 	void closeTab(int tabIndex);
 
 	void tabContextMenuEvent(const QPoint &pos);
@@ -97,6 +104,7 @@ private:
 
 	void reloadFile(const QString& filePath);
 	void onEndModificationTimeout();
+	void onEndNavigationTimeout();
 
 	void fileChanged(const QString& path);
 
@@ -109,7 +117,22 @@ private:
 	QSet<QString> filesBeingModified_;
 
 	QTimer* endModificationTimer_;
+	QTimer* endNavigationTimer_;
 	
+	QVector<QPair<QString, int>> navHistory_;
+	int currentHistoryIndex_;
+
+	bool isNavigatingHistory_;
+	QSet<QString> filesAlreadyPrompted_;
+	
+	void addToNavHistory(const QString& filePath, int line);
+
+public slots:
+	void goForward();
+	void goBackward();
+
+signals:
+	void updateGoForwardBackwardActions(bool canGoForward, bool canGoBackward);
 };
 
 #endif // CEDITOR_H

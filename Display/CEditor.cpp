@@ -5,7 +5,7 @@
 #include <QApplication>
 #include <QPlainTextEdit>
 #include <QStandardPaths>
-
+#include <QClipboard>
 #include <QMenu>
 #include <QAction>
 
@@ -56,7 +56,13 @@ CEditor::CEditor(CMainWindow *parent)
 	endModificationTimer_->setSingleShot(true);
 	connect(endModificationTimer_, &QTimer::timeout, this, &CEditor::onEndModificationTimeout);
 
+	endNavigationTimer_ = new QTimer(this);
+	endNavigationTimer_->setSingleShot(true);
+	connect(endNavigationTimer_, &QTimer::timeout, this, &CEditor::onEndNavigationTimeout);
+
 	connect(&fileWatcher_, &QFileSystemWatcher::fileChanged, this, &CEditor::fileChanged);
+
+	isNavigatingHistory_  = false;
 }
 
 void CEditor::openFile()
@@ -148,7 +154,7 @@ void CEditor::saveFile(const QString &fileName)
 
 	emit statusRight(fileName);
 
-	endModificationTimer_->start(1500);
+	endModificationTimer_->start(2000);
 }
 
 void CEditor::findText(const QString &text, bool bMatchWholeWord, bool bCaseSensitive, bool bRegularExpression)
@@ -260,14 +266,12 @@ void CEditor::loadFileWithLineNum(const QString &filePath, int lineNumber)
 		return;
 	}
 
-	editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
-	editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
-
 	if (lineNumber > 4)
 	{
 		editorTabMap_[filePath].textEdit->setFirstVisibleLine(lineNumber - 4);
 	}
-	editorTabMap_[filePath].textEdit->setCursorPosition(lineNumber, 0);
+
+	textEditGoToLine(editorTabMap_[filePath].textEdit, lineNumber);
 	editorTabMap_[filePath].textEdit->setFocus();
 
 	emit statusRight(filePath);
@@ -278,14 +282,11 @@ void CEditor::loadFileWithLineNumNewTab(const QString &filePath, int lineNumber)
 {
 	loadFileNewTab(filePath);
 
-	editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
-	editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
-
 	if (lineNumber > 4)
 	{
 		editorTabMap_[filePath].textEdit->setFirstVisibleLine(lineNumber - 4);
 	}
-	editorTabMap_[filePath].textEdit->setCursorPosition(lineNumber, 0);
+	textEditGoToLine(editorTabMap_[filePath].textEdit, lineNumber);
 	editorTabMap_[filePath].textEdit->setFocus();
 
 	emit statusRight(filePath);
@@ -306,6 +307,8 @@ void CEditor::newFile()
 
 	textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
 	textEdit->setCaretLineVisible(true);
+
+	textEditGoToLine(textEdit, 0);
 
 	createActions(textEdit);
 
@@ -479,6 +482,11 @@ int CEditor::loadFile(const QString &filePath)
 
 						EditorTab newEditorTab = {.textEdit = currentTextEdit, .lexer = lexer};
 						editorTabMap_[filePath] = newEditorTab;
+						
+						editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
+						editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
+
+						textEditGoToLine(editorTabMap_[filePath].textEdit, 0);
 
 						editorTabMap_[filePath].textEdit->setModified(false);
 
@@ -487,6 +495,8 @@ int CEditor::loadFile(const QString &filePath)
 							tabWidget->setTabText(tabWidget->currentIndex(), filename);
 							editorTabMap_.remove(editorTab.key());
 						}
+
+						addToNavHistory(filePath, 0);
 
 						break;
 					}
@@ -553,6 +563,11 @@ void CEditor::loadFileNewTab(const QString &filePath)
 		emit statusLeft("File loaded");
 
 		editorTabMap_[filePath].textEdit->setModified(false);
+
+		editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
+		editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
+
+		textEditGoToLine(editorTabMap_[filePath].textEdit, 0);
 	}
 }
 
@@ -567,15 +582,32 @@ void CEditor::createActions(QsciScintilla *textEdit)
 
 	connect(textEdit, &QsciScintilla::textChanged, this, &CEditor::textEditModified);
 	connect(textEdit, &QsciScintilla::cursorPositionChanged, parent_, &CMainWindow::showCurrentCursorPosition);
+
+	connect(textEdit, &QsciScintilla::cursorPositionChanged, this, &CEditor::handleCursorPositionChanged);
 }
 
 void CEditor::textEditModified()
 {
 	QString currentFileName = filePathInTab(tabWidget->currentIndex());
-
 	editorTabMap_[currentFileName].textEdit->setModified(true);
-
 	emit statusRight("* " + currentFileName);
+
+	// Add current edit location to history
+	int line, index;
+	editorTabMap_[currentFileName].textEdit->getCursorPosition(&line, &index);
+}
+
+void CEditor::handleCursorPositionChanged(int line, int index)
+{
+	if (!isNavigatingHistory_) {
+		QString currentFileName = filePathInTab(tabWidget->currentIndex());
+		qDebug() << "handleCursorPositionChanged() IN, " << "currentFileName = " << currentFileName << ", line = " << line << ", index = " << index << Qt::endl;	
+		addToNavHistory(currentFileName, line);
+		emit updateGoForwardBackwardActions(true, navHistory_.size() > 1);
+		qDebug() << "handleCursorPositionChanged() OUT, " << "currentFileName = " << currentFileName << ", line = " << line << ", index = " << index << Qt::endl;	
+	} else {
+		qDebug() << "isNavigatingHistory_ = true in handleCursorPositionChanged()" << Qt::endl;
+	}
 }
 
 void CEditor::updateAllEditorFont()
@@ -648,9 +680,15 @@ void CEditor::tabChanged(int tabIndex)
 	}
 }
 
-void CEditor::closeCurrentTab()
+void CEditor::closeCurrentTab(const QPoint &pos)
 {
-	this->closeTab(tabWidget->currentIndex());
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	this->closeTab(tabIndex);
 }
 
 QString CEditor::filePathInTab(int tabIndex)
@@ -688,7 +726,6 @@ void CEditor::closeTab(int tabIndex)
 		if (reply == QMessageBox::Yes)
 		{
 			saveFile(filePathRemoveFromMap);
-			fileWatcher_.removePath(filePathRemoveFromMap);
 		}
 		else if (reply == QMessageBox::Cancel)
 		{
@@ -702,6 +739,8 @@ void CEditor::closeTab(int tabIndex)
 	delete editorTabMap_[filePathRemoveFromMap].lexer;
 	editorTabMap_.remove(filePathRemoveFromMap);
 
+	fileWatcher_.removePath(filePathRemoveFromMap);
+
 	if (tabWidget->count() == 0)
 	{
 		newFile();
@@ -711,8 +750,17 @@ void CEditor::closeTab(int tabIndex)
 void CEditor::goToLine(int line)
 {
 	QString filePath = filePathInTab(tabWidget->currentIndex());
+	textEditGoToLine(editorTabMap_[filePath].textEdit, line);
+}
 
-	editorTabMap_[filePath].textEdit->setCursorPosition(line - 1, 0);
+void CEditor::textEditGoToLine(QsciScintilla *textEdit, int line)
+{
+	qDebug() << "textEditGoToLine() IN, " << "line = " << line << Qt::endl;
+	isNavigatingHistory_ = true;
+	textEdit->setCursorPosition(line, 0);
+	textEdit->setFocus();
+	endNavigationTimer_->start(2000);
+	qDebug() << "textEditGoToLine() OUT " << Qt::endl;
 }
 
 void CEditor::cut()
@@ -750,35 +798,104 @@ void CEditor::redo()
 	editorTabMap_[filePath].textEdit->redo();
 }
 
-void CEditor::closeAllTabsButCurrent()
+void CEditor::closeAllTabsButCurrent(const QPoint &pos)
 {
-	int currentIndex = tabWidget->currentIndex();
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
 	for (int i = tabWidget->count() - 1; i >= 0; --i)
 	{
-		if (i != currentIndex)
+		if (i != tabIndex)
 		{
 			closeTab(i);
 		}
 	}
 }
 
-void CEditor::closeAllTabsToLeft()
+void CEditor::closeAllTabsToLeft(const QPoint &pos)
 {
-	int currentIndex = tabWidget->currentIndex();
-	for (int i = currentIndex - 1; i >= 0; --i)
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	for (int i = tabIndex - 1; i >= 0; --i)
 	{
 		closeTab(i);
 	}
 }
 
-void CEditor::closeAllTabsToRight()
+void CEditor::closeAllTabsToRight(const QPoint &pos)
 {
-	int currentIndex = tabWidget->currentIndex();
-	for (int i = tabWidget->count() - 1; i > currentIndex; --i)
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	for (int i = tabWidget->count() - 1; i > tabIndex; --i)
 	{
 		closeTab(i);
 	}
 }
+
+void CEditor::copyFilePath(const QPoint &pos)
+{
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	QString filePath = filePathInTab(tabIndex);
+	qDebug() << "filePath = " << filePath << Qt::endl;
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(filePath);
+}
+
+void CEditor::copyFileName(const QPoint &pos)
+{
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	QString filePath = filePathInTab(tabIndex);
+	QFileInfo fileInfo(filePath);
+	QString fileName = fileInfo.fileName();
+	qDebug() << "fileName = " << fileName << Qt::endl;
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setText(fileName);
+}
+
+void CEditor::copyFile(const QPoint &pos)
+{
+	int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	QString filePath = filePathInTab(tabIndex);
+	QFile file(filePath);
+	
+	QMimeData *mimeData = new QMimeData();
+	QList<QUrl> urls;
+	urls << QUrl::fromLocalFile(filePath);
+	mimeData->setUrls(urls);
+
+	QClipboard *clipboard = QApplication::clipboard();
+	clipboard->setMimeData(mimeData);
+
+	qDebug() << "File MIME data copied to clipboard from: " << filePath << Qt::endl;
+}
+
+
 
 void CEditor::tabContextMenuEvent(const QPoint &pos)
 {
@@ -790,18 +907,114 @@ void CEditor::tabContextMenuEvent(const QPoint &pos)
 		QAction *closeOthersAction = menu.addAction("Close All But This");
 		QAction *closeLeftAction = menu.addAction("Close All to the Left");
 		QAction *closeRightAction = menu.addAction("Close All to the Right");
+		QAction *copyPathAction = menu.addAction("Copy File Path");
+		QAction *copyFileNameAction = menu.addAction("Copy File Name");
+		QAction *copyFileAction = menu.addAction("Copy File");
 
-		connect(closeCurrentAction, &QAction::triggered, this, &CEditor::closeCurrentTab);
-		connect(closeOthersAction, &QAction::triggered, this, &CEditor::closeAllTabsButCurrent);
-		connect(closeLeftAction, &QAction::triggered, this, &CEditor::closeAllTabsToLeft);
-		connect(closeRightAction, &QAction::triggered, this, &CEditor::closeAllTabsToRight);
+		connect(closeCurrentAction, &QAction::triggered, this, [this, pos]() { this->closeCurrentTab(pos); });
+		connect(closeOthersAction, &QAction::triggered, this, [this, pos]() { this->closeAllTabsButCurrent(pos); });
+		connect(closeLeftAction, &QAction::triggered, this, [this, pos]() { this->closeAllTabsToLeft(pos); });
+		connect(closeRightAction, &QAction::triggered, this, [this, pos]() { this->closeAllTabsToRight(pos); });
+		connect(copyPathAction, &QAction::triggered, this, [this, pos]() { this->copyFilePath(pos); });
+		connect(copyFileNameAction, &QAction::triggered, this, [this, pos]() { this->copyFileName(pos); });
+		connect(copyFileAction, &QAction::triggered, this, [this, pos]() { this->copyFile(pos); });
 
 		menu.exec(tabWidget->tabBar()->mapToGlobal(pos));
 	}
 }
 
+void CEditor::addToNavHistory(const QString& filePath, int line)
+{
+	qDebug() << "addToNavHistory() IN, " << "filePath = " << filePath << ", line = " << line << Qt::endl;
+
+    // Check if the new edit location is the same as the last one
+    if (!navHistory_.isEmpty() && 
+        navHistory_.last().first == filePath && 
+        navHistory_.last().second == line)
+    {
+        // If it's the same, don't add a duplicate entry
+        return;
+    }
+
+    // Remove any forward history
+    while (navHistory_.size() > currentHistoryIndex_ + 1)
+    {
+        navHistory_.pop_back();
+    }
+
+    // Add the new edit location
+    navHistory_.append(qMakePair(filePath, line));
+    currentHistoryIndex_ = navHistory_.size() - 1;
+
+    // Limit history size (e.g., to 100 entries)
+    if (navHistory_.size() > 100)
+    {
+        navHistory_.removeFirst();
+        currentHistoryIndex_--;
+    }
+
+	qDebug() << "navHistory_ in addToNavHistory() = " << navHistory_;
+	qDebug() << "currentHistoryIndex_ in addToNavHistory() = " << currentHistoryIndex_;
+	
+    emit updateGoForwardBackwardActions(false, navHistory_.size() > 1);
+
+	qDebug() << "addToNavHistory() OUT, " << "filePath = " << filePath << ", line = " << line << Qt::endl;
+}
+
+void CEditor::goForward()
+{
+	qDebug() << "goBackward() IN " << Qt::endl;
+
+    if (currentHistoryIndex_ < navHistory_.size() - 1)
+    {
+        currentHistoryIndex_++;
+        const auto& historyItem = navHistory_[currentHistoryIndex_];
+        
+		if (currentHistoryIndex_ > 0 && historyItem.first == navHistory_[currentHistoryIndex_ - 1].first)
+        {
+            // Same file as previous, just go to line
+            goToLine(historyItem.second);
+        }
+        else
+        {
+            loadFileWithLineNum(historyItem.first, historyItem.second);
+        }
+
+        emit updateGoForwardBackwardActions(currentHistoryIndex_ < navHistory_.size() - 1, true);
+    }
+
+	qDebug() << "goBackward() OUT " << Qt::endl;
+}
+
+void CEditor::goBackward()
+{
+	qDebug() << "goBackward() IN " << Qt::endl;
+
+    if (currentHistoryIndex_ > 0)
+    {
+        currentHistoryIndex_--;
+        const auto& historyItem = navHistory_[currentHistoryIndex_];
+
+        if (currentHistoryIndex_ < navHistory_.size() - 1 && historyItem.first == navHistory_[currentHistoryIndex_ + 1].first)
+        {
+            // Same file as next, just go to line
+            goToLine(historyItem.second);
+        }
+        else
+        {
+            loadFileWithLineNum(historyItem.first, historyItem.second);
+        }
+
+        emit updateGoForwardBackwardActions(true, currentHistoryIndex_ > 0);
+    }
+
+	qDebug() << "goBackward() OUT " << Qt::endl;
+}
+
 void CEditor::reloadFile(const QString &filePath)
 {
+	filesAlreadyPrompted_.remove(filePath);
+
 	QFile file(filePath);
 	if (file.open(QFile::ReadOnly))
 	{
@@ -812,6 +1025,11 @@ void CEditor::reloadFile(const QString &filePath)
 		{
 			editorTabMap_[filePath].textEdit->setText(content);
 			editorTabMap_[filePath].textEdit->setModified(false);
+
+			editorTabMap_[filePath].textEdit->setCaretLineBackgroundColor(QColor("#8fdcf1"));
+			editorTabMap_[filePath].textEdit->setCaretLineVisible(true);
+
+			textEditGoToLine(editorTabMap_[filePath].textEdit, 0);
 
 			tabWidget->setCurrentWidget(editorTabMap_[filePath].textEdit);
 			emit statusLeft("File reloaded.");
@@ -850,15 +1068,29 @@ void CEditor::onEndModificationTimeout()
     endFileModification(currentFileName);
 }
 
+void CEditor::onEndNavigationTimeout()
+{
+	isNavigatingHistory_ = false;
+}
+
 void CEditor::fileChanged(const QString & filePath)
 {
-	if (!filesBeingModified_.contains(filePath)) {
+	if (!filesBeingModified_.contains(filePath) && !filesAlreadyPrompted_.contains(filePath)) {
+		filesAlreadyPrompted_.insert(filePath);
 		QMessageBox::StandardButton reply = QMessageBox::question(this, "File Changed",
 			filePath + " has been modified by another program. Do you want to reload it and lose the changes in blink code search?",
 			QMessageBox::Yes | QMessageBox::No);
 		if (reply == QMessageBox::Yes) {
-			reloadFile(filePath);				
+			reloadFile(filePath);					
 		}
 	}
+}
+
+void CEditor::resetNavHistory()
+{
+	navHistory_.clear();
+	currentHistoryIndex_ = -1;
+	isNavigatingHistory_ = false;
+	emit updateGoForwardBackwardActions(false, false);
 }
 

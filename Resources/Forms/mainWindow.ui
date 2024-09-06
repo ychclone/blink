@@ -650,7 +650,7 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
      <x>0</x>
      <y>0</y>
      <width>705</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuHelp">
@@ -705,7 +705,6 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionFind"/>
     <addaction name="actionFindReplaceDialog"/>
     <addaction name="separator"/>
-    <addaction name="actionGoTo"/>
    </widget>
    <widget class="QMenu" name="menuFIle">
     <property name="title">
@@ -717,9 +716,19 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <addaction name="actionSaveAs"/>
     <addaction name="actionClose"/>
    </widget>
+   <widget class="QMenu" name="menuGo">
+    <property name="title">
+     <string>Go</string>
+    </property>
+    <addaction name="actionGoBack"/>
+    <addaction name="actionGoForward"/>
+    <addaction name="separator"/>
+    <addaction name="actionGoTo"/>
+   </widget>
    <addaction name="menuProject"/>
    <addaction name="menuFIle"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuGo"/>
    <addaction name="menuOptions"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
@@ -823,13 +832,37 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
     <string>&amp;Delete</string>
    </property>
   </action>
-  <action name="actionFileCopy">
+  <action name="actionFilePathCopy">
    <property name="icon">
     <iconset resource="../app.qrc">
      <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
    </property>
    <property name="text">
     <string>Copy Pathnames</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
+   </property>
+  </action>
+    <action name="actionFileNameCopy">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy File Name</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ShortcutContext::WindowShortcut</enum>
+   </property>
+  </action>
+  <action name="actionFileCopy">
+   <property name="icon">
+    <iconset resource="../app.qrc">
+     <normaloff>:/Icons/22x22/edit-copy-4.png</normaloff>:/Icons/22x22/edit-copy-4.png</iconset>
+   </property>
+   <property name="text">
+    <string>Copy File</string>
    </property>
    <property name="shortcutContext">
     <enum>Qt::ShortcutContext::WindowShortcut</enum>
@@ -1236,10 +1269,26 @@ background-color:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #e6f0fc, st
   </action>
   <action name="actionGoTo">
    <property name="text">
-    <string>Go to ...</string>
+    <string>Go to Line...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+G</string>
+   </property>
+  </action>
+  <action name="actionGoBack">
+   <property name="text">
+    <string>Back</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Left</string>
+   </property>
+  </action>
+  <action name="actionGoForward">
+   <property name="text">
+    <string>Forward</string>
+   </property>
+   <property name="shortcut">
+    <string>Alt+Right</string>
    </property>
   </action>
  </widget>

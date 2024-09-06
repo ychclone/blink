@@ -508,7 +508,10 @@ void CMainWindow::createActions()
     // default double click, enter action for file list item
 	connect(file_listView, &CFileListWidget::fileItemTriggered, this, &CMainWindow::on_fileListItemDoubleClicked);
 
+	connect(actionFilePathCopy, &QAction::triggered, this, &CMainWindow::on_filePathCopyPressed);
+	connect(actionFileNameCopy, &QAction::triggered, this, &CMainWindow::on_fileNameCopyPressed);
 	connect(actionFileCopy, &QAction::triggered, this, &CMainWindow::on_fileCopyPressed);
+
 	connect(actionFileExplore, &QAction::triggered, this, &CMainWindow::on_fileExplorePressed);
 	connect(actionFileConsole, &QAction::triggered, this, &CMainWindow::on_fileConsolePressed);
     connect(actionFileProperties, &QAction::triggered, this, &CMainWindow::on_filePropertiesPressed);
@@ -643,6 +646,13 @@ void CMainWindow::createActions()
 
 	connect(option_comboBox, &QComboBox::textActivated, this, &CMainWindow::on_optionLineEdit_textChanged);
 	connect(option_lineEdit, &QLineEdit::textChanged, this, &CMainWindow::on_optionLineEdit_textChanged);
+
+	actionGoForward->setEnabled(false);
+	actionGoBack->setEnabled(false);
+
+	connect(actionGoForward, &QAction::triggered, &editor_, &CEditor::goForward);
+	connect(actionGoBack, &QAction::triggered, &editor_, &CEditor::goBackward);
+	connect(&editor_, &CEditor::updateGoForwardBackwardActions, this, &CMainWindow::updateGoForwardBackwardActions);
 }
 
 void CMainWindow::on_projectAddDirectoryButton_clicked()
@@ -713,6 +723,7 @@ void CMainWindow::on_loadProjectButton_clicked()
 			projectItemName = projectItemNameList.at(0);
 			projectItem = CProjectManager::getInstance()->getProjectItem(projectItemName);
 
+			lastProjectItem_ = currentProjectItem_;
 			currentProjectItem_ = projectItem;
 
 			QDir currentDir(QDir::currentPath());
@@ -732,6 +743,10 @@ void CMainWindow::on_loadProjectButton_clicked()
 				projectLoadThread_.start();
 
 				setWindowTitle(projectItemName + " - Blink");
+
+				if (lastProjectItem_.srcDir_ != currentProjectItem_.srcDir_) {
+					editor_.resetNavHistory();
+				}
 			} else {
 				QMessageBox::warning(this, "Load", "Cannot load project. Source directory doesn't exists.", QMessageBox::Ok);
 			}
@@ -1585,7 +1600,10 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 			if (fileItemSelected > 1) {
 				QMenu menu(this);
 
+				menu.addAction(actionFilePathCopy);
+				menu.addAction(actionFileNameCopy);
 				menu.addAction(actionFileCopy);
+
 				menu.exec(event->globalPos());
 			} else {
 				QMenu menu(this);
@@ -1596,7 +1614,10 @@ void CMainWindow::contextMenuEvent(QContextMenuEvent* event)
 
 				menu.addAction(actionFileExplore);
 
+				menu.addAction(actionFilePathCopy);
+				menu.addAction(actionFileNameCopy);
 				menu.addAction(actionFileCopy);
+				
 				menu.addAction(actionFileConsole);
 
 #ifdef Q_OS_WIN
@@ -2001,7 +2022,7 @@ void CMainWindow::on_fileEditNewTabPressed()
 	}
 }
 
-void CMainWindow::on_fileCopyPressed()
+void CMainWindow::on_filePathCopyPressed()
 {
 	QStringList selectedItemList = getSelectedFileItemNameList();
 	QString clipBoardStr = "";
@@ -2020,6 +2041,50 @@ void CMainWindow::on_fileCopyPressed()
 
 		clipboard->setText(clipBoardStr);
 	}
+}
+
+void CMainWindow::on_fileNameCopyPressed()
+{
+    QStringList selectedItemList = getSelectedFileItemNameList();
+    QString clipBoardStr = "";
+
+    if (!selectedItemList.isEmpty()) {
+        for (int i = 0; i < selectedItemList.size(); ++i) {
+            if (i > 0) {
+                clipBoardStr += "\n";
+            }
+            QFileInfo fileInfo(selectedItemList[i]);
+            clipBoardStr += fileInfo.fileName();
+        }
+
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(clipBoardStr);
+    }
+}
+
+void CMainWindow::on_fileCopyPressed()
+{
+    QStringList selectedItemList = getSelectedFileItemNameList();
+    if (selectedItemList.isEmpty()) {
+        return;
+    }
+
+    QMimeData *mimeData = new QMimeData();
+
+    // Add file URLs
+    QList<QUrl> urls;
+    for (const QString &filePath : selectedItemList) {
+        urls << QUrl::fromLocalFile(filePath);
+    }
+    mimeData->setUrls(urls);
+
+    // Add plain text (file paths)
+    QString plainText = selectedItemList.join("\n");
+    mimeData->setText(plainText);
+
+    // Set the mime data to the clipboard
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setMimeData(mimeData);
 }
 
 void CMainWindow::on_fileExplorePressed()
@@ -2217,11 +2282,13 @@ void CMainWindow::queryTagRowLimit(const QString& tag, unsigned int limitSearchR
 			resultItemSrcLine = resultItem.fileLineSrc_;
 			resultItemSrcLine = resultItemSrcLine.toHtmlEscaped();
 
-			if (caseSensitivity) {
-				resultItemSrcLine.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
-			} else {
-				matchedStr = findStringCaseInsensitive(resultItemSrcLine, tagToQuery);
-				resultItemSrcLine.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
+			if (!bSymbolRegularExpression) {
+				if (caseSensitivity) {
+					resultItemSrcLine.replace(tagToQuery, "<keyword>" + tagToQuery + "</keyword>", Qt::CaseSensitive);
+				} else {
+					matchedStr = findStringCaseInsensitive(resultItemSrcLine, tagToQuery);
+					resultItemSrcLine.replace(matchedStr, "<keyword>" + matchedStr + "</keyword>", Qt::CaseSensitive);
+				}
 			}
 
 			lineSrcBeforeToPrint = "";
@@ -2456,6 +2523,12 @@ void CMainWindow::on_optionLineEdit_textChanged(const QString &text)
             }
         }
     }
+}
+
+void CMainWindow::updateGoForwardBackwardActions(bool canGoForward, bool canGoBackward)
+{
+    actionGoForward->setEnabled(canGoForward);
+    actionGoBack->setEnabled(canGoBackward);
 }
 
 

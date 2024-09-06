@@ -119,6 +119,8 @@ private slots:
 	void on_fileEditExternalPressed();
     void on_fileEditPressed();
 	void on_fileEditNewTabPressed();
+	void on_filePathCopyPressed();
+	void on_fileNameCopyPressed();
 	void on_fileCopyPressed();
 	void on_fileExplorePressed();
 	void on_fileConsolePressed();
@@ -176,6 +178,9 @@ private slots:
 	void fileSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
 
 	void on_optionLineEdit_textChanged(const QString& text);
+
+private slots:
+	void updateGoForwardBackwardActions(bool canGoForward, bool canGoBackward);
 
 private:
 	void updateProjectListWidget();
@@ -238,6 +243,7 @@ private:
 	int infoTabWidgetWidth;
 
 	CProjectItem currentProjectItem_;
+	CProjectItem lastProjectItem_;
 
 	CConfigManager* confManager_;
 
@@ -258,6 +264,7 @@ private:
 	CEditor editor_;
 	
 	QString codeBrowserFileName_;
+	
 };
 #endif // CMAINWINDOW_H
 

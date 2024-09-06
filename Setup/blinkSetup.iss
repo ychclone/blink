@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Blink"
-#define MyAppVersion "1.9.4"
+#define MyAppVersion "1.10.0"
 #define MyAppPublisher "ychclone"
 #define MyAppURL "https://github.com/ychclone/blink"
 #define MyAppExeName "blink.exe"
@@ -20,7 +20,7 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\Blink
 DisableProgramGroupPage=yes
-OutputBaseFilename=blink-1.9.4-setup
+OutputBaseFilename=blink-1.10.0-setup
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
