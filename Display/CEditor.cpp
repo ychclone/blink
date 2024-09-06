@@ -873,6 +873,29 @@ void CEditor::copyFileName(const QPoint &pos)
 	clipboard->setText(fileName);
 }
 
+void CEditor::reloadFileFromTab(const QPoint &pos)
+{
+    int tabIndex = tabWidget->tabBar()->tabAt(pos);
+
+	if (tabIndex == -1) {
+		return;
+	}
+
+	QString filePath = filePathInTab(tabIndex);
+	if (!filePath.isEmpty())
+	{
+		QMessageBox::StandardButton reply = QMessageBox::question(this, "Reload File",
+			"Are you sure you want to reload " + filePath + "?\nAny unsaved changes will be lost.",
+			QMessageBox::Yes | QMessageBox::No);
+
+		if (reply == QMessageBox::Yes)
+		{
+			reloadFile(filePath);
+			emit statusLeft("File reloaded: " + filePath);
+		}
+	}
+}
+
 void CEditor::copyFile(const QPoint &pos)
 {
 	int tabIndex = tabWidget->tabBar()->tabAt(pos);
@@ -895,8 +918,6 @@ void CEditor::copyFile(const QPoint &pos)
 	qDebug() << "File MIME data copied to clipboard from: " << filePath << Qt::endl;
 }
 
-
-
 void CEditor::tabContextMenuEvent(const QPoint &pos)
 {
 	int tabIndex = tabWidget->tabBar()->tabAt(pos);
@@ -910,6 +931,7 @@ void CEditor::tabContextMenuEvent(const QPoint &pos)
 		QAction *copyPathAction = menu.addAction("Copy File Path");
 		QAction *copyFileNameAction = menu.addAction("Copy File Name");
 		QAction *copyFileAction = menu.addAction("Copy File");
+		QAction *reloadFileAction = menu.addAction("Reload File");
 
 		connect(closeCurrentAction, &QAction::triggered, this, [this, pos]() { this->closeCurrentTab(pos); });
 		connect(closeOthersAction, &QAction::triggered, this, [this, pos]() { this->closeAllTabsButCurrent(pos); });
@@ -918,6 +940,7 @@ void CEditor::tabContextMenuEvent(const QPoint &pos)
 		connect(copyPathAction, &QAction::triggered, this, [this, pos]() { this->copyFilePath(pos); });
 		connect(copyFileNameAction, &QAction::triggered, this, [this, pos]() { this->copyFileName(pos); });
 		connect(copyFileAction, &QAction::triggered, this, [this, pos]() { this->copyFile(pos); });
+		connect(reloadFileAction, &QAction::triggered, this, [this, pos]() { this->reloadFileFromTab(pos); });
 
 		menu.exec(tabWidget->tabBar()->mapToGlobal(pos));
 	}

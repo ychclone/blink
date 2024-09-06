@@ -74,6 +74,7 @@ private slots:
 	void copyFilePath(const QPoint &pos);
 	void copyFileName(const QPoint &pos);
 	void copyFile(const QPoint &pos);
+	void reloadFileFromTab(const QPoint &pos);
 
 private:
 	void closeEvent(QCloseEvent *event);
