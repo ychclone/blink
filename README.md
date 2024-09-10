@@ -31,6 +31,16 @@ Source code is avaliable in
 
 # Change Log
 
+## version [1.10.0]
+
+- Editor can go back and forward for navigation
+- Advanced option in search combo box 
+- Right click close all tab, close all to left, close all to right, copy file path, copy filename, and copy file
+- Detect if file opened got modification by other program and prompt reload
+- Fix for find before line match
+- Fix for cursor line highlight
+- Fix for symbol regular expression escaped html string
+
 ## version [1.9.4]
 
 - Change default source mask from \*.\* to \* to include file without extension
