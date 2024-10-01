@@ -31,7 +31,7 @@ Source code is avaliable in
 
 # Change Log
 
-## version [1.10.0]
+## version [1.10.0] 2024/09/10
 
 - Editor can go back and forward for navigation
 - Advanced option in search combo box 
@@ -41,15 +41,15 @@ Source code is avaliable in
 - Fix for cursor line highlight
 - Fix for symbol regular expression escaped html string
 
-## version [1.9.4]
+## version [1.9.4] 2024/08/23
 
 - Change default source mask from \*.\* to \* to include file without extension
 
-## version [1.9.3]
+## version [1.9.3] 2024/08/21
 
 - Support directory to exclude and file mask to exclude
  
-## version [1.9.2]
+## version [1.9.2] 2024/08/07
   
 - can now use \*.\* as source file mask to process all text file. Binary files will be skipped.
 - default source file mask set to \*.\*
