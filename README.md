@@ -1,3 +1,5 @@
+
+
 ![Blink logo](https://raw.githubusercontent.com/ychclone/blink/master/Resources/Images/graphics3.png)
 
 # Blink code search
@@ -26,7 +28,7 @@ Drag and drop of filenames to your favourite editor.
 Windows and Linux binaries are available in
 * https://sourceforge.net/projects/blink-code-search/files/
 
-Source code is avaliable in
+Source code is available in
 * https://github.com/ychclone/blink
 
 # Change Log
@@ -145,5 +147,3 @@ Sol:
 ```
 export QT_QPA_PLATFORM_PLUGIN_PATH=/home/ychclone/Qt5.14.2/5.14.2/gcc_64/plugins/platforms
 ```
-
-
